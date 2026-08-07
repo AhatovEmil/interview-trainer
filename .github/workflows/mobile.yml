@@ -8,7 +8,8 @@ on:
     paths: ["mobile/**", ".github/workflows/mobile.yml"]
 
 env:
-  FLUTTER_VERSION: "3.24.5"
+  # Совпадает с версией, на которой проект проверялся локально.
+  FLUTTER_VERSION: "3.44.9"
 
 jobs:
   analyze:
