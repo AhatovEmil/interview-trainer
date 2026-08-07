@@ -42,6 +42,9 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-trainer}:${POSTGRES_PASSWORD:-trainer}@postgres:5432/${POSTGRES_DB:-trainer}
       REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${SECRET_KEY:-dev-secret-change-me}
+      ACCESS_TOKEN_TTL_MINUTES: ${ACCESS_TOKEN_TTL_MINUTES:-30}
+      REFRESH_TOKEN_TTL_DAYS: ${REFRESH_TOKEN_TTL_DAYS:-30}
     # Миграции и сид применяются на старте контейнера api (см. CLAUDE.md §4 и §9:
     # `docker compose up` на чистой машине должен поднимать бэкенд уже с контентом).
     # Сид идемпотентен, повторный старт данные не портит.

@@ -18,15 +18,27 @@ from app.db.models.taxonomy import (
     Topic,
     TopicWeight,
 )
+from app.db.models.user import (
+    ReviewState,
+    User,
+    UserAnswer,
+    UserSpecialization,
+    UserTopicRating,
+)
 
 __all__ = [
     "Base",
     "Profession",
     "Question",
     "QuestionOption",
+    "ReviewState",
     "Specialization",
     "Subtopic",
     "Topic",
     "TopicWeight",
+    "User",
+    "UserAnswer",
+    "UserSpecialization",
+    "UserTopicRating",
     "question_specializations",
 ]

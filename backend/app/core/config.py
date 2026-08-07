@@ -4,14 +4,15 @@ from __future__ import annotations
 
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import Field, PostgresDsn, RedisDsn
+from pydantic import Field, PostgresDsn, RedisDsn, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # backend/app/core/config.py → корень репозитория
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _DEFAULT_CONTENT_DIR = _REPO_ROOT / "content"
+_DEV_SECRET = "dev-secret-change-me"
 
 
 class Settings(BaseSettings):
@@ -41,6 +42,18 @@ class Settings(BaseSettings):
 
     # Контент (таксономия, банк вопросов) лежит вне кода и грузится YAML-сидом.
     content_dir: Path = Field(default=_DEFAULT_CONTENT_DIR)
+
+    # Значение по умолчанию годится только для локальной разработки:
+    # в проде SECRET_KEY обязателен и проверяется на старте.
+    secret_key: SecretStr = Field(default=SecretStr(_DEV_SECRET))
+    access_token_ttl_minutes: int = Field(default=30, ge=1)
+    refresh_token_ttl_days: int = Field(default=30, ge=1)
+
+    @model_validator(mode="after")
+    def check_production_secrets(self) -> Self:
+        if self.is_production and self.secret_key.get_secret_value() == _DEV_SECRET:
+            raise ValueError("в production переменная SECRET_KEY обязана быть задана")
+        return self
 
     @property
     def is_production(self) -> bool:

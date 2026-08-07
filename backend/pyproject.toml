@@ -17,6 +17,9 @@ dependencies = [
     "alembic>=1.14.0",            # миграции, зафиксирован в CLAUDE.md
     "redis>=5.2.0",               # клиент Redis для кеша выдачи вопросов
     "pyyaml>=6.0.2",              # чтение content/*.yaml: таксономия и банк вопросов
+    "argon2-cffi>=23.1.0",        # хеширование паролей, зафиксирован в CLAUDE.md
+    "pyjwt>=2.10.0",              # access/refresh-токены; легче python-jose и без лишних зависимостей
+    "email-validator>=2.2.0",     # валидация EmailStr в схемах регистрации
 ]
 
 [project.optional-dependencies]
