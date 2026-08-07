@@ -16,6 +16,7 @@ dependencies = [
     "asyncpg>=0.30.0",            # асинхронный драйвер Postgres для SQLAlchemy
     "alembic>=1.14.0",            # миграции, зафиксирован в CLAUDE.md
     "redis>=5.2.0",               # клиент Redis для кеша выдачи вопросов
+    "pyyaml>=6.0.2",              # чтение content/*.yaml: таксономия и банк вопросов
 ]
 
 [project.optional-dependencies]
@@ -25,6 +26,7 @@ dev = [
     "httpx>=0.28.0",          # ASGI-клиент для тестов эндпоинтов
     "ruff>=0.8.0",            # линтер и форматтер
     "mypy>=1.13.0",           # проверка типов, в проекте запрещён Any без аннотаций
+    "types-PyYAML>=6.0.12",   # стабы для pyyaml, иначе mypy --strict ругается на импорт
 ]
 
 [tool.hatch.build.targets.wheel]

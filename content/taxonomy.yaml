@@ -1,0 +1,290 @@
+# Таксономия: профессии, специализации, разделы и темы.
+#
+# Это данные, а не код. Источник истины для БД: сид приводит базу в соответствие
+# с этим файлом (python -m app.seed.taxonomy).
+#
+# weights — вес раздела для каждого грейда, 0.0–1.0. Смысл: насколько тема важна
+# на собеседовании именно этого уровня. По весам считается общий грейд по
+# специализации (взвешенное среднее по темам) и приоритет тем в плане подготовки.
+
+version: 1
+
+professions:
+  - id: backend
+    title: Backend-разработчик
+    specializations:
+      - id: backend_python
+        title: Python
+        is_active: true
+      - id: backend_java
+        title: Java
+      - id: backend_go
+        title: Go
+      - id: backend_csharp
+        title: C#
+      - id: backend_php
+        title: PHP
+      - id: backend_node
+        title: Node.js
+
+  - id: frontend
+    title: Frontend-разработчик
+    specializations:
+      - id: frontend_react
+        title: React
+      - id: frontend_vue
+        title: Vue
+      - id: frontend_angular
+        title: Angular
+
+  - id: mobile
+    title: Мобильный разработчик
+    specializations:
+      - id: mobile_android
+        title: Android / Kotlin
+      - id: mobile_ios
+        title: iOS / Swift
+      - id: mobile_flutter
+        title: Flutter
+
+  - id: qa
+    title: QA-инженер
+    specializations:
+      - id: qa_manual
+        title: Ручное тестирование
+      - id: qa_auto
+        title: Автоматизация
+
+  - id: data
+    title: Данные
+    specializations:
+      - id: data_analyst
+        title: Аналитик данных
+      - id: data_engineer
+        title: Data Engineer
+      - id: data_ml
+        title: ML-инженер
+
+  - id: infra
+    title: Инфраструктура
+    specializations:
+      - id: infra_devops
+        title: DevOps / SRE
+      - id: infra_dba
+        title: Администратор БД
+
+  - id: enterprise
+    title: Корпоративная разработка
+    specializations:
+      - id: enterprise_1c
+        title: 1С-разработчик
+
+  - id: analysis
+    title: Аналитика требований
+    specializations:
+      - id: analysis_system
+        title: Системный аналитик
+      - id: analysis_business
+        title: Бизнес-аналитик
+
+topics:
+  backend_python:
+    - code: language
+      title: Язык
+      # Основы языка спрашивают всех, но с ростом грейда вес падает:
+      # у сеньора проверяют не знание синтаксиса, а решения.
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.6
+        lead: 0.5
+      subtopics:
+        - code: gil
+          title: GIL
+        - code: memory_model
+          title: Модель памяти и сборка мусора
+        - code: decorators
+          title: Декораторы
+        - code: generators
+          title: Генераторы и итераторы
+        - code: typing
+          title: Типизация
+        - code: magic_methods
+          title: Магические методы
+
+    - code: async
+      title: Асинхронность
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: event_loop
+          title: Event loop
+        - code: asyncio_primitives
+          title: Примитивы asyncio
+        - code: concurrency_vs_parallelism
+          title: Конкурентность и параллелизм
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: indexes
+          title: Индексы
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: query_plans
+          title: Планы запросов
+        - code: normalization
+          title: Нормализация
+        - code: orm_pitfalls
+          title: Подводные камни ORM
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: http
+          title: HTTP
+        - code: rest_design
+          title: Дизайн REST API
+        - code: auth_jwt_oauth
+          title: "Аутентификация: JWT и OAuth"
+        - code: idempotency
+          title: Идемпотентность
+        - code: versioning
+          title: Версионирование API
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: solid
+          title: SOLID
+        - code: ddd_basics
+          title: Основы DDD
+        - code: patterns
+          title: Паттерны проектирования
+        - code: layered_architecture
+          title: Слоистая архитектура
+
+    - code: system_design
+      title: Системный дизайн
+      # Джуна об этом не спрашивают вовсе, для сеньора это половина собеседования.
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: sharding
+          title: Шардирование и репликация
+        - code: queues
+          title: Очереди и брокеры
+        - code: cap
+          title: CAP-теорема
+        - code: rate_limiting
+          title: Ограничение частоты запросов
+        - code: observability
+          title: Наблюдаемость
+
+    - code: infra
+      title: Инфраструктура
+      weights:
+        intern: 0.3
+        junior: 0.4
+        junior_plus: 0.5
+        middle: 0.6
+        middle_plus: 0.7
+        senior: 0.8
+        lead: 0.85
+      subtopics:
+        - code: docker
+          title: Docker
+        - code: ci_cd
+          title: CI/CD
+        - code: linux_basics
+          title: Основы Linux
+        - code: networking
+          title: Сети
+
+    - code: algorithms
+      title: Алгоритмы
+      # Обратная динамика: алгоритмические секции жёстче на входе в профессию.
+      weights:
+        intern: 0.8
+        junior: 0.8
+        junior_plus: 0.7
+        middle: 0.6
+        middle_plus: 0.55
+        senior: 0.5
+        lead: 0.45
+      subtopics:
+        - code: complexity
+          title: Оценка сложности
+        - code: arrays_strings
+          title: Массивы и строки
+        - code: hash_maps
+          title: Хеш-таблицы
+        - code: trees
+          title: Деревья
+        - code: graphs
+          title: Графы
+        - code: dp
+          title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате

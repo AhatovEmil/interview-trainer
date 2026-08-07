@@ -15,6 +15,10 @@ RUN pip install --no-cache-dir ".[dev]"
 
 COPY backend/ ./
 
+# Контент лежит вне backend: таксономия и банк вопросов нужны образу для сида.
+COPY content/ ./content/
+ENV CONTENT_DIR=/code/content
+
 RUN useradd --create-home --uid 1000 appuser && chown -R appuser:appuser /code
 USER appuser
 
