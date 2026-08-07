@@ -1,0 +1,28 @@
+name: interview_trainer
+description: Тренажёр для подготовки к техническим собеседованиям.
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.5.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Управление состоянием — зафиксирован в CLAUDE.md §4.
+  flutter_riverpod: ^2.5.1
+  # Навигация — зафиксирован в CLAUDE.md §4.
+  go_router: ^14.6.1
+  # HTTP-клиент — зафиксирован в CLAUDE.md §4.
+  dio: ^5.7.0
+  # Токены должны лежать в Keychain/Keystore, а не в обычных настройках.
+  flutter_secure_storage: ^9.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

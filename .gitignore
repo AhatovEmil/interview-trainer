@@ -23,7 +23,16 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Flutter (появится на этапе 4)
+# Flutter
 /mobile/build/
 /mobile/.dart_tool/
 /mobile/.flutter-plugins*
+/mobile/.packages
+/mobile/pubspec.lock
+# Платформенные каталоги генерируются через `flutter create .` (см. mobile/README.md)
+/mobile/android/
+/mobile/ios/
+/mobile/linux/
+/mobile/macos/
+/mobile/windows/
+/mobile/web/
