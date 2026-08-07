@@ -30,7 +30,7 @@ async def next_question(
 ) -> NextQuestionResponse:
     result = await PracticeService(session).next_question(user, specialization)
     return NextQuestionResponse(
-        question=_to_question(result.question),
+        question=to_question(result.question),
         is_review=result.is_review,
         due_at=result.due_at,
     )
@@ -88,7 +88,7 @@ async def stats(
     )
 
 
-def _to_question(question: Question) -> QuestionOut:
+def to_question(question: Question) -> QuestionOut:
     return QuestionOut(
         id=question.id,
         type=question.type,

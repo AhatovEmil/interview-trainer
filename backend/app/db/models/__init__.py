@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 from app.db.base import Base
+from app.db.models.plan import StudyPlan, StudyPlanDay
 from app.db.models.question import (
     Question,
     QuestionOption,
@@ -33,6 +34,8 @@ __all__ = [
     "QuestionOption",
     "ReviewState",
     "Specialization",
+    "StudyPlan",
+    "StudyPlanDay",
     "Subtopic",
     "Topic",
     "TopicWeight",
