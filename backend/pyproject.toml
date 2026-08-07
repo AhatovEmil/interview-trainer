@@ -1,0 +1,80 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "interview-trainer-api"
+version = "0.1.0"
+description = "Backend тренажёра для подготовки к техническим собеседованиям"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi>=0.115.0",           # HTTP-фреймворк, зафиксирован в CLAUDE.md
+    "uvicorn[standard]>=0.32.0",  # ASGI-сервер для запуска api
+    "pydantic>=2.9.0",            # схемы API, зафиксирован в CLAUDE.md
+    "pydantic-settings>=2.6.0",   # конфиг только из переменных окружения
+    "sqlalchemy[asyncio]>=2.0.36", # ORM 2.0, зафиксирован в CLAUDE.md
+    "asyncpg>=0.30.0",            # асинхронный драйвер Postgres для SQLAlchemy
+    "alembic>=1.14.0",            # миграции, зафиксирован в CLAUDE.md
+    "redis>=5.2.0",               # клиент Redis для кеша выдачи вопросов
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.0",          # тесты, зафиксирован в CLAUDE.md
+    "pytest-asyncio>=0.24.0", # async-тесты, зафиксирован в CLAUDE.md
+    "httpx>=0.28.0",          # ASGI-клиент для тестов эндпоинтов
+    "ruff>=0.8.0",            # линтер и форматтер
+    "mypy>=1.13.0",           # проверка типов, в проекте запрещён Any без аннотаций
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "integration: требует поднятых Postgres и Redis (RUN_INTEGRATION_TESTS=1)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",  # pycodestyle
+    "F",       # pyflakes
+    "I",       # isort
+    "B",       # bugbear
+    "UP",      # pyupgrade
+    "ANN",     # обязательные аннотации типов
+    "ASYNC",   # async-специфичные ошибки
+    "RUF",
+]
+ignore = [
+    "ANN401",
+    # Комментарии и docstring на русском — правила про «неоднозначный юникод» тут ложные.
+    "RUF001",
+    "RUF002",
+    "RUF003",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["app", "tests"]
+
+[tool.ruff.lint.per-file-ignores]
+"migrations/*" = ["ANN", "E501"]
+"tests/*" = ["ANN"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+exclude = ["^migrations/"]
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disallow_untyped_defs = false
