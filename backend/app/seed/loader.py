@@ -8,6 +8,7 @@ from typing import Any
 import yaml
 from pydantic import ValidationError
 
+from app.seed.question_schema import QuestionFile, TaxonomyIndex
 from app.seed.schema import TaxonomyFile
 
 
@@ -26,6 +27,27 @@ def load_taxonomy(path: Path) -> TaxonomyFile:
         return TaxonomyFile.model_validate(raw)
     except ValidationError as exc:
         raise ContentError(f"{path}: файл не прошёл валидацию\n{_format(exc)}") from exc
+
+
+def load_questions(path: Path, taxonomy: TaxonomyFile | None = None) -> QuestionFile:
+    """Прочитать и провалидировать файл вопросов.
+
+    Если передана таксономия, дополнительно проверяются ссылки на специализации,
+    разделы и темы: вопрос про несуществующий topic_id в базу попасть не должен.
+    """
+    raw = _read_yaml(path)
+    try:
+        payload = QuestionFile.model_validate(raw)
+    except ValidationError as exc:
+        raise ContentError(f"{path}: файл не прошёл валидацию\n{_format(exc)}") from exc
+
+    if taxonomy is not None:
+        try:
+            TaxonomyIndex.from_taxonomy(taxonomy).check(payload.questions)
+        except ValueError as exc:
+            raise ContentError(f"{path}: {exc}") from exc
+
+    return payload
 
 
 def _read_yaml(path: Path) -> dict[str, Any]:

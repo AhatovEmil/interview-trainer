@@ -6,6 +6,11 @@
 from __future__ import annotations
 
 from app.db.base import Base
+from app.db.models.question import (
+    Question,
+    QuestionOption,
+    question_specializations,
+)
 from app.db.models.taxonomy import (
     Profession,
     Specialization,
@@ -17,8 +22,11 @@ from app.db.models.taxonomy import (
 __all__ = [
     "Base",
     "Profession",
+    "Question",
+    "QuestionOption",
     "Specialization",
     "Subtopic",
     "Topic",
     "TopicWeight",
+    "question_specializations",
 ]

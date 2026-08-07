@@ -50,6 +50,10 @@ class Settings(BaseSettings):
     def taxonomy_file(self) -> Path:
         return self.content_dir / "taxonomy.yaml"
 
+    @property
+    def questions_dir(self) -> Path:
+        return self.content_dir / "questions"
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

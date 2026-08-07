@@ -88,11 +88,21 @@ async def clean_db(integration_db: str) -> AsyncIterator[None]:
     yield
 
 
+TRUNCATED_TABLES = (
+    "professions",
+    "specializations",
+    "topics",
+    "subtopics",
+    "topic_weights",
+    "questions",
+    "question_options",
+    "question_specializations",
+)
+
+
 async def _truncate() -> None:
     async with get_session_factory()() as session:
-        await session.execute(
-            text("TRUNCATE professions, specializations, topics, subtopics, topic_weights CASCADE")
-        )
+        await session.execute(text(f"TRUNCATE {', '.join(TRUNCATED_TABLES)} CASCADE"))
         await session.commit()
 
 

@@ -48,7 +48,7 @@ class TopicIn(StrictModel):
                     "допустимый диапазон 0.0–1.0"
                 )
 
-        _reject_duplicates(
+        reject_duplicates(
             [subtopic.code for subtopic in self.subtopics],
             f"раздел {self.code!r}: повторяющиеся коды тем",
         )
@@ -72,7 +72,7 @@ class ProfessionIn(StrictModel):
 
     @model_validator(mode="after")
     def check_specializations(self) -> Self:
-        _reject_duplicates(
+        reject_duplicates(
             [spec.id for spec in self.specializations],
             f"профессия {self.id!r}: повторяющиеся id специализаций",
         )
@@ -89,7 +89,7 @@ class TaxonomyFile(StrictModel):
 
     @model_validator(mode="after")
     def check_cross_references(self) -> Self:
-        _reject_duplicates(
+        reject_duplicates(
             [profession.id for profession in self.professions],
             "повторяющиеся id профессий",
         )
@@ -97,7 +97,7 @@ class TaxonomyFile(StrictModel):
         known_specializations = {
             spec.id for profession in self.professions for spec in profession.specializations
         }
-        _reject_duplicates(sorted(known_specializations), "повторяющиеся id специализаций")
+        reject_duplicates(sorted(known_specializations), "повторяющиеся id специализаций")
 
         for spec_id in self.topics:
             if spec_id not in known_specializations:
@@ -109,7 +109,7 @@ class TaxonomyFile(StrictModel):
         for spec_id, topics in self.topics.items():
             if not topics:
                 raise ValueError(f"специализация {spec_id!r}: пустой список разделов")
-            _reject_duplicates(
+            reject_duplicates(
                 [topic.code for topic in topics],
                 f"специализация {spec_id!r}: повторяющиеся коды разделов",
             )
@@ -130,7 +130,7 @@ class TaxonomyFile(StrictModel):
         return ALL_GRADES
 
 
-def _reject_duplicates(values: list[str], message: str) -> None:
+def reject_duplicates(values: list[str], message: str) -> None:
     seen: set[str] = set()
     duplicates: list[str] = []
     for value in values:
