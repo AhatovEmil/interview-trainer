@@ -29,9 +29,10 @@ Thumbs.db
 /mobile/.flutter-plugins*
 /mobile/.packages
 /mobile/pubspec.lock
-# Платформенные каталоги генерируются через `flutter create .` (см. mobile/README.md)
-/mobile/android/
-/mobile/ios/
+# android/ и ios/ лежат в git: там applicationId, разрешения, настройки подписи
+# и версия NDK — всё это часть проекта, а не артефакты сборки. Внутри каждого
+# каталога свой .gitignore от Flutter, он отсекает build/, .gradle/ и ключи.
+# Остальные платформы в MVP не поддерживаются и не генерируются.
 /mobile/linux/
 /mobile/macos/
 /mobile/windows/
