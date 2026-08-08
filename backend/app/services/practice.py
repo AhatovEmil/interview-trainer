@@ -13,7 +13,7 @@ from sqlalchemy.orm import selectinload
 
 from app.core.exceptions import ConflictError, InvalidInputError, NotFoundError
 from app.db.models.question import Question, question_specializations
-from app.db.models.taxonomy import Topic, TopicWeight
+from app.db.models.taxonomy import Subtopic, Topic, TopicWeight
 from app.db.models.user import (
     ReviewState,
     User,
@@ -34,6 +34,9 @@ class NextQuestion:
     question: Question
     is_review: bool
     due_at: datetime | None
+    # Названия из таксономии: наружу уходит «Базы данных», а не код db.
+    topic_title: str
+    subtopic_title: str | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,17 +109,46 @@ class PracticeService:
 
         due = await self._next_due_question(user, specialization_id)
         if due is not None:
-            return due
+            review, due_at = due
+            return await self._with_titles(
+                review, specialization_id, is_review=True, due_at=due_at
+            )
 
-        question = await self._next_new_question(user, specialization_id, grade)
-        if question is None:
+        fresh = await self._next_new_question(user, specialization_id, grade)
+        if fresh is None:
             raise NotFoundError(
                 "вопросы для вашего грейда в этой специализации закончились — "
                 "вернитесь позже за повторениями"
             )
-        return NextQuestion(question=question, is_review=False, due_at=None)
+        return await self._with_titles(fresh, specialization_id, is_review=False, due_at=None)
 
-    async def _next_due_question(self, user: User, specialization_id: str) -> NextQuestion | None:
+    async def _with_titles(
+        self,
+        question: Question,
+        specialization_id: str,
+        *,
+        is_review: bool,
+        due_at: datetime | None,
+    ) -> NextQuestion:
+        topics = await self._topic_titles(specialization_id)
+        subtopics = await self._subtopic_titles(specialization_id)
+        return NextQuestion(
+            question=question,
+            is_review=is_review,
+            due_at=due_at,
+            # Код остаётся запасным вариантом: тему могли убрать из таксономии,
+            # а вопрос на неё ещё ссылается.
+            topic_title=topics.get(question.topic_code, question.topic_code),
+            subtopic_title=(
+                subtopics.get(question.subtopic_code, question.subtopic_code)
+                if question.subtopic_code
+                else None
+            ),
+        )
+
+    async def _next_due_question(
+        self, user: User, specialization_id: str
+    ) -> tuple[Question, datetime] | None:
         """Повторения из SRS имеют приоритет над новыми вопросами."""
         now = datetime.now(UTC)
         statement = (
@@ -140,7 +172,7 @@ class PracticeService:
             return None
 
         question, due_at = row
-        return NextQuestion(question=question, is_review=True, due_at=due_at)
+        return question, due_at
 
     async def _next_new_question(
         self, user: User, specialization_id: str, grade: int
@@ -465,6 +497,16 @@ class PracticeService:
         rows = (
             await self._session.execute(
                 select(Topic.code, Topic.title).where(Topic.specialization_id == specialization_id)
+            )
+        ).all()
+        return {code: title for code, title in rows}
+
+    async def _subtopic_titles(self, specialization_id: str) -> dict[str, str]:
+        rows = (
+            await self._session.execute(
+                select(Subtopic.code, Subtopic.title)
+                .join(Topic, Topic.id == Subtopic.topic_id)
+                .where(Topic.specialization_id == specialization_id)
             )
         ).all()
         return {code: title for code, title in rows}

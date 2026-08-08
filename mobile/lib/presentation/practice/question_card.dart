@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/inline_markup.dart';
 import '../../domain/models/grade.dart';
 import '../../domain/models/question.dart';
 import '../common/async_button.dart';
@@ -63,7 +64,7 @@ class _QuestionCardState extends State<QuestionCard> {
       children: <Widget>[
         _MetaRow(next: widget.next),
         const SizedBox(height: 16),
-        Text(_question.title, style: theme.textTheme.titleLarge),
+        Text(stripInlineMarkup(_question.title), style: theme.textTheme.titleLarge),
         const SizedBox(height: 24),
         if (_question.type.hasOptions) ..._buildOptions(theme) else ..._buildOpenAnswer(theme),
       ],
@@ -127,16 +128,18 @@ class _QuestionCardState extends State<QuestionCard> {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'Проговорите ответ вслух, как на собеседовании. Потом откройте разбор '
-              'и честно оцените себя — от этого зависит, когда вопрос вернётся.',
+              'Проговорите ответ вслух, как на собеседовании. Потом оцените себя — '
+              'разбор откроется сразу после оценки, чтобы она осталась честной.',
               style: theme.textTheme.bodyMedium,
             ),
           ),
         ),
         const SizedBox(height: 16),
+        // Кнопка ведёт на самооценку, а не на разбор: увидев эталон заранее,
+        // почти все ставят «знал», и планировщик повторений слепнет.
         FilledButton(
           onPressed: () => setState(() => _revealed = true),
-          child: const Text('Показать эталонный ответ'),
+          child: const Text('Я ответил, оценить себя'),
         ),
       ];
     }
@@ -203,7 +206,7 @@ class _MetaRow extends StatelessWidget {
             label: const Text('Повторение'),
             backgroundColor: theme.colorScheme.tertiaryContainer,
           ),
-        Chip(label: Text(question.topicCode)),
+        Chip(label: Text(question.topicTitle)),
         Chip(label: Text('Пик: ${Grade.title(question.peakGrade)}')),
         if (!question.isVerified)
           Chip(
