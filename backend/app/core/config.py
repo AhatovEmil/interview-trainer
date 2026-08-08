@@ -12,7 +12,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 # backend/app/core/config.py → корень репозитория
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _DEFAULT_CONTENT_DIR = _REPO_ROOT / "content"
-_DEV_SECRET = "dev-secret-change-me"
+# Длина блока SHA-256: ключ короче не добавляет стойкости HMAC.
+MIN_SECRET_BYTES = 32
+# Дотягивает до MIN_SECRET_BYTES, иначе PyJWT сыплет предупреждениями в каждом тесте.
+_DEV_SECRET = "dev-secret-change-me-before-deploy"
 
 
 class Settings(BaseSettings):
@@ -51,8 +54,19 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def check_production_secrets(self) -> Self:
-        if self.is_production and self.secret_key.get_secret_value() == _DEV_SECRET:
+        if not self.is_production:
+            return self
+
+        secret = self.secret_key.get_secret_value()
+        if secret == _DEV_SECRET:
             raise ValueError("в production переменная SECRET_KEY обязана быть задана")
+        # HMAC-SHA256 берёт ключ короче длины хеша как есть: 8 символов остаются
+        # восемью символами энтропии, сколько бы раундов ни было сверху.
+        if len(secret.encode()) < MIN_SECRET_BYTES:
+            raise ValueError(
+                f"SECRET_KEY короче {MIN_SECRET_BYTES} байт — этого мало для HMAC-SHA256; "
+                'сгенерируйте: python -c "import secrets; print(secrets.token_urlsafe(48))"'
+            )
         return self
 
     @property

@@ -18,11 +18,16 @@ dependencies:
   dio: ^5.7.0
   # Токены должны лежать в Keychain/Keystore, а не в обычных настройках.
   flutter_secure_storage: ^9.2.2
+  drift: ^2.34.3
+  drift_flutter: ^0.3.1
+  connectivity_plus: ^7.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  drift_dev: ^2.34.5
+  build_runner: ^2.15.1
 
 flutter:
   uses-material-design: true

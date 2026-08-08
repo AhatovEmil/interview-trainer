@@ -30,8 +30,13 @@ Thumbs.db
 /mobile/.packages
 /mobile/pubspec.lock
 # android/ и ios/ лежат в git: там applicationId, разрешения, настройки подписи
-# и версия NDK — всё это часть проекта, а не артефакты сборки. Внутри каждого
-# каталога свой .gitignore от Flutter, он отсекает build/, .gradle/ и ключи.
+# и версия NDK — всё это часть проекта, а не артефакты сборки. Ключи и локальные
+# пути отсекают .gitignore от Flutter внутри самих каталогов, а вот каталоги
+# сборки там не перечислены — закрываем их здесь.
+/mobile/android/build/
+/mobile/android/.gradle/
+/mobile/android/app/build/
+/mobile/ios/Pods/
 # Остальные платформы в MVP не поддерживаются и не генерируются.
 /mobile/linux/
 /mobile/macos/

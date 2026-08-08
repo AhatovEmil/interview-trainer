@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/inline_markup.dart';
 import '../../core/theme/app_theme.dart';
 import '../../domain/models/question.dart';
 
@@ -86,8 +87,7 @@ class _ScoreHeader extends StatelessWidget {
       > 0.0 => 'Частично',
       _ => 'Мимо',
     };
-    final double delta = result.ratingDelta;
-    final String deltaText = '${delta >= 0 ? '+' : ''}${delta.toStringAsFixed(0)}';
+    final String subtitle = _subtitle(result);
 
     return Card(
       color: color.withValues(alpha: 0.12),
@@ -108,11 +108,7 @@ class _ScoreHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(verdict, style: theme.textTheme.titleMedium?.copyWith(color: color)),
-                  Text(
-                    'Рейтинг ${result.ratingAfter.toStringAsFixed(0)} ($deltaText) · '
-                    'повтор ${_formatDue(result.nextReviewAt)}',
-                    style: theme.textTheme.bodySmall,
-                  ),
+                  Text(subtitle, style: theme.textTheme.bodySmall),
                   if (result.isDuplicate)
                     Text(
                       'Ответ уже был засчитан ранее',
@@ -127,6 +123,19 @@ class _ScoreHeader extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Подпись под вердиктом. Офлайн рейтинга ещё нет — врать числом нельзя.
+  static String _subtitle(AnswerResult result) {
+    if (!result.hasRating) {
+      return 'Ответ сохранён · рейтинг обновится после синхронизации';
+    }
+    final double delta = result.ratingDelta ?? 0;
+    final String deltaText = '${delta >= 0 ? '+' : ''}${delta.toStringAsFixed(0)}';
+    final String due = result.nextReviewAt == null
+        ? ''
+        : ' · повтор ${_formatDue(result.nextReviewAt!)}';
+    return 'Рейтинг ${result.ratingAfter!.toStringAsFixed(0)} ($deltaText)$due';
   }
 
   static String _formatDue(DateTime due) {
@@ -157,10 +166,24 @@ class _Markdown extends StatelessWidget {
     bool inCode = false;
     final List<String> codeBuffer = <String>[];
 
+    // Абзац продолжается, пока не встретится пустая строка: одиночный перенос
+    // внутри абзаца — это перенос в исходнике, а не разрыв строки на экране.
+    final List<String> paragraph = <String>[];
+    void flushParagraph() {
+      if (paragraph.isEmpty) {
+        return;
+      }
+      blocks.add(
+        Text(stripInlineMarkup(paragraph.join(' ')), style: theme.textTheme.bodyMedium),
+      );
+      paragraph.clear();
+    }
+
     for (final String raw in lines) {
       final String line = raw.trimRight();
 
       if (line.trimLeft().startsWith('```')) {
+        flushParagraph();
         if (inCode) {
           blocks.add(_CodeBlock(code: codeBuffer.join('\n')));
           codeBuffer.clear();
@@ -175,12 +198,14 @@ class _Markdown extends StatelessWidget {
       }
 
       if (line.isEmpty) {
+        flushParagraph();
         blocks.add(const SizedBox(height: 12));
         continue;
       }
 
       final String trimmed = line.trimLeft();
       if (trimmed.startsWith('#')) {
+        flushParagraph();
         final String heading = trimmed.replaceFirst(RegExp(r'^#+\s*'), '');
         blocks.add(
           Padding(
@@ -198,12 +223,15 @@ class _Markdown extends StatelessWidget {
       }
 
       if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        flushParagraph();
         blocks.add(_Bullet(text: trimmed.substring(2), icon: Icons.circle, size: 6));
         continue;
       }
 
-      blocks.add(Text(_stripInline(trimmed), style: theme.textTheme.bodyMedium));
+      paragraph.add(trimmed);
     }
+
+    flushParagraph();
 
     if (codeBuffer.isNotEmpty) {
       blocks.add(_CodeBlock(code: codeBuffer.join('\n')));
@@ -211,10 +239,6 @@ class _Markdown extends StatelessWidget {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: blocks);
   }
-
-  /// Убираем маркеры жирного и inline-кода: рендерить их отдельно избыточно.
-  static String _stripInline(String value) =>
-      value.replaceAll('**', '').replaceAll('`', '');
 }
 
 class _CodeBlock extends StatelessWidget {

@@ -40,7 +40,9 @@ void main() {
         'type': 'single_choice',
         'title': 'Что выведет код?',
         'topic_code': 'language',
+        'topic_title': 'Язык',
         'subtopic_code': 'gil',
+        'subtopic_title': 'GIL',
         'min_grade': 1,
         'peak_grade': 3,
         'max_grade': 6,
@@ -55,6 +57,27 @@ void main() {
       expect(question.type, QuestionType.singleChoice);
       expect(question.options, hasLength(2));
       expect(question.isVerified, isFalse);
+      expect(question.topicTitle, 'Язык');
+      expect(question.subtopicTitle, 'GIL');
+    });
+
+    test('без названия темы откатываемся на код', () {
+      final Question question = Question.fromJson(<String, dynamic>{
+        'id': '1a2b',
+        'type': 'open_answer',
+        'title': 'Что такое GIL?',
+        'topic_code': 'language',
+        'subtopic_code': null,
+        'min_grade': 1,
+        'peak_grade': 3,
+        'max_grade': 6,
+        'frequency': 5,
+        'options': <dynamic>[],
+        'is_verified': false,
+      });
+
+      expect(question.topicTitle, 'language');
+      expect(question.subtopicTitle, isNull);
     });
 
     test('результат ответа', () {

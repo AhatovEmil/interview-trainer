@@ -1,10 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/network/api_exception.dart';
-import '../../data/repositories/practice_repository.dart';
+import '../../data/repositories/offline_practice_repository.dart';
 import '../../domain/models/question.dart';
 import '../providers.dart';
 
@@ -48,13 +46,17 @@ class PracticeState {
 }
 
 class PracticeController extends StateNotifier<PracticeState> {
-  PracticeController(this._repository, this._specialization) : super(const PracticeState()) {
+  PracticeController(this._repository, this._specialization, this._grade)
+      : super(const PracticeState()) {
     loadNext();
   }
 
-  final PracticeRepository _repository;
+  final OfflinePracticeRepository _repository;
   final String _specialization;
-  final Random _random = Random.secure();
+
+  /// Самооценка грейда: офлайн по ней отбираются вопросы, потому что серверную
+  /// оценку без сети не спросить.
+  final int _grade;
 
   /// Идентификатор попытки живёт, пока пользователь отвечает на этот вопрос:
   /// ретрай отправки не должен посчитаться вторым ответом.
@@ -63,14 +65,16 @@ class PracticeController extends StateNotifier<PracticeState> {
   Future<void> loadNext() async {
     state = state.copyWith(phase: PracticePhase.loading, clearResult: true);
     try {
-      final NextQuestion next = await _repository.next(_specialization);
-      _submissionId = _newSubmissionId();
+      final NextQuestion next = await _repository.next(_specialization, grade: _grade);
+      _submissionId = _repository.newSubmissionId();
       state = state.copyWith(phase: PracticePhase.answering, current: next);
     } on ApiException catch (error) {
       state = state.copyWith(
         phase: error.isNotFound ? PracticePhase.exhausted : PracticePhase.failed,
         error: error.message,
       );
+    } on OfflineExhaustedException catch (error) {
+      state = state.copyWith(phase: PracticePhase.exhausted, error: error.toString());
     } on Object catch (error) {
       state = state.copyWith(phase: PracticePhase.failed, error: error.toString());
     }
@@ -107,22 +111,13 @@ class PracticeController extends StateNotifier<PracticeState> {
     }
   }
 
-  String _newSubmissionId() {
-    // UUID v4 без внешней зависимости: 122 случайных бита плюс версия и вариант.
-    final List<int> bytes = List<int>.generate(16, (_) => _random.nextInt(256));
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    final String hex =
-        bytes.map((int byte) => byte.toRadixString(16).padLeft(2, '0')).join();
-    return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}'
-        '-${hex.substring(16, 20)}-${hex.substring(20)}';
-  }
 }
 
 final StateNotifierProviderFamily<PracticeController, PracticeState, String> practiceProvider =
     StateNotifierProvider.family<PracticeController, PracticeState, String>(
   (Ref ref, String specialization) => PracticeController(
-    ref.watch(practiceRepositoryProvider),
+    ref.watch(offlinePracticeRepositoryProvider),
     specialization,
+    ref.watch(sessionProvider).profile?.primary?.selfAssessedGrade ?? 3,
   ),
 );
