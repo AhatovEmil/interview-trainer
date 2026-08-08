@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/inline_markup.dart';
 import '../../core/theme/app_theme.dart';
 import '../../domain/models/question.dart';
 
@@ -157,10 +158,24 @@ class _Markdown extends StatelessWidget {
     bool inCode = false;
     final List<String> codeBuffer = <String>[];
 
+    // Абзац продолжается, пока не встретится пустая строка: одиночный перенос
+    // внутри абзаца — это перенос в исходнике, а не разрыв строки на экране.
+    final List<String> paragraph = <String>[];
+    void flushParagraph() {
+      if (paragraph.isEmpty) {
+        return;
+      }
+      blocks.add(
+        Text(stripInlineMarkup(paragraph.join(' ')), style: theme.textTheme.bodyMedium),
+      );
+      paragraph.clear();
+    }
+
     for (final String raw in lines) {
       final String line = raw.trimRight();
 
       if (line.trimLeft().startsWith('```')) {
+        flushParagraph();
         if (inCode) {
           blocks.add(_CodeBlock(code: codeBuffer.join('\n')));
           codeBuffer.clear();
@@ -175,12 +190,14 @@ class _Markdown extends StatelessWidget {
       }
 
       if (line.isEmpty) {
+        flushParagraph();
         blocks.add(const SizedBox(height: 12));
         continue;
       }
 
       final String trimmed = line.trimLeft();
       if (trimmed.startsWith('#')) {
+        flushParagraph();
         final String heading = trimmed.replaceFirst(RegExp(r'^#+\s*'), '');
         blocks.add(
           Padding(
@@ -198,12 +215,15 @@ class _Markdown extends StatelessWidget {
       }
 
       if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
+        flushParagraph();
         blocks.add(_Bullet(text: trimmed.substring(2), icon: Icons.circle, size: 6));
         continue;
       }
 
-      blocks.add(Text(_stripInline(trimmed), style: theme.textTheme.bodyMedium));
+      paragraph.add(trimmed);
     }
+
+    flushParagraph();
 
     if (codeBuffer.isNotEmpty) {
       blocks.add(_CodeBlock(code: codeBuffer.join('\n')));
@@ -211,10 +231,6 @@ class _Markdown extends StatelessWidget {
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: blocks);
   }
-
-  /// Убираем маркеры жирного и inline-кода: рендерить их отдельно избыточно.
-  static String _stripInline(String value) =>
-      value.replaceAll('**', '').replaceAll('`', '');
 }
 
 class _CodeBlock extends StatelessWidget {

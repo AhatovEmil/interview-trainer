@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/plural.dart';
 import '../../domain/models/grade.dart';
 import '../../domain/models/taxonomy.dart';
 import '../common/async_button.dart';
@@ -139,7 +140,14 @@ class _ProfessionStep extends StatelessWidget {
           child: ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
             title: Text(profession.title),
-            subtitle: Text('${profession.specializations.length} направлени(й)'),
+            subtitle: Text(
+              withPlural(
+                profession.specializations.length,
+                'направление',
+                'направления',
+                'направлений',
+              ),
+            ),
             trailing: available
                 ? const Icon(Icons.chevron_right)
                 : const _SoonBadge(),

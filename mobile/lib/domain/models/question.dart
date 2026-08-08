@@ -38,7 +38,9 @@ class Question {
     required this.type,
     required this.title,
     required this.topicCode,
+    required this.topicTitle,
     required this.subtopicCode,
+    required this.subtopicTitle,
     required this.minGrade,
     required this.peakGrade,
     required this.maxGrade,
@@ -51,7 +53,11 @@ class Question {
   final QuestionType type;
   final String title;
   final String topicCode;
+
+  /// Название темы из таксономии — то, что видит пользователь.
+  final String topicTitle;
   final String? subtopicCode;
+  final String? subtopicTitle;
   final int minGrade;
   final int peakGrade;
   final int maxGrade;
@@ -64,7 +70,10 @@ class Question {
         type: QuestionType.fromWire(json['type'] as String),
         title: json['title'] as String,
         topicCode: json['topic_code'] as String,
+        // Старый сервер названий не присылает — падать из-за этого не должны.
+        topicTitle: json['topic_title'] as String? ?? json['topic_code'] as String,
         subtopicCode: json['subtopic_code'] as String?,
+        subtopicTitle: json['subtopic_title'] as String?,
         minGrade: json['min_grade'] as int,
         peakGrade: json['peak_grade'] as int,
         maxGrade: json['max_grade'] as int,
