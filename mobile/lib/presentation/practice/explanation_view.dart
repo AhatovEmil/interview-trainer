@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../core/inline_markup.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_typography.dart';
 import '../../domain/models/question.dart';
+import '../common/section_label.dart';
+import '../common/surface_card.dart';
 
-/// Разбор после ответа: дельта рейтинга, эталонный ответ, ошибки и follow-up.
+/// Разбор после ответа: вердикт, эталонный ответ, разбор по уровням,
+/// частые ошибки и follow-up.
 class ExplanationView extends StatelessWidget {
   const ExplanationView({
     required this.result,
@@ -17,125 +21,189 @@ class ExplanationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final AppColors colors = context.colors;
     final QuestionExplanation explanation = result.explanation;
 
     return Column(
       children: <Widget>[
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
             children: <Widget>[
-              _ScoreHeader(result: result),
-              const SizedBox(height: 20),
-              Text('Коротко', style: theme.textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(explanation.answerShort),
+              _Verdict(result: result),
+              const SizedBox(height: 28),
+              const SectionLabel('Коротко'),
+              const SizedBox(height: 10),
+              SurfaceCard(
+                child: Text(
+                  explanation.answerShort,
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
-              const SizedBox(height: 20),
-              Text('Разбор', style: theme.textTheme.titleMedium),
-              const SizedBox(height: 8),
+              const SizedBox(height: 28),
+              const SectionLabel('Разбор'),
+              const SizedBox(height: 10),
               _Markdown(text: explanation.answerDetailed),
               if (explanation.commonMistakes.isNotEmpty) ...<Widget>[
-                const SizedBox(height: 20),
-                Text('Частые ошибки', style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
+                const SizedBox(height: 28),
+                const SectionLabel('Частые ошибки'),
+                const SizedBox(height: 10),
                 ...explanation.commonMistakes.map(
-                  (String item) => _Bullet(text: item, icon: Icons.close, color: theme.colorScheme.error),
-                ),
-              ],
-              if (explanation.followUps.isNotEmpty) ...<Widget>[
-                const SizedBox(height: 20),
-                Text('Спросят следующим', style: theme.textTheme.titleMedium),
-                const SizedBox(height: 8),
-                ...explanation.followUps.map(
                   (String item) => _Bullet(
                     text: item,
-                    icon: Icons.arrow_forward,
-                    color: theme.colorScheme.primary,
+                    icon: Icons.close_rounded,
+                    color: colors.critical,
                   ),
                 ),
               ],
-              const SizedBox(height: 24),
+              if (explanation.followUps.isNotEmpty) ...<Widget>[
+                const SizedBox(height: 28),
+                const SectionLabel('Спросят следующим'),
+                const SizedBox(height: 10),
+                ...explanation.followUps.map(
+                  (String item) => _Bullet(
+                    text: item,
+                    icon: Icons.arrow_forward_rounded,
+                    color: colors.accent,
+                  ),
+                ),
+              ],
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: FilledButton(onPressed: onNext, child: const Text('Следующий вопрос')),
+        _BottomBar(
+          child: FilledButton(
+            onPressed: onNext,
+            child: const Text('Следующий вопрос'),
+          ),
         ),
       ],
     );
   }
 }
 
-class _ScoreHeader extends StatelessWidget {
-  const _ScoreHeader({required this.result});
+/// Панель с главной кнопкой. Отделена от списка волосяной линией, чтобы при
+/// прокрутке текст не «подтекал» под кнопку без границы.
+class _BottomBar extends StatelessWidget {
+  const _BottomBar({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppColors colors = context.colors;
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.page,
+        border: Border(top: BorderSide(color: colors.hairline)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+      child: SafeArea(top: false, child: child),
+    );
+  }
+}
+
+/// Вердикт: крупно и однозначно. Цвет дублируется иконкой и словом —
+/// на одном цвете смысл держаться не должен.
+class _Verdict extends StatelessWidget {
+  const _Verdict({required this.result});
 
   final AnswerResult result;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final Color color = AppTheme.scoreColor(theme.colorScheme, result.score);
-    final String verdict = switch (result.score) {
+    final AppColors colors = context.colors;
+    final Color tone = colors.verdict(result.score);
+
+    final String title = switch (result.score) {
       >= 1.0 => 'Верно',
       > 0.0 => 'Частично',
       _ => 'Мимо',
     };
-    final String subtitle = _subtitle(result);
+    final IconData icon = switch (result.score) {
+      >= 1.0 => Icons.check_rounded,
+      > 0.0 => Icons.remove_rounded,
+      _ => Icons.close_rounded,
+    };
 
-    return Card(
-      color: color.withValues(alpha: 0.12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: <Widget>[
-            Icon(
-              result.isCorrect
-                  ? Icons.check_circle
-                  : (result.isPartial ? Icons.adjust : Icons.cancel),
-              color: color,
-              size: 32,
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: colors.verdictWash(result.score),
+        borderRadius: BorderRadius.circular(AppTypography.radiusLarge),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(color: tone, shape: BoxShape.circle),
+            child: Icon(icon, size: 24, color: colors.surface),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(title, style: theme.textTheme.titleLarge?.copyWith(color: tone)),
+                const SizedBox(height: 2),
+                _RatingLine(result: result),
+              ],
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(verdict, style: theme.textTheme.titleMedium?.copyWith(color: color)),
-                  Text(subtitle, style: theme.textTheme.bodySmall),
-                  if (result.isDuplicate)
-                    Text(
-                      'Ответ уже был засчитан ранее',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+}
 
-  /// Подпись под вердиктом. Офлайн рейтинга ещё нет — врать числом нельзя.
-  static String _subtitle(AnswerResult result) {
-    if (!result.hasRating) {
-      return 'Ответ сохранён · рейтинг обновится после синхронизации';
+class _RatingLine extends StatelessWidget {
+  const _RatingLine({required this.result});
+
+  final AnswerResult result;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final AppColors colors = context.colors;
+    final TextStyle? base = theme.textTheme.bodySmall?.copyWith(color: colors.inkSecondary);
+
+    if (result.isDuplicate) {
+      return Text('Ответ уже был засчитан ранее', style: base);
     }
+
+    // Офлайн рейтинг неизвестен: он зависит от серверного состояния.
+    if (!result.hasRating) {
+      return Text('Сохранено · рейтинг обновится после синхронизации', style: base);
+    }
+
     final double delta = result.ratingDelta ?? 0;
-    final String deltaText = '${delta >= 0 ? '+' : ''}${delta.toStringAsFixed(0)}';
+    final String sign = delta >= 0 ? '+' : '−';
     final String due = result.nextReviewAt == null
         ? ''
         : ' · повтор ${_formatDue(result.nextReviewAt!)}';
-    return 'Рейтинг ${result.ratingAfter!.toStringAsFixed(0)} ($deltaText)$due';
+
+    return Row(
+      children: <Widget>[
+        Text(
+          result.ratingAfter!.toStringAsFixed(0),
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontFeatures: AppTypography.tabularFigures,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          '$sign${delta.abs().toStringAsFixed(0)}',
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: delta >= 0 ? colors.good : colors.critical,
+            fontFeatures: AppTypography.tabularFigures,
+          ),
+        ),
+        Expanded(child: Text(due, style: base, overflow: TextOverflow.ellipsis)),
+      ],
+    );
   }
 
   static String _formatDue(DateTime due) {
@@ -160,6 +228,7 @@ class _Markdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    final AppColors colors = context.colors;
     final List<Widget> blocks = <Widget>[];
     final List<String> lines = text.split('\n');
 
@@ -174,7 +243,13 @@ class _Markdown extends StatelessWidget {
         return;
       }
       blocks.add(
-        Text(stripInlineMarkup(paragraph.join(' ')), style: theme.textTheme.bodyMedium),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Text(
+            stripInlineMarkup(paragraph.join(' ')),
+            style: theme.textTheme.bodyLarge?.copyWith(color: colors.inkSecondary),
+          ),
+        ),
       );
       paragraph.clear();
     }
@@ -199,32 +274,26 @@ class _Markdown extends StatelessWidget {
 
       if (line.isEmpty) {
         flushParagraph();
-        blocks.add(const SizedBox(height: 12));
         continue;
       }
 
       final String trimmed = line.trimLeft();
       if (trimmed.startsWith('#')) {
         flushParagraph();
-        final String heading = trimmed.replaceFirst(RegExp(r'^#+\s*'), '');
-        blocks.add(
-          Padding(
-            padding: const EdgeInsets.only(top: 12, bottom: 4),
-            child: Text(
-              heading,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        );
+        blocks.add(_LevelHeading(text: trimmed.replaceFirst(RegExp(r'^#+\s*'), '')));
         continue;
       }
 
       if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
         flushParagraph();
-        blocks.add(_Bullet(text: trimmed.substring(2), icon: Icons.circle, size: 6));
+        blocks.add(
+          _Bullet(
+            text: trimmed.substring(2),
+            icon: Icons.circle,
+            color: colors.inkMuted,
+            size: 5,
+          ),
+        );
         continue;
       }
 
@@ -241,6 +310,40 @@ class _Markdown extends StatelessWidget {
   }
 }
 
+/// Заголовок уровня внутри разбора: «Junior», «Middle», «Senior».
+/// Это опора для чтения — по ней находят свой уровень, не читая всё.
+class _LevelHeading extends StatelessWidget {
+  const _LevelHeading({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppColors colors = context.colors;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 10),
+      child: Row(
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: colors.accentWash,
+              borderRadius: BorderRadius.circular(AppTypography.radiusPill),
+            ),
+            child: Text(
+              text.toUpperCase(),
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.accent),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(child: Divider(color: colors.hairline)),
+        ],
+      ),
+    );
+  }
+}
+
 class _CodeBlock extends StatelessWidget {
   const _CodeBlock({required this.code});
 
@@ -248,20 +351,27 @@ class _CodeBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeData theme = Theme.of(context);
+    final AppColors colors = context.colors;
+
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(12),
+        color: colors.surfaceRaised,
+        borderRadius: BorderRadius.circular(AppTypography.radiusMedium),
+        border: Border.all(color: colors.hairline),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Text(
           code,
-          style: const TextStyle(fontFamily: 'monospace', fontSize: 13, height: 1.4),
+          style: TextStyle(
+            fontFamily: 'monospace',
+            fontSize: 13,
+            height: 1.5,
+            color: colors.inkPrimary,
+          ),
         ),
       ),
     );
@@ -272,28 +382,37 @@ class _Bullet extends StatelessWidget {
   const _Bullet({
     required this.text,
     required this.icon,
-    this.color,
+    required this.color,
     this.size = 16,
   });
 
   final String text;
   final IconData icon;
-  final Color? color;
+  final Color color;
   final double size;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          // Иконку опускаем на пару пикселей: так она встаёт на оптическую
+          // середину первой строки, а не на её верх.
           Padding(
-            padding: const EdgeInsets.only(top: 4, right: 10),
-            child: Icon(icon, size: size, color: color ?? theme.colorScheme.onSurfaceVariant),
+            padding: EdgeInsets.only(top: size < 8 ? 9 : 3),
+            child: Icon(icon, size: size, color: color),
           ),
-          Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              stripInlineMarkup(text),
+              style: theme.textTheme.bodyMedium,
+            ),
+          ),
         ],
       ),
     );
