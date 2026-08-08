@@ -3,22 +3,48 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/router/app_router.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_typography.dart';
 import '../common/async_button.dart';
 import '../providers.dart';
 import 'explanation_view.dart';
+import 'pending_banner.dart';
 import 'practice_controller.dart';
 import 'question_card.dart';
 
-class PracticeScreen extends ConsumerWidget {
+class PracticeScreen extends ConsumerStatefulWidget {
   const PracticeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PracticeScreen> createState() => _PracticeScreenState();
+}
+
+class _PracticeScreenState extends ConsumerState<PracticeScreen> {
+  bool _syncStarted = false;
+
+  /// Первая синхронизация при входе в тренировку: скачивает банк, чтобы в
+  /// метро было чем заниматься, и доносит то, что осталось с прошлого раза.
+  void _startSyncOnce(String specialization) {
+    if (_syncStarted) {
+      return;
+    }
+    _syncStarted = true;
+    // Не блокируем первый кадр: тренировка начинается с сетевого запроса,
+    // а пакет догрузится фоном.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(syncControllerProvider(specialization)).syncNow();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final String? specialization = ref.watch(sessionProvider).specializationId;
 
     if (specialization == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+
+    _startSyncOnce(specialization);
 
     final PracticeState state = ref.watch(practiceProvider(specialization));
     final PracticeController controller = ref.read(practiceProvider(specialization).notifier);
@@ -27,20 +53,23 @@ class PracticeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Тренировка'),
         actions: <Widget>[
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: Text('${state.answeredInSession}'),
-            ),
-          ),
+          if (state.answeredInSession > 0) _SessionCounter(value: state.answeredInSession),
           IconButton(
             icon: const Icon(Icons.insights_outlined),
             tooltip: 'Мой уровень',
             onPressed: () => context.push(AppRoutes.profile),
           ),
+          const SizedBox(width: 4),
         ],
       ),
-      body: SafeArea(child: _buildBody(context, ref, state, controller, specialization)),
+      body: SafeArea(
+        child: Column(
+          children: <Widget>[
+            PendingBanner(specialization: specialization),
+            Expanded(child: _buildBody(context, ref, state, controller, specialization)),
+          ],
+        ),
+      ),
     );
   }
 
@@ -115,6 +144,43 @@ class PracticeScreen extends ConsumerWidget {
   }
 }
 
+/// Счётчик отвеченного за сессию. Появляется только после первого ответа —
+/// пустой ноль в шапке ничего не сообщает.
+class _SessionCounter extends StatelessWidget {
+  const _SessionCounter({required this.value});
+
+  final int value;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppColors colors = context.colors;
+
+    return Center(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: colors.surfaceRaised,
+          borderRadius: BorderRadius.circular(AppTypography.radiusPill),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(Icons.check_rounded, size: 13, color: colors.good),
+            const SizedBox(width: 5),
+            Text(
+              '$value',
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: colors.inkSecondary,
+                    fontFeatures: AppTypography.tabularFigures,
+                  ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _Message extends StatelessWidget {
   const _Message({
     required this.icon,
@@ -134,24 +200,28 @@ class _Message extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
+    final AppColors colors = context.colors;
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(icon, size: 56, color: theme.colorScheme.primary),
-            const SizedBox(height: 16),
-            Text(title, style: theme.textTheme.titleLarge, textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text(
-              body,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: colors.surfaceRaised,
+                shape: BoxShape.circle,
               ),
+              child: Icon(icon, size: 26, color: colors.inkSecondary),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
+            Text(title, style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            Text(body, textAlign: TextAlign.center, style: theme.textTheme.bodyMedium),
+            const SizedBox(height: 28),
             AsyncButton(label: actionLabel, onPressed: onAction),
           ],
         ),

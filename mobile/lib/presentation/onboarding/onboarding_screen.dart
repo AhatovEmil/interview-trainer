@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/plural.dart';
+import '../../core/theme/app_colors.dart';
 import '../../domain/models/grade.dart';
 import '../../domain/models/taxonomy.dart';
 import '../common/async_button.dart';
+import '../common/choice_tile.dart';
 import '../providers.dart';
 
 /// Онбординг в три шага: профессия → специализация → грейд.
@@ -61,8 +64,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             ? null
             : IconButton(icon: const Icon(Icons.arrow_back), onPressed: _back),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(4),
-          child: LinearProgressIndicator(value: (_step + 1) / 3, minHeight: 4),
+          preferredSize: const Size.fromHeight(20),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+            child: StepDots(total: 3, current: _step),
+          ),
         ),
       ),
       body: taxonomy.when(
@@ -129,22 +135,23 @@ class _ProfessionStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
       itemCount: professions.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (BuildContext context, int index) {
         final Profession profession = professions[index];
         final bool available = profession.hasActive;
-        return Card(
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            title: Text(profession.title),
-            subtitle: Text('${profession.specializations.length} направлени(й)'),
-            trailing: available
-                ? const Icon(Icons.chevron_right)
-                : const _SoonBadge(),
-            onTap: () => onSelected(profession),
+        return ChoiceTile(
+          title: profession.title,
+          subtitle: withPlural(
+            profession.specializations.length,
+            'направление',
+            'направления',
+            'направлений',
           ),
+          enabled: available,
+          trailing: available ? null : const SoonBadge(),
+          onTap: () => onSelected(profession),
         );
       },
     );
@@ -165,24 +172,24 @@ class _SpecializationStep extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
       itemCount: profession.specializations.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (BuildContext context, int index) {
         final Specialization specialization = profession.specializations[index];
-        return Card(
-          child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            title: Text(specialization.title),
-            subtitle: specialization.isActive
-                ? Text('${specialization.topics.length} разделов вопросов')
-                : const Text('Готовим банк вопросов'),
-            trailing: specialization.isActive
-                ? const Icon(Icons.chevron_right)
-                : const _SoonBadge(),
-            enabled: specialization.isActive,
-            onTap: specialization.isActive ? () => onSelected(specialization) : null,
-          ),
+        return ChoiceTile(
+          title: specialization.title,
+          subtitle: specialization.isActive
+              ? withPlural(
+                  specialization.topics.length,
+                  'раздел вопросов',
+                  'раздела вопросов',
+                  'разделов вопросов',
+                )
+              : 'Готовим банк вопросов',
+          enabled: specialization.isActive,
+          trailing: specialization.isActive ? null : const SoonBadge(),
+          onTap: () => onSelected(specialization),
         );
       },
     );
@@ -208,61 +215,50 @@ class _GradeStep extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
+    final AppColors colors = context.colors;
+
     return Column(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
           child: Text(
             'Это стартовая точка, а не приговор: после 20 ответов приложение измерит '
             'уровень само и подстроит выдачу.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: theme.textTheme.bodyMedium,
           ),
         ),
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
             itemCount: Grade.all.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (BuildContext context, int index) {
               final int value = Grade.all[index];
-              final bool isSelected = value == grade;
-              return Card(
-                color: isSelected ? theme.colorScheme.primaryContainer : null,
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  title: Text(Grade.title(value)),
-                  subtitle: Text(Grade.hint(value)),
-                  trailing: isSelected ? const Icon(Icons.check_circle) : null,
-                  onTap: () => onChanged(value),
-                ),
+              return ChoiceTile(
+                title: Grade.title(value),
+                subtitle: Grade.hint(value),
+                selected: value == grade,
+                onTap: () => onChanged(value),
               );
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          child: AsyncButton(
-            label: 'Начать тренировку',
-            isLoading: isSaving,
-            onPressed: onSubmit,
+        Container(
+          decoration: BoxDecoration(
+            color: colors.page,
+            border: Border(top: BorderSide(color: colors.hairline)),
+          ),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          child: SafeArea(
+            top: false,
+            child: AsyncButton(
+              label: 'Начать тренировку',
+              isLoading: isSaving,
+              onPressed: onSubmit,
+            ),
           ),
         ),
       ],
-    );
-  }
-}
-
-class _SoonBadge extends StatelessWidget {
-  const _SoonBadge();
-
-  @override
-  Widget build(BuildContext context) {
-    return Chip(
-      label: const Text('скоро'),
-      visualDensity: VisualDensity.compact,
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
     );
   }
 }

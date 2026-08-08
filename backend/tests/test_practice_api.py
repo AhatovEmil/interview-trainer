@@ -193,6 +193,26 @@ async def test_next_question_hides_answers(
         assert "is_correct" not in option
 
 
+async def test_next_question_carries_topic_title(
+    client: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Интерфейсу нужно «Базы данных», а не код db."""
+    await set_profile(client, auth_headers, GRADE_MIDDLE)
+
+    response = await client.get(
+        f"/api/v1/practice/next?specialization={SPECIALIZATION}", headers=auth_headers
+    )
+
+    assert response.status_code == 200
+    question = response.json()["question"]
+    assert question["topic_title"]
+    # Название берётся из таксономии и отличается от машинного кода.
+    assert question["topic_title"] != question["topic_code"]
+    assert not question["topic_title"].islower() or " " in question["topic_title"]
+    if question["subtopic_code"]:
+        assert question["subtopic_title"]
+
+
 async def test_question_outside_grade_range_is_not_served(
     client: AsyncClient, auth_headers: dict[str, str]
 ) -> None:

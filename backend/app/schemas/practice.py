@@ -25,7 +25,10 @@ class QuestionOut(BaseModel):
     type: QuestionType
     title: str
     topic_code: str
+    # Человекочитаемое название темы: интерфейсу незачем знать про коды.
+    topic_title: str
     subtopic_code: str | None
+    subtopic_title: str | None
     min_grade: int = Field(ge=MIN_GRADE, le=MAX_GRADE)
     peak_grade: int = Field(ge=MIN_GRADE, le=MAX_GRADE)
     max_grade: int = Field(ge=MIN_GRADE, le=MAX_GRADE)

@@ -30,7 +30,11 @@ async def next_question(
 ) -> NextQuestionResponse:
     result = await PracticeService(session).next_question(user, specialization)
     return NextQuestionResponse(
-        question=to_question(result.question),
+        question=to_question(
+            result.question,
+            topic_title=result.topic_title,
+            subtopic_title=result.subtopic_title,
+        ),
         is_review=result.is_review,
         due_at=result.due_at,
     )
@@ -88,13 +92,21 @@ async def stats(
     )
 
 
-def to_question(question: Question) -> QuestionOut:
+def to_question(
+    question: Question,
+    *,
+    topic_title: str | None = None,
+    subtopic_title: str | None = None,
+) -> QuestionOut:
     return QuestionOut(
         id=question.id,
         type=question.type,
         title=question.title,
         topic_code=question.topic_code,
+        # Без таксономии под рукой откатываемся на код — лучше, чем пустая строка.
+        topic_title=topic_title or question.topic_code,
         subtopic_code=question.subtopic_code,
+        subtopic_title=subtopic_title,
         min_grade=question.min_grade,
         peak_grade=question.peak_grade,
         max_grade=question.max_grade,
