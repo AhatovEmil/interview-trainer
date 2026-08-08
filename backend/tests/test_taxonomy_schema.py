@@ -156,12 +156,17 @@ def test_project_taxonomy_is_valid() -> None:
     specializations = {
         spec.id: spec for profession in payload.professions for spec in profession.specializations
     }
-    assert len(specializations) == 22
-    active = [spec_id for spec_id, spec in specializations.items() if spec.is_active]
-    assert active == ["backend_python"], "в MVP активна только backend_python"
+    assert len(specializations) == 22, "список специализаций задан в CLAUDE.md §3.1"
 
-    topics = payload.topics["backend_python"]
-    assert [topic.code for topic in topics] == [
+    active = [spec_id for spec_id, spec in specializations.items() if spec.is_active]
+    assert "backend_python" in active, "на backend_python держится приёмка остальных этапов"
+    # Банк вопросов пополняется, поэтому список активных растёт. Инвариант не в
+    # их числе, а в том, что у активной специализации есть чем заниматься.
+    for spec_id in active:
+        assert spec_id in payload.topics, f"{spec_id}: активна, но разделов нет"
+
+    python_topics = payload.topics["backend_python"]
+    assert [topic.code for topic in python_topics] == [
         "language",
         "async",
         "db",
@@ -172,10 +177,14 @@ def test_project_taxonomy_is_valid() -> None:
         "algorithms",
         "soft",
     ]
-    assert sum(len(topic.subtopics) for topic in topics) == 44
+    assert sum(len(topic.subtopics) for topic in python_topics) == 44
 
-    for topic in topics:
-        assert set(topic.weights_by_grade()) == set(ALL_GRADES)
+    # Веса обязаны покрывать всю шкалу грейдов в любой специализации.
+    for spec_id, topics in payload.topics.items():
+        for topic in topics:
+            assert set(topic.weights_by_grade()) == set(ALL_GRADES), (
+                f"{spec_id}/{topic.code}: веса заданы не для всех грейдов"
+            )
 
 
 def test_system_design_outweighs_language_for_senior() -> None:

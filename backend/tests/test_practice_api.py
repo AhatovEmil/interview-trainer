@@ -149,11 +149,14 @@ async def test_profile_update_sets_specialization(
 async def test_inactive_specialization_rejected(
     client: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
+    # backend_java выбран как заведомо неактивный: банка вопросов для него ещё
+    # нет. Как только он появится, тест упадёт — и это правильный сигнал
+    # заменить пример, а не тихо потерять проверку.
     response = await client.patch(
         "/api/v1/me",
         headers=auth_headers,
         json={
-            "specialization_id": "backend_go",
+            "specialization_id": "backend_java",
             "self_assessed_grade": GRADE_MIDDLE,
             "is_primary": True,
         },

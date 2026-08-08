@@ -68,7 +68,7 @@ class QuestionService:
                 )
                 self._session.add(current)
 
-            changed = self._apply_fields(current, payload)
+            changed = self._apply_fields(current, payload, is_new=is_new)
             if is_new:
                 report.questions.created += 1
             elif changed:
@@ -93,9 +93,8 @@ class QuestionService:
         )
         return {row.id: row for row in result}
 
-    def _apply_fields(self, row: Question, payload: QuestionIn) -> bool:
+    def _apply_fields(self, row: Question, payload: QuestionIn, *, is_new: bool) -> bool:
         min_grade, peak_grade, max_grade = payload.grades()
-        difficulty = payload.difficulty_rating or difficulty_from_peak_grade(peak_grade)
 
         values: dict[str, object] = {
             "slug": payload.slug,
@@ -104,7 +103,6 @@ class QuestionService:
             "min_grade": min_grade,
             "peak_grade": peak_grade,
             "max_grade": max_grade,
-            "difficulty_rating": difficulty,
             "frequency": payload.frequency,
             "type": payload.type,
             "title": payload.title,
@@ -115,6 +113,17 @@ class QuestionService:
             "company_tags": payload.company_tags,
             "source": payload.source,
         }
+
+        # Сложность вопроса — не константа из файла, а величина, которую двигают
+        # ответы пользователей (CLAUDE.md §3.5). Задаём её только при создании,
+        # иначе сид на старте контейнера обнулял бы накопленную статистику.
+        # Явное значение в YAML остаётся способом принудительно её переустановить.
+        if is_new:
+            values["difficulty_rating"] = payload.difficulty_rating or difficulty_from_peak_grade(
+                peak_grade
+            )
+        elif payload.difficulty_rating is not None:
+            values["difficulty_rating"] = payload.difficulty_rating
 
         changed = False
         for name, value in values.items():
