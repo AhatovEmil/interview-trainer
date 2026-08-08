@@ -25,6 +25,13 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      # Схема Drift лежит в git сгенерированной, иначе сборка требовала бы
+      # кодогенерации на каждой машине. Проверяем, что файл не отстал от таблиц:
+      # молча протухший .g.dart анализатор не поймает.
+      - name: Сгенерированный код соответствует схеме
+        run: |
+          dart run build_runner build
+          git diff --exit-code -- lib/data/local/app_database.g.dart
       - run: flutter analyze
       - run: flutter test
 

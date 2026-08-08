@@ -20,15 +20,26 @@ enum QuestionType {
 }
 
 class QuestionOption {
-  const QuestionOption({required this.code, required this.text});
+  const QuestionOption({required this.code, required this.text, this.isCorrect});
 
   final String code;
   final String text;
 
+  /// Известна только в офлайн-пакете. При выдаче по одному вопросу сервер
+  /// правильность не присылает, и здесь остаётся null.
+  final bool? isCorrect;
+
   factory QuestionOption.fromJson(Map<String, dynamic> json) => QuestionOption(
         code: json['code'] as String,
         text: json['text'] as String,
+        isCorrect: json['is_correct'] as bool?,
       );
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'code': code,
+        'text': text,
+        if (isCorrect != null) 'is_correct': isCorrect,
+      };
 }
 
 /// Вопрос без ответа: разбор приходит только после отправки.
@@ -129,30 +140,41 @@ class AnswerResult {
   const AnswerResult({
     required this.score,
     required this.quality,
-    required this.ratingBefore,
-    required this.ratingAfter,
-    required this.ratingDelta,
-    required this.grade,
-    required this.gradeCode,
-    required this.nextReviewAt,
-    required this.isDuplicate,
     required this.explanation,
+    this.ratingBefore,
+    this.ratingAfter,
+    this.ratingDelta,
+    this.grade,
+    this.gradeCode,
+    this.nextReviewAt,
+    this.isDuplicate = false,
+    this.isOffline = false,
   });
 
   final double score;
   final int quality;
-  final double ratingBefore;
-  final double ratingAfter;
-  final double ratingDelta;
-  final int grade;
-  final String gradeCode;
-  final DateTime nextReviewAt;
-  final bool isDuplicate;
   final QuestionExplanation explanation;
+
+  /// Рейтинг считает сервер: он знает и текущий рейтинг пользователя по теме,
+  /// и сложность вопроса. Офлайн эти поля пустые до синхронизации.
+  final double? ratingBefore;
+  final double? ratingAfter;
+  final double? ratingDelta;
+  final int? grade;
+  final String? gradeCode;
+  final DateTime? nextReviewAt;
+
+  final bool isDuplicate;
+
+  /// Ответ засчитан на устройстве и ждёт отправки.
+  final bool isOffline;
 
   bool get isCorrect => score >= 1.0;
 
   bool get isPartial => score > 0.0 && score < 1.0;
+
+  /// Есть ли что показывать в блоке рейтинга.
+  bool get hasRating => ratingAfter != null;
 
   factory AnswerResult.fromJson(Map<String, dynamic> json) => AnswerResult(
         score: (json['score'] as num).toDouble(),
@@ -165,5 +187,18 @@ class AnswerResult {
         nextReviewAt: DateTime.parse(json['next_review_at'] as String),
         isDuplicate: json['is_duplicate'] as bool,
         explanation: QuestionExplanation.fromJson(json['explanation'] as Map<String, dynamic>),
+      );
+
+  /// Результат, посчитанный на устройстве: разбор есть, рейтинга ещё нет.
+  factory AnswerResult.offline({
+    required double score,
+    required int quality,
+    required QuestionExplanation explanation,
+  }) =>
+      AnswerResult(
+        score: score,
+        quality: quality,
+        explanation: explanation,
+        isOffline: true,
       );
 }

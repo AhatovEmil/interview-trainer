@@ -20,6 +20,17 @@ class UserProfile {
             .toList(),
       );
 
+  /// Для сохранения на устройстве: без сети профиль неоткуда взять, а без него
+  /// приложение не знает ни специализации, ни грейда.
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'id': id,
+        'email': email,
+        'is_premium': isPremium,
+        'specializations': specializations
+            .map((UserSpecialization item) => item.toJson())
+            .toList(growable: false),
+      };
+
   UserSpecialization? get primary {
     for (final UserSpecialization item in specializations) {
       if (item.isPrimary) {
@@ -54,6 +65,14 @@ class UserSpecialization {
         isPrimary: json['is_primary'] as bool,
         answersCount: json['answers_count'] as int,
       );
+
+  Map<String, dynamic> toJson() => <String, dynamic>{
+        'specialization_id': specializationId,
+        'self_assessed_grade': selfAssessedGrade,
+        'grade_code': gradeCode,
+        'is_primary': isPrimary,
+        'answers_count': answersCount,
+      };
 }
 
 class TopicStats {

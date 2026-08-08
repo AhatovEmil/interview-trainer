@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import Select, func, select
 from sqlalchemy.exc import IntegrityError
@@ -13,7 +13,7 @@ from sqlalchemy.orm import selectinload
 
 from app.core.exceptions import ConflictError, InvalidInputError, NotFoundError
 from app.db.models.question import Question, question_specializations
-from app.db.models.taxonomy import Subtopic, Topic, TopicWeight
+from app.db.models.taxonomy import Specialization, Subtopic, Topic, TopicWeight
 from app.db.models.user import (
     ReviewState,
     User,
@@ -27,6 +27,10 @@ from app.services.scheduler import ReviewScheduler, ReviewSnapshot, get_schedule
 # Сколько кандидатов поднимаем в память для ранжирования. Банк вопросов на
 # специализацию небольшой; когда он вырастет, ранжирование уедет в SQL.
 CANDIDATE_LIMIT = 200
+
+# Насколько глубоко в прошлое разрешено датировать офлайн-ответ. Больше месяца
+# без сети — это не «поезд в метро», а попытка задним числом переставить очередь.
+MAX_BACKDATING = timedelta(days=30)
 
 
 @dataclass(frozen=True, slots=True)
@@ -47,6 +51,9 @@ class AnswerSubmission:
     selected_options: list[str]
     free_text: str | None
     self_assessment: int | None
+    # Время ответа по часам устройства: офлайн-ответ мог быть дан вчера в метро.
+    # None — отвечали онлайн, время проставит сервер.
+    answered_at: datetime | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,6 +75,27 @@ class AnswerResult:
     @property
     def grade(self) -> int:
         return elo.grade_from_rating(self.rating_after)
+
+
+@dataclass(frozen=True, slots=True)
+class QuestionPackage:
+    """Пакет вопросов для офлайна вместе со словарями названий тем."""
+
+    specialization_id: str
+    synced_at: datetime
+    questions: list[Question]
+    topic_titles: dict[str, str]
+    subtopic_titles: dict[str, str]
+
+
+@dataclass(frozen=True, slots=True)
+class BatchItemResult:
+    """Судьба одного ответа из офлайн-пачки."""
+
+    submission_id: uuid.UUID
+    accepted: bool
+    result: AnswerResult | None
+    error: str | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -110,9 +138,7 @@ class PracticeService:
         due = await self._next_due_question(user, specialization_id)
         if due is not None:
             review, due_at = due
-            return await self._with_titles(
-                review, specialization_id, is_review=True, due_at=due_at
-            )
+            return await self._with_titles(review, specialization_id, is_review=True, due_at=due_at)
 
         fresh = await self._next_new_question(user, specialization_id, grade)
         if fresh is None:
@@ -246,8 +272,12 @@ class PracticeService:
             answers_on_topic=topic_rating.answers_count,
         )
 
+        answered_at = self._resolve_answered_at(submission.answered_at)
+
         snapshot = await self._review_snapshot(user, question.id)
-        scheduled = self._scheduler.review(snapshot, quality=quality, now=datetime.now(UTC))
+        # Планировщик считает срок повторения от момента ответа, а не от момента
+        # синхронизации: иначе неделя офлайна сдвинула бы всю очередь вперёд.
+        scheduled = self._scheduler.review(snapshot, quality=quality, now=answered_at)
         assert scheduled.due_at is not None  # планировщик всегда проставляет срок
 
         answer = UserAnswer(
@@ -265,6 +295,7 @@ class PracticeService:
             rating_after=update.user_rating_after,
             difficulty_before=update.question_rating_before,
             difficulty_after=update.question_rating_after,
+            answered_at=answered_at,
         )
         self._session.add(answer)
 
@@ -292,6 +323,84 @@ class PracticeService:
             next_review_at=scheduled.due_at,
             is_duplicate=False,
         )
+
+    async def question_package(
+        self, specialization_id: str, since: datetime | None = None
+    ) -> QuestionPackage:
+        """Вопросы специализации для скачивания на устройство.
+
+        [since] — метка предыдущей синхронизации: отдаём только изменившееся,
+        чтобы в метро не тянуть весь банк заново.
+        """
+        specialization = await self._session.get(Specialization, specialization_id)
+        if specialization is None:
+            raise NotFoundError(f"специализация {specialization_id!r} не найдена")
+
+        # Метку снимаем до выборки: вопрос, изменённый пока идёт запрос, иначе
+        # не попал бы ни в этот пакет, ни в следующий — его updated_at оказался
+        # бы меньше выданной клиенту границы.
+        synced_at = datetime.now(UTC)
+
+        statement: Select[tuple[Question]] = (
+            select(Question)
+            .join(
+                question_specializations,
+                question_specializations.c.question_id == Question.id,
+            )
+            .where(question_specializations.c.specialization_id == specialization_id)
+            .options(selectinload(Question.options))
+            .order_by(Question.slug)
+        )
+        if since is not None:
+            statement = statement.where(Question.updated_at > since)
+
+        questions = list(await self._session.scalars(statement))
+        return QuestionPackage(
+            specialization_id=specialization_id,
+            synced_at=synced_at,
+            questions=questions,
+            topic_titles=await self._topic_titles(specialization_id),
+            subtopic_titles=await self._subtopic_titles(specialization_id),
+        )
+
+    async def submit_batch(
+        self, user: User, submissions: list[AnswerSubmission]
+    ) -> list[BatchItemResult]:
+        """Пачка офлайн-ответов.
+
+        Порядок важен: Elo пересчитывает рейтинг после каждого ответа, поэтому
+        применяем по возрастанию времени ответа, а не в порядке прихода из сети.
+        Ошибка на одном элементе не роняет остальные — клиент должен узнать,
+        что именно не принято, и убрать это из очереди.
+        """
+        ordered = sorted(
+            submissions,
+            key=lambda item: item.answered_at or datetime.now(UTC),
+        )
+
+        results: list[BatchItemResult] = []
+        for submission in ordered:
+            try:
+                result = await self.submit_answer(user, submission)
+            except (InvalidInputError, NotFoundError, ConflictError) as error:
+                results.append(
+                    BatchItemResult(
+                        submission_id=submission.submission_id,
+                        accepted=False,
+                        result=None,
+                        error=str(error),
+                    )
+                )
+                continue
+            results.append(
+                BatchItemResult(
+                    submission_id=submission.submission_id,
+                    accepted=True,
+                    result=result,
+                    error=None,
+                )
+            )
+        return results
 
     async def _replay(self, answer: UserAnswer) -> AnswerResult:
         """Повторная отправка того же ответа возвращает сохранённый результат."""
@@ -492,6 +601,24 @@ class PracticeService:
             )
         ).all()
         return {code: weight for code, weight in rows}
+
+    @staticmethod
+    def _resolve_answered_at(claimed: datetime | None) -> datetime:
+        """Время ответа с устройства, приведённое к разумным границам.
+
+        Часы телефона идут как угодно, а клиент вообще может прислать что захочет.
+        Будущее обрезаем по «сейчас», слишком старое — по окну синхронизации:
+        иначе задним числом можно было бы двигать очередь повторений.
+        """
+        now = datetime.now(UTC)
+        if claimed is None:
+            return now
+        if claimed.tzinfo is None:
+            claimed = claimed.replace(tzinfo=UTC)
+        if claimed > now:
+            return now
+        earliest = now - MAX_BACKDATING
+        return max(claimed, earliest)
 
     async def _topic_titles(self, specialization_id: str) -> dict[str, str]:
         rows = (

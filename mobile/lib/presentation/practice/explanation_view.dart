@@ -87,8 +87,7 @@ class _ScoreHeader extends StatelessWidget {
       > 0.0 => 'Частично',
       _ => 'Мимо',
     };
-    final double delta = result.ratingDelta;
-    final String deltaText = '${delta >= 0 ? '+' : ''}${delta.toStringAsFixed(0)}';
+    final String subtitle = _subtitle(result);
 
     return Card(
       color: color.withValues(alpha: 0.12),
@@ -109,11 +108,7 @@ class _ScoreHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(verdict, style: theme.textTheme.titleMedium?.copyWith(color: color)),
-                  Text(
-                    'Рейтинг ${result.ratingAfter.toStringAsFixed(0)} ($deltaText) · '
-                    'повтор ${_formatDue(result.nextReviewAt)}',
-                    style: theme.textTheme.bodySmall,
-                  ),
+                  Text(subtitle, style: theme.textTheme.bodySmall),
                   if (result.isDuplicate)
                     Text(
                       'Ответ уже был засчитан ранее',
@@ -128,6 +123,19 @@ class _ScoreHeader extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// Подпись под вердиктом. Офлайн рейтинга ещё нет — врать числом нельзя.
+  static String _subtitle(AnswerResult result) {
+    if (!result.hasRating) {
+      return 'Ответ сохранён · рейтинг обновится после синхронизации';
+    }
+    final double delta = result.ratingDelta ?? 0;
+    final String deltaText = '${delta >= 0 ? '+' : ''}${delta.toStringAsFixed(0)}';
+    final String due = result.nextReviewAt == null
+        ? ''
+        : ' · повтор ${_formatDue(result.nextReviewAt!)}';
+    return 'Рейтинг ${result.ratingAfter!.toStringAsFixed(0)} ($deltaText)$due';
   }
 
   static String _formatDue(DateTime due) {
