@@ -33,6 +33,7 @@ professions:
     specializations:
       - id: frontend_react
         title: React
+        is_active: true
       - id: frontend_vue
         title: Vue
       - id: frontend_angular
@@ -267,6 +268,227 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У фронтенда свои разделы: вместо баз данных — браузер и производительность
+  # рендеринга, вместо системного дизайна серверов — архитектура клиентского
+  # приложения. Алгоритмы спрашивают заметно реже, чем на бэкенде.
+  frontend_react:
+    - code: javascript
+      title: JavaScript
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: closures
+          title: Замыкания
+        - code: this_binding
+          title: Контекст this
+        - code: prototypes
+          title: Прототипы и наследование
+        - code: event_loop
+          title: Event loop и микрозадачи
+        - code: promises_async
+          title: Промисы и async/await
+        - code: equality_coercion
+          title: Приведение типов и сравнения
+
+    - code: typescript
+      title: TypeScript
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: structural_typing
+          title: Структурная типизация
+        - code: generics
+          title: Дженерики
+        - code: utility_types
+          title: Утилитарные типы
+        - code: narrowing
+          title: Сужение типов
+        - code: unknown_any_never
+          title: unknown, any и never
+
+    - code: react
+      title: React
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: hooks_rules
+          title: Правила хуков
+        - code: reconciliation
+          title: Согласование и ключи
+        - code: state_updates
+          title: Обновления состояния
+        - code: effects
+          title: Эффекты и очистка
+        - code: memoization
+          title: Мемоизация
+        - code: context
+          title: Контекст
+        - code: server_components
+          title: Серверные компоненты
+
+    - code: state_management
+      title: Управление состоянием
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: local_vs_global
+          title: Локальное и глобальное состояние
+        - code: server_state
+          title: Серверное состояние и кеш запросов
+        - code: derived_state
+          title: Производное состояние
+        - code: forms
+          title: Формы
+
+    - code: browser
+      title: Браузер и сеть
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: rendering_pipeline
+          title: Конвейер отрисовки
+        - code: http_caching
+          title: HTTP-кеширование
+        - code: cors
+          title: CORS
+        - code: storage
+          title: Хранилища и куки
+        - code: web_security
+          title: XSS, CSRF и защита
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: core_web_vitals
+          title: Core Web Vitals
+        - code: bundle_size
+          title: Размер бандла и разделение кода
+        - code: rerender_cost
+          title: Лишние перерисовки
+        - code: lists_virtualization
+          title: Виртуализация списков
+        - code: images_fonts
+          title: Изображения и шрифты
+
+    - code: architecture
+      title: Архитектура приложения
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: component_design
+          title: Проектирование компонентов
+        - code: rendering_strategies
+          title: Стратегии рендеринга
+        - code: module_boundaries
+          title: Границы модулей
+        - code: design_system
+          title: Дизайн-система
+
+    - code: accessibility
+      title: Доступность
+      # Спрашивают редко, но на продуктовых собеседованиях это заметный плюс.
+      weights:
+        intern: 0.25
+        junior: 0.35
+        junior_plus: 0.45
+        middle: 0.55
+        middle_plus: 0.6
+        senior: 0.65
+        lead: 0.7
+      subtopics:
+        - code: semantics
+          title: Семантика разметки
+        - code: keyboard_focus
+          title: Клавиатура и фокус
+        - code: aria
+          title: ARIA
+        - code: contrast
+          title: Контраст и типографика
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: testing_library
+          title: Тестирование поведения
+        - code: mocking_network
+          title: Моки сети
+        - code: e2e
+          title: Сквозные тесты
 
     - code: soft
       title: Поведенческая секция
