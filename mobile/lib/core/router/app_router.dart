@@ -4,9 +4,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../presentation/auth/login_screen.dart';
 import '../../presentation/auth/register_screen.dart';
+import '../../presentation/home/home_screen.dart';
 import '../../presentation/onboarding/onboarding_screen.dart';
 import '../../presentation/practice/practice_screen.dart';
 import '../../presentation/profile/profile_screen.dart';
+import '../../presentation/questions/question_list_screen.dart';
 import '../../presentation/providers.dart';
 import '../../presentation/splash_screen.dart';
 
@@ -17,7 +19,11 @@ class AppRoutes {
   static const String login = '/login';
   static const String register = '/register';
   static const String onboarding = '/onboarding';
+
+  /// Точка входа после онбординга: обзор, выбор специализации, переходы.
+  static const String home = '/home';
   static const String practice = '/practice';
+  static const String questions = '/questions';
   static const String profile = '/profile';
 }
 
@@ -46,8 +52,23 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
         builder: (BuildContext context, GoRouterState state) => const OnboardingScreen(),
       ),
       GoRoute(
+        path: AppRoutes.home,
+        builder: (BuildContext context, GoRouterState state) => const HomeScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.practice,
         builder: (BuildContext context, GoRouterState state) => const PracticeScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.questions,
+        builder: (BuildContext context, GoRouterState state) => const QuestionListScreen(),
+        routes: <RouteBase>[
+          GoRoute(
+            path: ':id',
+            builder: (BuildContext context, GoRouterState state) =>
+                PracticeScreen(questionId: state.pathParameters['id']),
+          ),
+        ],
       ),
       GoRoute(
         path: AppRoutes.profile,
@@ -74,7 +95,7 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
           if (onAuthScreen ||
               location == AppRoutes.splash ||
               location == AppRoutes.onboarding) {
-            return AppRoutes.practice;
+            return AppRoutes.home;
           }
           return null;
         case SessionStatus.unknown:

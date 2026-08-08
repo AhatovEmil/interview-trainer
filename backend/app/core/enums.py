@@ -21,3 +21,24 @@ class QuestionSource(StrEnum):
     SEED = "seed"
     CROWDSOURCED = "crowdsourced"
     IMPORTED = "imported"
+
+
+class QuestionStatus(StrEnum):
+    """Как пользователь закрыл вопрос в последний раз.
+
+    Берётся именно последняя попытка, а не лучшая: список должен показывать
+    текущее положение дел, иначе забытый вопрос выглядел бы освоенным.
+    """
+
+    UNANSWERED = "unanswered"
+    CORRECT = "correct"
+    PARTIAL = "partial"
+    WRONG = "wrong"
+
+    @classmethod
+    def from_score(cls, score: float) -> QuestionStatus:
+        if score >= 1.0:
+            return cls.CORRECT
+        if score > 0.0:
+            return cls.PARTIAL
+        return cls.WRONG

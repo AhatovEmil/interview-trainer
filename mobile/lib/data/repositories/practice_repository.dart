@@ -1,6 +1,7 @@
 import '../../core/network/api_client.dart';
 import '../../domain/models/profile.dart';
 import '../../domain/models/question.dart';
+import '../../domain/models/question_list.dart';
 import '../../domain/models/taxonomy.dart';
 
 class PracticeRepository {
@@ -37,6 +38,24 @@ class PracticeRepository {
     };
     return AnswerResult.fromJson(await _client.post('/practice/answer', body: body));
   }
+
+  /// Все вопросы специализации с отметкой, как они закрыты.
+  Future<QuestionListSummary> questions(String specialization) async =>
+      QuestionListSummary.fromJson(
+        await _client.get(
+          '/practice/questions',
+          query: <String, dynamic>{'specialization': specialization},
+        ),
+      );
+
+  /// Конкретный вопрос, открытый из списка вручную.
+  Future<NextQuestion> questionById(String specialization, String questionId) async =>
+      NextQuestion.fromJson(
+        await _client.get(
+          '/practice/questions/$questionId',
+          query: <String, dynamic>{'specialization': specialization},
+        ),
+      );
 
   Future<PracticeStats> stats(String specialization) async => PracticeStats.fromJson(
         await _client.get(

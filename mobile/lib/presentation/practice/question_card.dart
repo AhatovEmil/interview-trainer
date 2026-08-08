@@ -388,8 +388,9 @@ class _MetaRow extends StatelessWidget {
           ),
         MetaPill(label: question.topicTitle),
         MetaPill(label: 'Пик: ${Grade.title(question.peakGrade)}'),
-        if (!question.isVerified)
-          MetaPill(label: 'не проверен', icon: Icons.help_outline_rounded),
+        // Метку `is_verified` пользователю не показываем: сейчас она стоит у
+        // всего банка и потому ничего не сообщает, зато подрывает доверие.
+        // Смысл появится, когда рядом лягут вопросы из краудсорсинга.
       ],
     );
   }

@@ -13,6 +13,7 @@ import '../data/repositories/practice_repository.dart';
 import '../data/sync/sync_controller.dart';
 import '../data/sync/sync_service.dart';
 import '../domain/models/profile.dart';
+import '../domain/models/question_list.dart';
 import '../domain/models/taxonomy.dart';
 
 final Provider<TokenStorage> tokenStorageProvider =
@@ -195,4 +196,12 @@ final FutureProviderFamily<PracticeStats, String> statsProvider =
     FutureProvider.family<PracticeStats, String>(
   (Ref ref, String specialization) =>
       ref.watch(practiceRepositoryProvider).stats(specialization),
+);
+
+/// Список вопросов с отметками о прохождении. Собирается на сервере: статус
+/// зависит от всех ответов пользователя, включая сделанные на других устройствах.
+final FutureProviderFamily<QuestionListSummary, String> questionListProvider =
+    FutureProvider.family<QuestionListSummary, String>(
+  (Ref ref, String specialization) =>
+      ref.watch(practiceRepositoryProvider).questions(specialization),
 );
