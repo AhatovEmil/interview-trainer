@@ -27,6 +27,7 @@ professions:
         title: PHP
       - id: backend_node
         title: Node.js
+        is_active: true
 
   - id: frontend
     title: Frontend-разработчик
@@ -268,6 +269,215 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Node свой центр тяжести: однопоточный event loop вместо потоков, поэтому
+  # блокировка главного потока и работа с потоками данных вынесены в отдельные
+  # разделы. Безопасность цепочки зависимостей вынесена явно: в npm-экосистеме
+  # это спрашивают предметно.
+  backend_node:
+    - code: language
+      title: JavaScript и TypeScript
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: closures
+          title: Замыкания
+        - code: promises_async
+          title: Промисы и async/await
+        - code: error_handling
+          title: Обработка ошибок
+        - code: modules
+          title: Модули CommonJS и ESM
+        - code: typing
+          title: Типизация
+
+    - code: event_loop
+      title: Event loop и асинхронность
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: phases
+          title: Фазы цикла событий
+        - code: microtasks
+          title: Микрозадачи и nextTick
+        - code: blocking
+          title: Блокировка главного потока
+        - code: worker_threads
+          title: Рабочие потоки и процессы
+
+    - code: streams
+      title: Потоки и буферы
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: backpressure
+          title: Обратное давление
+        - code: pipeline
+          title: Конвейеры и ошибки
+        - code: buffers
+          title: Буферы и кодировки
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: connection_pool
+          title: Пул соединений
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: indexes
+          title: Индексы
+        - code: orm_pitfalls
+          title: Подводные камни ORM
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: http
+          title: HTTP
+        - code: rest_design
+          title: Дизайн REST API
+        - code: auth_jwt_oauth
+          title: "Аутентификация: JWT и OAuth"
+        - code: idempotency
+          title: Идемпотентность
+        - code: validation
+          title: Валидация входных данных
+
+    - code: security
+      title: Безопасность
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: injection
+          title: Инъекции
+        - code: secrets
+          title: Секреты и конфигурация
+        - code: supply_chain
+          title: Безопасность зависимостей
+        - code: headers_cors
+          title: Заголовки и CORS
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: layered_architecture
+          title: Слоистая архитектура
+        - code: solid
+          title: SOLID
+        - code: dependency_injection
+          title: Внедрение зависимостей
+        - code: monorepo
+          title: Монорепозиторий и границы модулей
+
+    - code: system_design
+      title: Системный дизайн
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: queues
+          title: Очереди и брокеры
+        - code: scaling
+          title: Масштабирование процессов
+        - code: rate_limiting
+          title: Ограничение частоты запросов
+        - code: observability
+          title: Наблюдаемость
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: unit_integration
+          title: Юнит- и интеграционные тесты
+        - code: mocking
+          title: Моки и подмены
+        - code: test_containers
+          title: Тесты с реальными зависимостями
 
     - code: soft
       title: Поведенческая секция
