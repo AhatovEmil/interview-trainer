@@ -38,6 +38,7 @@ professions:
         is_active: true
       - id: frontend_vue
         title: Vue
+        is_active: true
       - id: frontend_angular
         title: Angular
 
@@ -278,6 +279,209 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Vue отдельный вес имеет система реактивности: она работает на прокси и
+  # отслеживает зависимости автоматически, поэтому спрашивают именно про её
+  # устройство и границы — где отслеживание теряется. В React такого раздела
+  # нет, потому что там перерисовка запускается иначе.
+  frontend_vue:
+    - code: javascript
+      title: JavaScript
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: closures
+          title: Замыкания
+        - code: event_loop
+          title: Event loop и микрозадачи
+        - code: promises_async
+          title: Промисы и async/await
+        - code: prototypes
+          title: Прототипы
+        - code: proxy_reflect
+          title: Прокси и перехват
+
+    - code: reactivity
+      title: Реактивность
+      weights:
+        intern: 0.5
+        junior: 0.75
+        junior_plus: 0.9
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: ref_reactive
+          title: ref и reactive
+        - code: computed_watch
+          title: Вычисляемые свойства и наблюдатели
+        - code: tracking_limits
+          title: Границы отслеживания
+        - code: shallow
+          title: Поверхностная реактивность
+
+    - code: components
+      title: Компоненты
+      weights:
+        intern: 0.85
+        junior: 0.95
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: props_events
+          title: Свойства и события
+        - code: slots
+          title: Слоты
+        - code: lifecycle
+          title: Жизненный цикл
+        - code: composition_api
+          title: Composition API
+        - code: provide_inject
+          title: Передача через контекст
+
+    - code: state_management
+      title: Управление состоянием
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.65
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: store
+          title: Хранилище
+        - code: server_state
+          title: Серверное состояние
+        - code: composables
+          title: Переиспользуемая логика
+
+    - code: routing
+      title: Маршрутизация
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.85
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: guards
+          title: Защита маршрутов
+        - code: lazy_routes
+          title: Ленивая загрузка
+        - code: params
+          title: Параметры и запросы
+
+    - code: browser
+      title: Браузер и сеть
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: rendering_pipeline
+          title: Конвейер отрисовки
+        - code: http_caching
+          title: HTTP-кеширование
+        - code: cors
+          title: CORS
+        - code: web_security
+          title: XSS и защита
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: core_web_vitals
+          title: Core Web Vitals
+        - code: bundle_size
+          title: Размер бандла
+        - code: rerender_cost
+          title: Лишние обновления
+        - code: lists_virtualization
+          title: Виртуализация списков
+
+    - code: architecture
+      title: Архитектура приложения
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: component_design
+          title: Проектирование компонентов
+        - code: rendering_strategies
+          title: Стратегии рендеринга
+        - code: module_boundaries
+          title: Границы модулей
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: component_tests
+          title: Тесты компонентов
+        - code: mocking_network
+          title: Моки сети
+        - code: e2e
+          title: Сквозные тесты
 
     - code: soft
       title: Поведенческая секция
