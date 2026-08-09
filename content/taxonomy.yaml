@@ -18,6 +18,7 @@ professions:
         is_active: true
       - id: backend_java
         title: Java
+        is_active: true
       - id: backend_go
         title: Go
         is_active: true
@@ -269,6 +270,238 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Java собеседование традиционно тяжелее на устройстве платформы: JVM,
+  # сборка мусора и модель памяти вынесены в отдельные разделы, а Spring —
+  # де-факто обязательная часть, поэтому у него свой раздел.
+  backend_java:
+    - code: language
+      title: Язык
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: equals_hashcode
+          title: equals и hashCode
+        - code: immutability
+          title: Неизменяемость
+        - code: generics
+          title: Дженерики и стирание типов
+        - code: exceptions
+          title: Исключения
+        - code: optional_null
+          title: Optional и null
+        - code: records_sealed
+          title: Записи и запечатанные типы
+
+    - code: collections
+      title: Коллекции
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: hashmap_internals
+          title: Устройство HashMap
+        - code: list_set
+          title: Списки и множества
+        - code: comparable_comparator
+          title: Сравнение и сортировка
+        - code: streams_api
+          title: Stream API
+
+    - code: jvm
+      title: JVM и память
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: memory_areas
+          title: Области памяти
+        - code: garbage_collection
+          title: Сборка мусора
+        - code: class_loading
+          title: Загрузка классов
+        - code: jit
+          title: JIT-компиляция
+
+    - code: concurrency
+      title: Многопоточность
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: memory_model
+          title: Модель памяти и happens-before
+        - code: synchronization
+          title: Синхронизация и блокировки
+        - code: executors
+          title: Пулы потоков
+        - code: concurrent_collections
+          title: Конкурентные коллекции
+        - code: virtual_threads
+          title: Виртуальные потоки
+
+    - code: spring
+      title: Spring
+      weights:
+        intern: 0.4
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: di_context
+          title: Контекст и внедрение зависимостей
+        - code: bean_scopes
+          title: Области видимости бинов
+        - code: transactions
+          title: Декларативные транзакции
+        - code: aop_proxies
+          title: Прокси и AOP
+        - code: boot_config
+          title: Конфигурация Spring Boot
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: jpa_lifecycle
+          title: Жизненный цикл сущности в JPA
+        - code: lazy_loading
+          title: Ленивая загрузка
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: indexes
+          title: Индексы
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.55
+        junior: 0.75
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: rest_design
+          title: Дизайн REST API
+        - code: auth
+          title: Аутентификация и авторизация
+        - code: validation
+          title: Валидация
+        - code: error_handling
+          title: Обработка ошибок
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: solid
+          title: SOLID
+        - code: patterns
+          title: Паттерны проектирования
+        - code: layered_architecture
+          title: Слоистая архитектура
+        - code: microservices
+          title: Микросервисы
+
+    - code: system_design
+      title: Системный дизайн
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: queues
+          title: Очереди и брокеры
+        - code: scaling
+          title: Масштабирование
+        - code: observability
+          title: Наблюдаемость
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: junit_mockito
+          title: JUnit и Mockito
+        - code: spring_test
+          title: Тесты в Spring
+        - code: testcontainers
+          title: Тесты с реальными зависимостями
 
     - code: soft
       title: Поведенческая секция
