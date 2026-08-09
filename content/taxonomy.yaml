@@ -24,6 +24,7 @@ professions:
         is_active: true
       - id: backend_csharp
         title: C#
+        is_active: true
       - id: backend_php
         title: PHP
       - id: backend_node
@@ -279,6 +280,215 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У C# отдельный вес имеет асинхронность: async/await появился здесь раньше,
+  # чем в большинстве языков, и на собеседованиях его разбирают глубоко —
+  # вплоть до контекста синхронизации и взаимных блокировок. Плюс ASP.NET Core
+  # с EF Core как де-факто обязательная часть стека.
+  backend_csharp:
+    - code: language
+      title: Язык
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: value_reference
+          title: Значимые и ссылочные типы
+        - code: equality
+          title: Равенство и хеш-код
+        - code: nullable
+          title: Ссылочные типы с null
+        - code: generics
+          title: Обобщения
+        - code: records
+          title: Записи и неизменяемость
+        - code: exceptions
+          title: Исключения
+
+    - code: async
+      title: Асинхронность
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: async_await
+          title: async и await
+        - code: deadlocks
+          title: Взаимные блокировки
+        - code: cancellation
+          title: Отмена операций
+        - code: parallel
+          title: Параллелизм и потоки
+
+    - code: dotnet
+      title: Платформа
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: gc
+          title: Сборка мусора
+        - code: memory
+          title: Управление памятью
+        - code: disposable
+          title: Освобождение ресурсов
+        - code: spans
+          title: Работа без лишних выделений
+
+    - code: aspnet
+      title: ASP.NET Core
+      weights:
+        intern: 0.4
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: di_lifetime
+          title: Внедрение зависимостей и время жизни
+        - code: middleware
+          title: Конвейер обработки
+        - code: configuration
+          title: Конфигурация
+        - code: hosted_services
+          title: Фоновые службы
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: ef_tracking
+          title: Отслеживание изменений
+        - code: lazy_loading
+          title: Ленивая загрузка
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: migrations
+          title: Миграции
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.55
+        junior: 0.75
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: rest_design
+          title: Дизайн REST API
+        - code: auth
+          title: Аутентификация и авторизация
+        - code: validation
+          title: Валидация
+        - code: error_handling
+          title: Обработка ошибок
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: solid
+          title: SOLID
+        - code: layered_architecture
+          title: Слоистая архитектура
+        - code: patterns
+          title: Паттерны проектирования
+        - code: microservices
+          title: Микросервисы
+
+    - code: system_design
+      title: Системный дизайн
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: queues
+          title: Очереди и брокеры
+        - code: scaling
+          title: Масштабирование
+        - code: observability
+          title: Наблюдаемость
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: unit
+          title: Юнит-тесты
+        - code: integration
+          title: Интеграционные тесты
+        - code: mocking
+          title: Моки и подмены
 
     - code: soft
       title: Поведенческая секция
