@@ -75,6 +75,7 @@ professions:
         is_active: true
       - id: data_engineer
         title: Data Engineer
+        is_active: true
       - id: data_ml
         title: ML-инженер
 
@@ -281,6 +282,189 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У инженера данных центр тяжести — надёжность конвейеров и моделирование
+  # хранилища. Отдельные разделы про качество данных и обработку сбоев есть
+  # только здесь: перезапуск упавшей загрузки не должен задваивать данные,
+  # а расхождение с источником нужно обнаружить раньше, чем аналитик.
+  data_engineer:
+    - code: sql
+      title: SQL и аналитические запросы
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.9
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.7
+      subtopics:
+        - code: window_functions
+          title: Оконные функции
+        - code: joins_aggregation
+          title: Соединения и агрегация
+        - code: query_plans
+          title: Планы выполнения
+        - code: incremental
+          title: Инкрементальная обработка
+
+    - code: modeling
+      title: Моделирование данных
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: star_schema
+          title: Схема звезды
+        - code: slowly_changing
+          title: Медленно меняющиеся измерения
+        - code: normalization
+          title: Нормализация и денормализация
+        - code: grain
+          title: Гранулярность таблиц
+
+    - code: pipelines
+      title: Конвейеры обработки
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: orchestration
+          title: Оркестрация и расписания
+        - code: idempotency
+          title: Идемпотентность и перезапуск
+        - code: backfill
+          title: Дозагрузка исторических данных
+        - code: dependencies
+          title: Зависимости между задачами
+
+    - code: storage
+      title: Хранилища и форматы
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: columnar
+          title: Колоночные форматы
+        - code: partitioning
+          title: Партиционирование
+        - code: lakehouse
+          title: Озеро и витрины
+        - code: compression
+          title: Сжатие и размер файлов
+
+    - code: streaming
+      title: Потоковая обработка
+      weights:
+        intern: 0.15
+        junior: 0.35
+        junior_plus: 0.55
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: delivery_guarantees
+          title: Гарантии доставки
+        - code: event_time
+          title: Время события и опоздания
+        - code: windowing
+          title: Оконные вычисления
+        - code: ordering
+          title: Порядок и партиционирование
+
+    - code: data_quality
+      title: Качество данных
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: validation
+          title: Проверки и контракты
+        - code: reconciliation
+          title: Сверка с источником
+        - code: monitoring
+          title: Мониторинг конвейеров
+        - code: lineage
+          title: Происхождение данных
+
+    - code: distributed
+      title: Распределённая обработка
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: shuffle
+          title: Перераспределение данных
+        - code: skew
+          title: Перекос данных
+        - code: resources
+          title: Ресурсы и параллелизм
+
+    - code: engineering
+      title: Инженерные практики
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: testing
+          title: Тестирование конвейеров
+        - code: versioning
+          title: Версионирование и миграции
+        - code: cost
+          title: Стоимость обработки
 
     - code: soft
       title: Поведенческая секция
