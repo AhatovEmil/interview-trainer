@@ -50,6 +50,7 @@ professions:
         title: iOS / Swift
       - id: mobile_flutter
         title: Flutter
+        is_active: true
 
   - id: qa
     title: QA-инженер
@@ -270,6 +271,211 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У мобильной разработки свои разделы: жизненный цикл приложения и платформа
+  # (разрешения, фон, публикация) весят столько же, сколько язык. Вместо баз
+  # данных — локальное хранилище и работа в офлайне: связь на телефоне рвётся,
+  # и это спрашивают предметно.
+  mobile_flutter:
+    - code: dart
+      title: Dart
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: null_safety
+          title: Безопасность null
+        - code: async_futures
+          title: Future и async/await
+        - code: streams
+          title: Потоки
+        - code: isolates
+          title: Изоляты
+        - code: collections_equality
+          title: Коллекции и равенство
+
+    - code: widgets
+      title: Виджеты и рендеринг
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: stateless_stateful
+          title: Stateless и Stateful
+        - code: three_trees
+          title: Дерево виджетов, элементов и слоёв
+        - code: keys
+          title: Ключи
+        - code: build_context
+          title: BuildContext
+        - code: layout
+          title: Раскладка и ограничения
+
+    - code: state_management
+      title: Управление состоянием
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: lifting_state
+          title: Подъём состояния
+        - code: inherited_widget
+          title: InheritedWidget и провайдеры
+        - code: server_state
+          title: Серверное состояние
+        - code: forms
+          title: Формы
+
+    - code: navigation
+      title: Навигация
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.8
+        senior: 0.75
+        lead: 0.7
+      subtopics:
+        - code: routing
+          title: Маршрутизация
+        - code: deep_links
+          title: Глубокие ссылки
+        - code: nested_navigation
+          title: Вложенная навигация
+
+    - code: storage
+      title: Хранилище и офлайн
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: local_db
+          title: Локальная база
+        - code: caching_sync
+          title: Кеш и синхронизация
+        - code: secure_storage
+          title: Безопасное хранение
+
+    - code: platform
+      title: Платформа
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: lifecycle
+          title: Жизненный цикл приложения
+        - code: permissions
+          title: Разрешения
+        - code: platform_channels
+          title: Каналы к нативному коду
+        - code: background
+          title: Фоновая работа
+        - code: release
+          title: Сборка и публикация
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: rebuilds
+          title: Лишние перестроения
+        - code: jank
+          title: Пропуск кадров
+        - code: lists
+          title: Длинные списки
+        - code: images
+          title: Изображения и память
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: layers
+          title: Слои приложения
+        - code: dependency_injection
+          title: Внедрение зависимостей
+        - code: error_handling
+          title: Обработка ошибок
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: widget_tests
+          title: Тесты виджетов
+        - code: golden_tests
+          title: Golden-тесты
+        - code: integration_tests
+          title: Интеграционные тесты
 
     - code: soft
       title: Поведенческая секция
