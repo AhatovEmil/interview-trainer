@@ -57,8 +57,10 @@ professions:
     specializations:
       - id: qa_manual
         title: Ручное тестирование
+        is_active: true
       - id: qa_auto
         title: Автоматизация
+        is_active: true
 
   - id: data
     title: Данные
@@ -279,6 +281,332 @@ topics:
         junior: 0.5
         junior_plus: 0.6
         middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У ручного тестирования центр тяжести не в коде, а в мышлении: техники
+  # тест-дизайна, работа с требованиями и качество баг-репортов. Это и
+  # проверяют на собеседовании в первую очередь.
+  qa_manual:
+    - code: fundamentals
+      title: Основы тестирования
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.9
+        middle: 0.8
+        middle_plus: 0.7
+        senior: 0.6
+        lead: 0.5
+      subtopics:
+        - code: levels_types
+          title: Уровни и виды тестирования
+        - code: verification_validation
+          title: Верификация и валидация
+        - code: static_testing
+          title: Статическое тестирование
+        - code: principles
+          title: Принципы тестирования
+
+    - code: test_design
+      title: Тест-дизайн
+      weights:
+        intern: 0.7
+        junior: 0.9
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: equivalence_boundary
+          title: Классы эквивалентности и границы
+        - code: decision_table
+          title: Таблицы решений
+        - code: state_transition
+          title: Переходы состояний
+        - code: pairwise
+          title: Попарное тестирование
+        - code: error_guessing
+          title: Предугадывание ошибок
+
+    - code: documentation
+      title: Документация
+      weights:
+        intern: 0.8
+        junior: 0.95
+        junior_plus: 0.95
+        middle: 0.9
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: bug_report
+          title: Баг-репорт
+        - code: test_cases
+          title: Тест-кейсы и чек-листы
+        - code: requirements
+          title: Работа с требованиями
+        - code: test_plan
+          title: Тест-план и стратегия
+
+    - code: web_mobile
+      title: Веб и мобильные приложения
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: devtools
+          title: Инструменты разработчика
+        - code: http_basics
+          title: Основы HTTP
+        - code: cross_browser
+          title: Кросс-браузерность и адаптивность
+        - code: mobile_specifics
+          title: Особенности мобильных приложений
+
+    - code: api_db
+      title: API и базы данных
+      weights:
+        intern: 0.35
+        junior: 0.6
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: rest_testing
+          title: Тестирование REST API
+        - code: status_codes
+          title: Коды ответов
+        - code: sql_queries
+          title: SQL-запросы
+        - code: postman
+          title: Инструменты работы с API
+
+    - code: process
+      title: Процессы
+      weights:
+        intern: 0.4
+        junior: 0.55
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: sdlc
+          title: Жизненный цикл разработки
+        - code: agile
+          title: Гибкие методологии
+        - code: bug_lifecycle
+          title: Жизненный цикл дефекта
+        - code: release_criteria
+          title: Критерии выпуска
+
+    - code: nonfunctional
+      title: Нефункциональное тестирование
+      weights:
+        intern: 0.2
+        junior: 0.35
+        junior_plus: 0.5
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: performance
+          title: Производительность
+        - code: security_basics
+          title: Основы безопасности
+        - code: usability
+          title: Удобство использования
+        - code: accessibility
+          title: Доступность
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У автоматизации к навыкам тестировщика добавляется инженерная часть:
+  # устойчивость тестов, архитектура фреймворка и место прогона в конвейере.
+  # Именно на них, а не на знании селекторов, разваливаются собеседования.
+  qa_auto:
+    - code: fundamentals
+      title: Основы тестирования
+      weights:
+        intern: 0.9
+        junior: 0.9
+        junior_plus: 0.85
+        middle: 0.75
+        middle_plus: 0.65
+        senior: 0.55
+        lead: 0.5
+      subtopics:
+        - code: pyramid
+          title: Пирамида тестов
+        - code: what_to_automate
+          title: Что автоматизировать
+        - code: test_design
+          title: Тест-дизайн для автоматизации
+
+    - code: programming
+      title: Программирование
+      weights:
+        intern: 0.8
+        junior: 0.95
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: language_basics
+          title: Основы языка
+        - code: oop
+          title: Объектно-ориентированный подход
+        - code: async_waits
+          title: Асинхронность и ожидания
+        - code: data_structures
+          title: Структуры данных
+
+    - code: ui_automation
+      title: Автоматизация интерфейса
+      weights:
+        intern: 0.6
+        junior: 0.85
+        junior_plus: 0.95
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: locators
+          title: Локаторы
+        - code: waits
+          title: Ожидания
+        - code: page_object
+          title: Page Object
+        - code: flakiness
+          title: Нестабильные тесты
+
+    - code: api_automation
+      title: Автоматизация API
+      weights:
+        intern: 0.5
+        junior: 0.75
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: request_testing
+          title: Проверка запросов
+        - code: contract_testing
+          title: Контрактное тестирование
+        - code: mocks_stubs
+          title: Моки и заглушки
+
+    - code: test_data
+      title: Тестовые данные
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: isolation
+          title: Изоляция тестов
+        - code: fixtures
+          title: Подготовка данных
+        - code: environments
+          title: Тестовые окружения
+
+    - code: ci_cd
+      title: CI и запуск
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: pipeline
+          title: Конвейер сборки
+        - code: parallel_runs
+          title: Параллельный запуск
+        - code: reporting
+          title: Отчёты и анализ падений
+        - code: containers
+          title: Контейнеры в тестах
+
+    - code: architecture
+      title: Архитектура фреймворка
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: layers
+          title: Слои фреймворка
+        - code: maintainability
+          title: Поддерживаемость
+        - code: reporting_design
+          title: Отчётность и логирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.45
+        junior: 0.55
+        junior_plus: 0.65
+        middle: 0.75
         middle_plus: 0.8
         senior: 0.9
         lead: 1.0
