@@ -67,6 +67,7 @@ professions:
     specializations:
       - id: data_analyst
         title: Аналитик данных
+        is_active: true
       - id: data_engineer
         title: Data Engineer
       - id: data_ml
@@ -274,6 +275,191 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У аналитика вес смещён не в технологии, а в постановку задачи и выводы:
+  # SQL и статистика — инструменты, а спрашивают прежде всего умение
+  # превратить размытый вопрос бизнеса в проверяемую гипотезу и не соврать
+  # цифрой. Отсюда отдельные разделы про метрики и коммуникацию.
+  data_analyst:
+    - code: sql
+      title: SQL
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.8
+        lead: 0.7
+      subtopics:
+        - code: joins
+          title: Соединения таблиц
+        - code: aggregation
+          title: Группировка и агрегаты
+        - code: window_functions
+          title: Оконные функции
+        - code: subqueries_cte
+          title: Подзапросы и CTE
+        - code: nulls
+          title: Работа с NULL
+        - code: performance
+          title: Скорость запросов
+
+    - code: statistics
+      title: Статистика
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: descriptive
+          title: Описательные статистики
+        - code: distributions
+          title: Распределения
+        - code: hypothesis_testing
+          title: Проверка гипотез
+        - code: correlation_causation
+          title: Корреляция и причинность
+        - code: sampling
+          title: Выборки и смещения
+
+    - code: ab_testing
+      title: A/B-тесты
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: design
+          title: Дизайн эксперимента
+        - code: sample_size
+          title: Размер выборки и мощность
+        - code: pitfalls
+          title: Ловушки и подглядывание
+        - code: interpretation
+          title: Интерпретация результата
+
+    - code: metrics
+      title: Метрики продукта
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: definition
+          title: Определение метрик
+        - code: cohorts
+          title: Когорты и удержание
+        - code: unit_economics
+          title: Юнит-экономика
+        - code: guardrails
+          title: Контрольные метрики
+
+    - code: data_quality
+      title: Качество данных
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: validation
+          title: Проверка данных
+        - code: missing_data
+          title: Пропуски и выбросы
+        - code: tracking
+          title: Сбор событий
+
+    - code: visualization
+      title: Визуализация
+      weights:
+        intern: 0.6
+        junior: 0.75
+        junior_plus: 0.8
+        middle: 0.85
+        middle_plus: 0.85
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: chart_choice
+          title: Выбор типа графика
+        - code: dashboards
+          title: Дашборды
+        - code: misleading
+          title: Вводящие в заблуждение графики
+
+    - code: tools
+      title: Инструменты
+      weights:
+        intern: 0.7
+        junior: 0.8
+        junior_plus: 0.8
+        middle: 0.75
+        middle_plus: 0.7
+        senior: 0.6
+        lead: 0.5
+      subtopics:
+        - code: python_pandas
+          title: Python и таблицы
+        - code: excel
+          title: Таблицы и сводные
+        - code: bi
+          title: BI-системы
+
+    - code: communication
+      title: Коммуникация
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: problem_framing
+          title: Постановка задачи
+        - code: presenting
+          title: Представление результатов
+        - code: stakeholders
+          title: Работа с заказчиками
 
     - code: soft
       title: Поведенческая секция
