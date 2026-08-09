@@ -77,6 +77,7 @@ professions:
     specializations:
       - id: infra_devops
         title: DevOps / SRE
+        is_active: true
       - id: infra_dba
         title: Администратор БД
 
@@ -273,6 +274,213 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У DevOps разделы отражают не язык, а слои эксплуатации: Linux и сеть внизу,
+  # контейнеры и оркестрация посередине, конвейеры и наблюдаемость сверху.
+  # Надёжность вынесена отдельно: именно про инциденты и SLO спрашивают на
+  # старших грейдах, а не про синтаксис манифестов.
+  infra_devops:
+    - code: linux
+      title: Linux
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.8
+        senior: 0.75
+        lead: 0.65
+      subtopics:
+        - code: processes
+          title: Процессы и сигналы
+        - code: filesystem
+          title: Файловая система и права
+        - code: resources
+          title: Память, диск, нагрузка
+        - code: troubleshooting
+          title: Диагностика на сервере
+
+    - code: networking
+      title: Сети
+      weights:
+        intern: 0.7
+        junior: 0.85
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: tcp_ip
+          title: TCP/IP
+        - code: dns
+          title: DNS
+        - code: tls
+          title: TLS и сертификаты
+        - code: load_balancing
+          title: Балансировка нагрузки
+        - code: firewall
+          title: Фильтрация трафика
+
+    - code: containers
+      title: Контейнеры
+      weights:
+        intern: 0.6
+        junior: 0.85
+        junior_plus: 0.95
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: images
+          title: Образы и слои
+        - code: isolation
+          title: Изоляция и лимиты
+        - code: storage_networking
+          title: Тома и сеть контейнеров
+        - code: security
+          title: Безопасность контейнеров
+
+    - code: kubernetes
+      title: Оркестрация
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: workloads
+          title: Поды и контроллеры
+        - code: services_ingress
+          title: Сервисы и входящий трафик
+        - code: config_secrets
+          title: Конфигурация и секреты
+        - code: scheduling
+          title: Планирование и ресурсы
+        - code: probes
+          title: Пробы и жизненный цикл
+
+    - code: ci_cd
+      title: Конвейеры
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: pipeline_design
+          title: Устройство конвейера
+        - code: artifacts
+          title: Артефакты и версии
+        - code: deployment_strategies
+          title: Стратегии выката
+        - code: secrets_in_ci
+          title: Секреты в конвейере
+
+    - code: iac
+      title: Инфраструктура как код
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.95
+        lead: 0.95
+      subtopics:
+        - code: declarative
+          title: Декларативный подход
+        - code: state
+          title: Состояние и дрейф
+        - code: modules
+          title: Модули и переиспользование
+
+    - code: observability
+      title: Наблюдаемость
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: metrics
+          title: Метрики
+        - code: logs
+          title: Логи
+        - code: tracing
+          title: Трассировка
+        - code: alerting
+          title: Оповещения
+
+    - code: reliability
+      title: Надёжность
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: slo
+          title: SLI, SLO и бюджет ошибок
+        - code: incidents
+          title: Инциденты и разбор
+        - code: capacity
+          title: Ёмкость и масштабирование
+        - code: backups
+          title: Резервные копии и восстановление
+
+    - code: security
+      title: Безопасность
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 0.95
+        lead: 0.95
+      subtopics:
+        - code: secrets_management
+          title: Управление секретами
+        - code: access_control
+          title: Доступы и права
+        - code: supply_chain
+          title: Цепочка поставки
 
     - code: soft
       title: Поведенческая секция
