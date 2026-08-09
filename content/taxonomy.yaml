@@ -46,6 +46,7 @@ professions:
     specializations:
       - id: mobile_android
         title: Android / Kotlin
+        is_active: true
       - id: mobile_ios
         title: iOS / Swift
       - id: mobile_flutter
@@ -275,6 +276,231 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Android центр тяжести — жизненный цикл и ограничения устройства: система
+  # в любой момент может убить процесс, а батарея и память конечны. Отсюда
+  # отдельные разделы про жизненный цикл и фоновую работу, которых нет
+  # у серверных специализаций.
+  mobile_android:
+    - code: kotlin
+      title: Kotlin
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: null_safety
+          title: Безопасность null
+        - code: data_classes
+          title: Классы данных и sealed
+        - code: extensions
+          title: Функции-расширения
+        - code: scope_functions
+          title: Функции области видимости
+        - code: collections
+          title: Коллекции и последовательности
+
+    - code: coroutines
+      title: Корутины
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: structured_concurrency
+          title: Структурная конкурентность
+        - code: dispatchers
+          title: Диспетчеры и потоки
+        - code: flow
+          title: Flow и холодные потоки
+        - code: cancellation
+          title: Отмена и исключения
+
+    - code: lifecycle
+      title: Жизненный цикл
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.8
+        lead: 0.7
+      subtopics:
+        - code: activity_fragment
+          title: Активности и фрагменты
+        - code: configuration_change
+          title: Смена конфигурации
+        - code: process_death
+          title: Убийство процесса
+        - code: viewmodel
+          title: ViewModel и состояние
+
+    - code: ui
+      title: Интерфейс
+      weights:
+        intern: 0.8
+        junior: 0.9
+        junior_plus: 0.95
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: compose_basics
+          title: Основы Compose
+        - code: recomposition
+          title: Рекомпозиция
+        - code: state_hoisting
+          title: Подъём состояния
+        - code: lists
+          title: Списки и производительность
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.15
+        junior: 0.35
+        junior_plus: 0.55
+        middle: 0.85
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: mvvm_mvi
+          title: MVVM и MVI
+        - code: layers
+          title: Слои и модули
+        - code: di
+          title: Внедрение зависимостей
+        - code: navigation
+          title: Навигация
+
+    - code: data
+      title: Данные и сеть
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: networking
+          title: Сеть и клиенты
+        - code: local_storage
+          title: Локальное хранилище
+        - code: offline_sync
+          title: Офлайн и синхронизация
+        - code: caching
+          title: Кеширование
+
+    - code: background
+      title: Фоновая работа
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: workmanager
+          title: Отложенные задачи
+        - code: services
+          title: Службы и уведомления
+        - code: battery
+          title: Батарея и ограничения
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: memory_leaks
+          title: Утечки памяти
+        - code: rendering
+          title: Плавность отрисовки
+        - code: startup
+          title: Время запуска
+        - code: apk_size
+          title: Размер приложения
+
+    - code: release
+      title: Сборка и релиз
+      weights:
+        intern: 0.3
+        junior: 0.45
+        junior_plus: 0.55
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.85
+        lead: 0.9
+      subtopics:
+        - code: gradle
+          title: Сборка
+        - code: proguard
+          title: Сокращение и обфускация
+        - code: permissions
+          title: Разрешения
+        - code: store
+          title: Публикация и обновления
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: unit
+          title: Юнит-тесты
+        - code: ui_tests
+          title: Тесты интерфейса
+        - code: coroutines_test
+          title: Тестирование корутин
 
     - code: soft
       title: Поведенческая секция
