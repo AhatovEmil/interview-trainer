@@ -102,6 +102,7 @@ professions:
         is_active: true
       - id: analysis_business
         title: Бизнес-аналитик
+        is_active: true
 
 topics:
   backend_python:
@@ -292,6 +293,179 @@ topics:
         middle: 0.7
         middle_plus: 0.8
         senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # Бизнес-аналитик отличается от системного точкой приложения: он работает с
+  # процессами и выгодой, а не с интеграциями и схемами. Отсюда разделы про
+  # экономическое обоснование и управление изменениями, которых нет у
+  # системного аналитика, и отсутствие раздела про интеграции.
+  analysis_business:
+    - code: requirements
+      title: Требования
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: elicitation
+          title: Выявление требований
+        - code: prioritization
+          title: Приоритизация
+        - code: acceptance
+          title: Критерии приёмки
+        - code: scope
+          title: Границы объёма
+
+    - code: processes
+      title: Бизнес-процессы
+      weights:
+        intern: 0.7
+        junior: 0.85
+        junior_plus: 0.95
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: as_is_to_be
+          title: Текущее и целевое состояние
+        - code: modeling
+          title: Моделирование процессов
+        - code: bottlenecks
+          title: Узкие места
+        - code: metrics
+          title: Метрики процесса
+
+    - code: business_case
+      title: Экономическое обоснование
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.85
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: value
+          title: Оценка ценности
+        - code: costs
+          title: Затраты и окупаемость
+        - code: risks
+          title: Риски и допущения
+
+    - code: stakeholders
+      title: Заинтересованные стороны
+      weights:
+        intern: 0.5
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: mapping
+          title: Карта участников
+        - code: communication
+          title: Коммуникация
+        - code: conflicts
+          title: Разрешение противоречий
+
+    - code: data
+      title: Работа с данными
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: sql_basics
+          title: Запросы к данным
+        - code: metrics_definition
+          title: Определение метрик
+        - code: interpretation
+          title: Интерпретация результатов
+
+    - code: solutions
+      title: Проработка решений
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: options
+          title: Варианты решения
+        - code: mvp
+          title: Минимальный объём
+        - code: tradeoffs
+          title: Компромиссы
+
+    - code: change_management
+      title: Управление изменениями
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: adoption
+          title: Внедрение и принятие
+        - code: training
+          title: Обучение пользователей
+        - code: measurement
+          title: Измерение эффекта
+
+    - code: documentation
+      title: Документация
+      weights:
+        intern: 0.7
+        junior: 0.85
+        junior_plus: 0.9
+        middle: 0.85
+        middle_plus: 0.8
+        senior: 0.75
+        lead: 0.7
+      subtopics:
+        - code: specifications
+          title: Описание требований
+        - code: presentations
+          title: Представление результатов
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
         lead: 1.0
       subtopics:
         - code: conflict
