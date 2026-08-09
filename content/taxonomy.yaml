@@ -42,6 +42,7 @@ professions:
         is_active: true
       - id: frontend_angular
         title: Angular
+        is_active: true
 
   - id: mobile
     title: Мобильный разработчик
@@ -280,6 +281,225 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Angular два раздела, которых нет у других фронтенд-специализаций:
+  # обнаружение изменений (его механика — половина вопросов про
+  # производительность) и внедрение зависимостей с иерархией инжекторов.
+  # Плюс RxJS, который здесь не библиотека по выбору, а часть каркаса.
+  frontend_angular:
+    - code: typescript
+      title: TypeScript
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.9
+        middle_plus: 0.8
+        senior: 0.7
+        lead: 0.6
+      subtopics:
+        - code: types_generics
+          title: Типы и обобщения
+        - code: narrowing
+          title: Сужение типов
+        - code: decorators
+          title: Декораторы
+        - code: strict_mode
+          title: Строгий режим
+
+    - code: components
+      title: Компоненты и шаблоны
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: standalone
+          title: Автономные компоненты
+        - code: inputs_outputs
+          title: Входные и выходные свойства
+        - code: lifecycle
+          title: Жизненный цикл
+        - code: content_projection
+          title: Проекция содержимого
+        - code: control_flow
+          title: Управляющие конструкции шаблона
+
+    - code: signals
+      title: Сигналы
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: basics
+          title: Основы сигналов
+        - code: computed_effect
+          title: Вычисляемые сигналы и эффекты
+        - code: interop_rxjs
+          title: Совместимость с потоками
+        - code: signal_inputs
+          title: Сигнальные входные свойства
+
+    - code: rxjs
+      title: RxJS
+      weights:
+        intern: 0.35
+        junior: 0.6
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: operators
+          title: Операторы
+        - code: flattening
+          title: Стратегии вложенных потоков
+        - code: subscriptions
+          title: Подписки и утечки
+        - code: subjects
+          title: Субъекты и мультикаст
+
+    - code: change_detection
+      title: Обнаружение изменений
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: strategies
+          title: Стратегии проверки
+        - code: zone
+          title: Зона выполнения
+        - code: async_pipe
+          title: Асинхронный канал
+        - code: performance
+          title: Стоимость проверок
+
+    - code: di
+      title: Внедрение зависимостей
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: hierarchy
+          title: Иерархия инжекторов
+        - code: providers
+          title: Поставщики и токены
+        - code: scopes
+          title: Область видимости сервисов
+
+    - code: forms
+      title: Формы
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.85
+        middle: 0.85
+        middle_plus: 0.8
+        senior: 0.75
+        lead: 0.65
+      subtopics:
+        - code: reactive
+          title: Реактивные формы
+        - code: validation
+          title: Валидация
+        - code: dynamic
+          title: Динамические формы
+
+    - code: routing
+      title: Маршрутизация
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.85
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: guards
+          title: Защита маршрутов
+        - code: lazy_loading
+          title: Ленивая загрузка
+        - code: resolvers
+          title: Предзагрузка данных
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: bundle_size
+          title: Размер бандла
+        - code: lists
+          title: Списки и отслеживание
+        - code: ssr_hydration
+          title: Серверный рендеринг и гидратация
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: component_tests
+          title: Тесты компонентов
+        - code: async_testing
+          title: Тестирование асинхронного кода
+        - code: mocking
+          title: Подмена зависимостей
 
     - code: soft
       title: Поведенческая секция
