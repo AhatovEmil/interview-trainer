@@ -95,6 +95,7 @@ professions:
     specializations:
       - id: analysis_system
         title: Системный аналитик
+        is_active: true
       - id: analysis_business
         title: Бизнес-аналитик
 
@@ -287,6 +288,175 @@ topics:
         middle: 0.7
         middle_plus: 0.8
         senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У системного аналитика ядро — требования и интеграции: он стоит между
+  # бизнесом и разработкой, поэтому проверяют умение довести размытое желание
+  # до однозначной спецификации и спроектировать обмен между системами.
+  # Кода здесь почти нет, зато есть SQL и чтение схем.
+  analysis_system:
+    - code: requirements
+      title: Требования
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: elicitation
+          title: Выявление требований
+        - code: functional
+          title: Функциональные требования
+        - code: non_functional
+          title: Нефункциональные требования
+        - code: acceptance
+          title: Критерии приёмки
+        - code: traceability
+          title: Прослеживаемость
+
+    - code: modeling
+      title: Моделирование
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: use_cases
+          title: Сценарии использования
+        - code: uml
+          title: Диаграммы UML
+        - code: bpmn
+          title: Модели процессов
+        - code: data_model
+          title: Модель данных
+
+    - code: integrations
+      title: Интеграции
+      weights:
+        intern: 0.3
+        junior: 0.6
+        junior_plus: 0.8
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: rest_design
+          title: Проектирование REST API
+        - code: contracts
+          title: Контракты и версионирование
+        - code: async_messaging
+          title: Асинхронный обмен
+        - code: idempotency
+          title: Идемпотентность и повторы
+        - code: error_contracts
+          title: Договорённости об ошибках
+
+    - code: databases
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: sql_basics
+          title: Запросы SQL
+        - code: normalization
+          title: Нормализация
+        - code: keys_relations
+          title: Ключи и связи
+        - code: transactions
+          title: Транзакции
+
+    - code: architecture
+      title: Архитектура систем
+      weights:
+        intern: 0.15
+        junior: 0.35
+        junior_plus: 0.55
+        middle: 0.8
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: components
+          title: Компоненты и границы
+        - code: sync_async
+          title: Синхронный и асинхронный обмен
+        - code: reliability
+          title: Отказоустойчивость
+        - code: security_basics
+          title: Основы безопасности
+
+    - code: documentation
+      title: Документация
+      weights:
+        intern: 0.7
+        junior: 0.85
+        junior_plus: 0.9
+        middle: 0.9
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: specifications
+          title: Спецификации
+        - code: api_docs
+          title: Описание интерфейсов
+        - code: change_management
+          title: Управление изменениями
+
+    - code: process
+      title: Процесс и команда
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.95
+      subtopics:
+        - code: backlog
+          title: Работа с бэклогом
+        - code: estimation
+          title: Оценка и декомпозиция
+        - code: stakeholders
+          title: Заинтересованные стороны
+        - code: testing_support
+          title: Поддержка тестирования
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.45
+        junior: 0.55
+        junior_plus: 0.65
+        middle: 0.75
+        middle_plus: 0.85
+        senior: 0.95
         lead: 1.0
       subtopics:
         - code: conflict
