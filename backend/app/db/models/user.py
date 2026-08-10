@@ -52,9 +52,12 @@ class UserSpecialization(Base, TimestampMixin):
     __tablename__ = "user_specializations"
     __table_args__ = (
         CheckConstraint(
-            f"self_assessed_grade BETWEEN {MIN_GRADE} AND {MAX_GRADE}",
+            f"self_assessed_grade BETWEEN {MIN_GRADE} AND {MAX_GRADE} "
+            f"AND target_grade BETWEEN {MIN_GRADE} AND {MAX_GRADE}",
             name="grade_range",
         ),
+        # Готовиться вниз бессмысленно: цель не ниже текущего уровня.
+        CheckConstraint("target_grade >= self_assessed_grade", name="target_not_below_current"),
         Index("ix_user_specializations_primary", "user_id", "is_primary"),
     )
 
@@ -67,6 +70,10 @@ class UserSpecialization(Base, TimestampMixin):
         primary_key=True,
     )
     self_assessed_grade: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    # Уровень, к которому человек готовится. Именно он определяет выдачу: тот,
+    # кто идёт с middle на senior, должен видеть senior-вопросы, а не свои
+    # текущие. Самооценка остаётся стартовой точкой для оценки Elo.
+    target_grade: Mapped[int] = mapped_column(SmallInteger, nullable=False)
     is_primary: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     answers_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 

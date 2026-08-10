@@ -13,6 +13,7 @@ from app.core.config import get_settings
 from app.core.grades import GRADE_MIDDLE
 from app.db.models.user import ReviewState, UserAnswer
 from app.db.session import get_session_factory
+from app.seed.loader import load_questions, load_taxonomy
 from app.seed.questions import seed_questions
 from app.seed.taxonomy import seed_taxonomy
 
@@ -90,7 +91,12 @@ async def test_package_carries_everything_needed_offline(
     package = await fetch_package(client, auth_headers)
 
     assert package["specialization_id"] == SPECIALIZATION
-    assert len(package["questions"]) == 30
+    # Размер банка растёт, поэтому проверяем, что пакет полный, а не равен числу.
+    taxonomy = load_taxonomy(get_settings().taxonomy_file)
+    expected = load_questions(
+        get_settings().questions_dir / f"{SPECIALIZATION}.yaml", taxonomy
+    ).questions
+    assert len(package["questions"]) == len(expected)
 
     question = package["questions"][0]
     # Без разбора и правильности вариантов офлайн нечего показать после ответа.

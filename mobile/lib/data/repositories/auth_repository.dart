@@ -37,12 +37,14 @@ class AuthRepository {
   Future<UserProfile> setSpecialization({
     required String specializationId,
     required int selfAssessedGrade,
+    int? targetGrade,
   }) async {
     final Map<String, dynamic> data = await _client.patch(
       '/me',
       body: <String, dynamic>{
         'specialization_id': specializationId,
         'self_assessed_grade': selfAssessedGrade,
+        if (targetGrade != null) 'target_grade': targetGrade,
         'is_primary': true,
       },
     );

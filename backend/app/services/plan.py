@@ -64,9 +64,7 @@ class PlanService:
 
         try:
             days = plan_days(current_day, interview_date)
-            priorities = await self._topic_priorities(
-                user, specialization_id, profile.self_assessed_grade
-            )
+            priorities = await self._topic_priorities(user, specialization_id, profile.target_grade)
             schedule = build_plan(priorities, days, daily_capacity)
         except PlanError as exc:
             raise InvalidInputError(str(exc)) from exc
@@ -77,7 +75,7 @@ class PlanService:
             user_id=user.id,
             specialization_id=specialization_id,
             interview_date=interview_date,
-            target_grade=profile.self_assessed_grade,
+            target_grade=profile.target_grade,
             daily_capacity=daily_capacity,
             is_active=True,
             days=[

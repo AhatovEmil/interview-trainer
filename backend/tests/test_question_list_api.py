@@ -8,6 +8,7 @@ from httpx import AsyncClient
 
 from app.core.config import get_settings
 from app.core.grades import GRADE_INTERN, GRADE_MIDDLE
+from app.seed.loader import load_questions, load_taxonomy
 from app.seed.questions import seed_questions
 from app.seed.taxonomy import seed_taxonomy
 
@@ -89,6 +90,13 @@ async def answer(
     return response.json()
 
 
+def bank_size() -> int:
+    """Размер банка считаем из файла: он растёт, и зашитое число тут врало бы."""
+    taxonomy = load_taxonomy(get_settings().taxonomy_file)
+    path = get_settings().questions_dir / f"{SPECIALIZATION}.yaml"
+    return len(load_questions(path, taxonomy).questions)
+
+
 async def test_list_requires_profile(client: AsyncClient, auth_headers: dict[str, str]) -> None:
     response = await client.get(
         f"/api/v1/practice/questions?specialization={SPECIALIZATION}", headers=auth_headers
@@ -104,7 +112,7 @@ async def test_fresh_list_is_all_unanswered(
 
     body = await fetch_list(client, auth_headers)
 
-    assert body["total"] == 30
+    assert body["total"] == bank_size()
     assert body["answered"] == 0
     assert all(item["status"] == "unanswered" for item in body["items"])
     # Разбора и правильных ответов в списке нет: он не должен быть шпаргалкой.
@@ -172,7 +180,7 @@ async def test_out_of_grade_questions_are_listed_but_marked(
 
     body = await fetch_list(client, auth_headers)
 
-    assert body["total"] == 30
+    assert body["total"] == bank_size()
     assert any(not item["in_grade_range"] for item in body["items"])
 
 

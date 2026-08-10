@@ -165,10 +165,12 @@ class SessionNotifier extends StateNotifier<SessionState> {
   Future<void> completeOnboarding({
     required String specializationId,
     required int grade,
+    int? targetGrade,
   }) async {
     final UserProfile profile = await _auth.setSpecialization(
       specializationId: specializationId,
       selfAssessedGrade: grade,
+      targetGrade: targetGrade,
     );
     state = SessionState(status: SessionStatus.ready, profile: profile);
   }

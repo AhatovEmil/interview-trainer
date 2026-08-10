@@ -9,7 +9,13 @@ import '../common/async_button.dart';
 import '../common/choice_tile.dart';
 import '../providers.dart';
 
-/// Онбординг в три шага: профессия → специализация → грейд.
+/// Онбординг в четыре шага: профессия → специализация → текущий уровень →
+/// уровень, к которому готовятся.
+///
+/// Два уровня, а не один, потому что это разные вопросы. Текущий — точка
+/// отсчёта для оценки. Целевой определяет выдачу: тот, кто идёт с middle на
+/// senior, готовится к senior-собеседованию, и показывать ему middle-вопросы
+/// значит готовить не к тому.
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -22,6 +28,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Profession? _profession;
   Specialization? _specialization;
   int _grade = Grade.middle;
+  int _target = Grade.middle;
   bool _isSaving = false;
 
   Future<void> _finish() async {
@@ -34,6 +41,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       await ref.read(sessionProvider.notifier).completeOnboarding(
             specializationId: specialization.id,
             grade: _grade,
+            targetGrade: _target,
           );
     } on Object catch (error) {
       if (mounted) {
@@ -67,7 +75,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           preferredSize: const Size.fromHeight(20),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-            child: StepDots(total: 3, current: _step),
+            child: StepDots(total: 4, current: _step),
           ),
         ),
       ),
@@ -85,7 +93,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   String _titleForStep() => switch (_step) {
         0 => 'Кем вы работаете',
         1 => 'Ваш стек',
-        _ => 'Ваш уровень',
+        2 => 'Ваш уровень сейчас',
+        _ => 'К какому уровню готовитесь',
       };
 
   Widget _buildStep(Taxonomy taxonomy) {
@@ -109,12 +118,31 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             _step = 2;
           }),
         );
-      default:
+      case 2:
         return _GradeStep(
           grade: _grade,
+          note: 'Это стартовая точка, а не приговор: после 20 ответов приложение '
+              'измерит уровень само и уточнит оценку.',
+          buttonLabel: 'Дальше',
+          onChanged: (int grade) => setState(() {
+            _grade = grade;
+            // Цель не может быть ниже текущего уровня — подтягиваем её следом,
+            // иначе следующий шаг открылся бы с недопустимым выбором.
+            if (_target < grade) {
+              _target = grade;
+            }
+          }),
+          onSubmit: () => setState(() => _step = 3),
+        );
+      default:
+        return _GradeStep(
+          grade: _target,
+          minGrade: _grade,
           isSaving: _isSaving,
-          specialization: _specialization!,
-          onChanged: (int grade) => setState(() => _grade = grade),
+          note: 'Вопросы будут подбираться под этот уровень. Если просто освежаете '
+              'знания — оставьте свой текущий.',
+          buttonLabel: 'Начать тренировку',
+          onChanged: (int grade) => setState(() => _target = grade),
           onSubmit: _finish,
         );
     }
@@ -196,36 +224,41 @@ class _SpecializationStep extends StatelessWidget {
   }
 }
 
+/// Выбор грейда. Используется дважды — для текущего уровня и для целевого,
+/// разница только в подписи и в нижней границе списка.
 class _GradeStep extends StatelessWidget {
   const _GradeStep({
     required this.grade,
-    required this.isSaving,
-    required this.specialization,
+    required this.note,
+    required this.buttonLabel,
     required this.onChanged,
     required this.onSubmit,
+    this.minGrade,
+    this.isSaving = false,
   });
 
   final int grade;
-  final bool isSaving;
-  final Specialization specialization;
+  final String note;
+  final String buttonLabel;
   final ValueChanged<int> onChanged;
   final VoidCallback onSubmit;
+
+  /// Ниже этого уровня выбор недоступен: готовиться вниз незачем.
+  final int? minGrade;
+
+  final bool isSaving;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-
     final AppColors colors = context.colors;
+    final int floor = minGrade ?? Grade.min;
 
     return Column(
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
-          child: Text(
-            'Это стартовая точка, а не приговор: после 20 ответов приложение измерит '
-            'уровень само и подстроит выдачу.',
-            style: theme.textTheme.bodyMedium,
-          ),
+          child: Text(note, style: theme.textTheme.bodyMedium),
         ),
         Expanded(
           child: ListView.separated(
@@ -234,10 +267,12 @@ class _GradeStep extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (BuildContext context, int index) {
               final int value = Grade.all[index];
+              final bool available = value >= floor;
               return ChoiceTile(
                 title: Grade.title(value),
-                subtitle: Grade.hint(value),
+                subtitle: available ? Grade.hint(value) : 'Ниже вашего текущего уровня',
                 selected: value == grade,
+                enabled: available,
                 onTap: () => onChanged(value),
               );
             },
@@ -252,7 +287,7 @@ class _GradeStep extends StatelessWidget {
           child: SafeArea(
             top: false,
             child: AsyncButton(
-              label: 'Начать тренировку',
+              label: buttonLabel,
               isLoading: isSaving,
               onPressed: onSubmit,
             ),

@@ -15,6 +15,7 @@ import '../common/surface_card.dart';
 import '../profile/rating_meter.dart';
 import '../providers.dart';
 import 'specialization_sheet.dart';
+import 'target_grade_sheet.dart';
 
 /// Главный экран: что сейчас изучаем, сколько пройдено и куда пойти дальше.
 ///
@@ -136,10 +137,37 @@ class _SpecializationCard extends ConsumerWidget {
             ],
           ),
           if (current != null) ...<Widget>[
-            const SizedBox(height: 4),
-            Text(
-              'Самооценка: ${Grade.title(current.selfAssessedGrade)}',
-              style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
+            const SizedBox(height: 16),
+            Divider(color: colors.hairline, height: 1),
+            const SizedBox(height: 14),
+            const SectionLabel('Готовлюсь на'),
+            const SizedBox(height: 10),
+            Row(
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        Grade.title(current.targetGrade),
+                        style: theme.textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        current.isReaching
+                            ? 'Сейчас ${Grade.title(current.selfAssessedGrade)} — '
+                                'вопросы идут на уровень выше'
+                            : 'Освежаю то, что уже умею',
+                        style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
+                      ),
+                    ],
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => showTargetGradeSheet(context, ref),
+                  child: const Text('Изменить'),
+                ),
+              ],
             ),
           ],
         ],

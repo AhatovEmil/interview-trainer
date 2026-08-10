@@ -167,7 +167,7 @@ class PracticeService:
 
     async def next_question(self, user: User, specialization_id: str) -> NextQuestion:
         profile = await self._require_profile(user, specialization_id)
-        grade = await self.effective_grade(user, profile)
+        grade = self.feed_grade(profile)
 
         due = await self._next_due_question(user, specialization_id)
         if due is not None:
@@ -361,7 +361,7 @@ class PracticeService:
     async def question_list(self, user: User, specialization_id: str) -> QuestionList:
         """Все вопросы специализации с отметкой, как пользователь их закрыл."""
         profile = await self._require_profile(user, specialization_id)
-        grade = await self.effective_grade(user, profile)
+        grade = self.feed_grade(profile)
 
         statement: Select[tuple[Question]] = (
             select(Question)
@@ -587,7 +587,9 @@ class PracticeService:
 
     async def stats(self, user: User, specialization_id: str) -> SpecializationStats:
         profile = await self._require_profile(user, specialization_id)
-        grade = profile.self_assessed_grade
+        # Веса берём для целевого уровня: важно, насколько тема весит на том
+        # собеседовании, к которому человек готовится, а не на текущей позиции.
+        grade = profile.target_grade
 
         weights = await self._topic_weights(specialization_id, grade)
         titles = await self._topic_titles(specialization_id)
@@ -642,12 +644,23 @@ class PracticeService:
             return "premium_required"
         return None
 
+    @staticmethod
+    def feed_grade(profile: UserSpecialization) -> int:
+        """Грейд, под который подбираются вопросы.
+
+        Это цель, а не измеренный уровень: человек, идущий с middle на senior,
+        готовится к senior-собеседованию и должен видеть senior-вопросы. Оценка
+        Elo по-прежнему считается — она отвечает на другой вопрос, «где я
+        сейчас», и живёт на экране уровня.
+        """
+        return profile.target_grade
+
     async def effective_grade(self, user: User, profile: UserSpecialization) -> int:
-        """Грейд для выдачи: измеренный, если данных хватает, иначе самооценка."""
+        """Измеренный уровень: Elo, если данных хватает, иначе самооценка."""
         if profile.answers_count < elo.MIN_ANSWERS_FOR_ESTIMATE:
             return profile.self_assessed_grade
 
-        weights = await self._topic_weights(profile.specialization_id, profile.self_assessed_grade)
+        weights = await self._topic_weights(profile.specialization_id, profile.target_grade)
         ratings = await self._topic_ratings(user, profile.specialization_id)
         overall = elo.overall_rating(ratings, weights)
         if overall is None:
