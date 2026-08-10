@@ -255,6 +255,8 @@ class PracticeService {
         title: item.question.title,
         topicCode: item.question.topicCode,
         topicTitle: item.question.topicTitle,
+        minGrade: item.question.minGrade,
+        maxGrade: item.question.maxGrade,
         peakGrade: item.question.peakGrade,
         frequency: item.question.frequency,
         status: last == null

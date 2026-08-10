@@ -140,10 +140,7 @@ class _SpecializationCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        profile.isReaching
-                            ? 'Сейчас ${Grade.title(profile.selfAssessedGrade)} — '
-                                'вопросы идут на уровень выше'
-                            : 'Освежаю то, что уже умею',
+                        _targetHint(profile),
                         style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
                       ),
                     ],
@@ -212,6 +209,21 @@ class _Progress extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Подпись под целевым уровнем.
+///
+/// Три случая, и они разные по смыслу: готовлюсь выше, освежаю своё,
+/// повторяю основы. Раньше последний показывался как «освежаю то, что уже
+/// умею» — то есть врал человеку, выбравшему уровень ниже своего.
+String _targetHint(UserSpecialization profile) {
+  if (profile.isReaching) {
+    return 'Сейчас ${Grade.title(profile.selfAssessedGrade)} — вопросы идут на уровень выше';
+  }
+  if (profile.isRevisiting) {
+    return 'Ниже вашего ${Grade.title(profile.selfAssessedGrade)} — повторяю основы';
+  }
+  return 'Освежаю то, что уже умею';
 }
 
 /// Счётчик исходов. Цвет дублируется точкой и подписью, а не несёт смысл один.

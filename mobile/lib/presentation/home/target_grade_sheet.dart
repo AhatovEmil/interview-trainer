@@ -91,8 +91,8 @@ class _TargetGradeSheetState extends ConsumerState<_TargetGradeSheet> {
                   Text('К какому уровню готовитесь', style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 6),
                   Text(
-                    'Вопросы подбираются под этот уровень. Ниже текущего выбрать нельзя — '
-                    'готовиться вниз незачем.',
+                    'Вопросы подбираются под этот уровень. Менять можно в любую '
+                    'сторону: освежить основы перед собеседованием — обычное дело.',
                     style: theme.textTheme.bodySmall,
                   ),
                 ],
@@ -107,11 +107,13 @@ class _TargetGradeSheetState extends ConsumerState<_TargetGradeSheet> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: ChoiceTile(
                         title: Grade.title(value),
-                        subtitle: value < current
-                            ? 'Ниже вашего текущего уровня'
-                            : (value == current ? 'Освежить то, что уже умею' : Grade.hint(value)),
+                        subtitle: value == current
+                            ? 'Освежить то, что уже умею'
+                            : (value < current
+                                ? 'Ниже текущего — повторить основы'
+                                : Grade.hint(value)),
                         selected: value == target,
-                        enabled: value >= current && _saving == null,
+                        enabled: _saving == null,
                         trailing: _saving == value
                             ? const SizedBox(
                                 width: 20,

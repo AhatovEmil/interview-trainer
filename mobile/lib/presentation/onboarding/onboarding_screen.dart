@@ -120,21 +120,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           buttonLabel: 'Дальше',
           onChanged: (int grade) => setState(() {
             _grade = grade;
-            // Цель не может быть ниже текущего уровня — подтягиваем её следом,
-            // иначе следующий шаг открылся бы с недопустимым выбором.
-            if (_target < grade) {
-              _target = grade;
-            }
+            // Цель по умолчанию совпадает с текущим уровнем: следующий шаг
+            // открывается с осмысленной подсказкой, а не с прошлым выбором.
+            _target = grade;
           }),
           onSubmit: () => setState(() => _step = 3),
         );
       default:
         return _GradeStep(
           grade: _target,
-          minGrade: _grade,
           isSaving: _isSaving,
           note: 'Вопросы будут подбираться под этот уровень. Если просто освежаете '
-              'знания — оставьте свой текущий.',
+              'знания — оставьте свой текущий, менять его можно когда угодно.',
           buttonLabel: 'Начать тренировку',
           onChanged: (int grade) => setState(() => _target = grade),
           onSubmit: _finish,
@@ -227,7 +224,6 @@ class _GradeStep extends StatelessWidget {
     required this.buttonLabel,
     required this.onChanged,
     required this.onSubmit,
-    this.minGrade,
     this.isSaving = false,
   });
 
@@ -237,16 +233,12 @@ class _GradeStep extends StatelessWidget {
   final ValueChanged<int> onChanged;
   final VoidCallback onSubmit;
 
-  /// Ниже этого уровня выбор недоступен: готовиться вниз незачем.
-  final int? minGrade;
-
   final bool isSaving;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final AppColors colors = context.colors;
-    final int floor = minGrade ?? Grade.min;
 
     return Column(
       children: <Widget>[
@@ -261,12 +253,10 @@ class _GradeStep extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(height: 10),
             itemBuilder: (BuildContext context, int index) {
               final int value = Grade.all[index];
-              final bool available = value >= floor;
               return ChoiceTile(
                 title: Grade.title(value),
-                subtitle: available ? Grade.hint(value) : 'Ниже вашего текущего уровня',
+                subtitle: Grade.hint(value),
                 selected: value == grade,
-                enabled: available,
                 onTap: () => onChanged(value),
               );
             },

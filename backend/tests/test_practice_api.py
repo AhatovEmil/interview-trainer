@@ -316,10 +316,14 @@ async def test_target_grade_is_stored_and_returned(
     assert profile["target_grade_code"] == "senior"
 
 
-async def test_target_below_current_is_rejected(
+async def test_target_below_current_is_allowed(
     client: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
-    """Готовиться вниз незачем — это опечатка, а не сценарий."""
+    """Повторить основы перед собеседованием — обычное дело, а не опечатка.
+
+    Раньше такой запрос отклонялся. Запрет мешал вместо того, чтобы помогать:
+    senior, решивший освежить junior-вопросы, упирался в отказ.
+    """
     response = await client.patch(
         "/api/v1/me",
         headers=auth_headers,
@@ -331,8 +335,10 @@ async def test_target_below_current_is_rejected(
         },
     )
 
-    assert response.status_code == 422
-    assert "ниже текущего" in response.json()["detail"]
+    assert response.status_code == 200, response.text
+    profile = response.json()["specializations"][0]
+    assert profile["self_assessed_grade"] == GRADE_SENIOR
+    assert profile["target_grade"] == GRADE_JUNIOR
 
 
 async def test_question_list_uses_target_grade(

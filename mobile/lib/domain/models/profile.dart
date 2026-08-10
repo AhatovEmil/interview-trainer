@@ -63,8 +63,12 @@ class UserSpecialization {
   final bool isPrimary;
   final int answersCount;
 
-  /// Готовится выше своего текущего уровня, а не просто освежает знания.
+  /// Готовится выше своего текущего уровня.
   bool get isReaching => targetGrade > selfAssessedGrade;
+
+  /// Целится ниже текущего — повторяет основы. Это законный сценарий: перед
+  /// собеседованием освежают и то, что давно не трогали.
+  bool get isRevisiting => targetGrade < selfAssessedGrade;
 
   factory UserSpecialization.fromJson(Map<String, dynamic> json) => UserSpecialization(
         specializationId: json['specialization_id'] as String,
