@@ -1,40 +1,20 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/network/api_client.dart';
-import '../core/network/api_exception.dart';
-import '../core/storage/token_storage.dart';
+import '../data/content/question_bank.dart';
 import '../data/local/app_database.dart';
-import '../data/repositories/auth_repository.dart';
-import '../data/repositories/offline_practice_repository.dart';
-import '../data/repositories/practice_repository.dart';
-import '../data/sync/sync_controller.dart';
-import '../data/sync/sync_service.dart';
-import '../domain/models/plan.dart';
+import '../data/local/practice_service.dart';
 import '../domain/models/profile.dart';
 import '../domain/models/question_list.dart';
 import '../domain/models/taxonomy.dart';
 
-final Provider<TokenStorage> tokenStorageProvider =
-    Provider<TokenStorage>((Ref ref) => TokenStorage());
-
-final Provider<ApiClient> apiClientProvider = Provider<ApiClient>((Ref ref) {
-  final ApiClient client = ApiClient(tokens: ref.watch(tokenStorageProvider));
-  client.onSessionExpired = () => ref.read(sessionProvider.notifier).forceLogout();
-  return client;
-});
-
-final Provider<AuthRepository> authRepositoryProvider = Provider<AuthRepository>(
-  (Ref ref) => AuthRepository(
-    client: ref.watch(apiClientProvider),
-    tokens: ref.watch(tokenStorageProvider),
-  ),
-);
-
-final Provider<PracticeRepository> practiceRepositoryProvider = Provider<PracticeRepository>(
-  (Ref ref) => PracticeRepository(client: ref.watch(apiClientProvider)),
+/// Банк вопросов из ресурсов приложения.
+///
+/// Загружается в main до запуска интерфейса и подставляется сюда переопределением:
+/// иначе каждый экран, которому нужен вопрос, ждал бы разбора файла и обрастал
+/// состоянием загрузки. Разбор занимает доли секунды один раз за запуск.
+final Provider<QuestionBank> questionBankProvider = Provider<QuestionBank>(
+  (Ref ref) => throw UnimplementedError('банк подставляется в main через override'),
 );
 
 /// Локальная база живёт всё время работы приложения: открывать её на каждый
@@ -45,55 +25,30 @@ final Provider<AppDatabase> appDatabaseProvider = Provider<AppDatabase>((Ref ref
   return database;
 });
 
-final Provider<SyncService> syncServiceProvider = Provider<SyncService>(
-  (Ref ref) => SyncService(
-    client: ref.watch(apiClientProvider),
+final Provider<PracticeService> practiceServiceProvider = Provider<PracticeService>(
+  (Ref ref) => PracticeService(
     database: ref.watch(appDatabaseProvider),
+    bank: ref.watch(questionBankProvider),
   ),
 );
 
-final Provider<OfflinePracticeRepository> offlinePracticeRepositoryProvider =
-    Provider<OfflinePracticeRepository>(
-  (Ref ref) => OfflinePracticeRepository(
-    remote: ref.watch(practiceRepositoryProvider),
-    database: ref.watch(appDatabaseProvider),
-    sync: ref.watch(syncServiceProvider),
-  ),
-);
+final Provider<Taxonomy> taxonomyProvider =
+    Provider<Taxonomy>((Ref ref) => ref.watch(questionBankProvider).taxonomy);
 
-/// Сколько ответов ждут отправки. Поток из Drift: индикатор обновляется сам.
-final StreamProvider<int> pendingAnswersProvider = StreamProvider<int>(
-  (Ref ref) => ref.watch(appDatabaseProvider).watchPendingCount(),
-);
-
-/// Следит за сетью и досылает накопленное. Создаётся на специализацию, потому
-/// что пакет вопросов скачивается для каждой отдельно.
-final ProviderFamily<SyncController, String> syncControllerProvider =
-    Provider.family<SyncController, String>((Ref ref, String specialization) {
-  final SyncController controller = SyncController(
-    service: ref.watch(syncServiceProvider),
-    specializationId: specialization,
-  );
-  ref.onDispose(controller.dispose);
-  return controller;
-});
-
-/// Состояние сессии: от него зависит, куда пускает роутер.
-enum SessionStatus { unknown, signedOut, needsOnboarding, ready }
+/// Состояние приложения: от него зависит, куда пускает роутер.
+///
+/// Аккаунтов нет, поэтому состояний три: ещё не знаем, нужен онбординг,
+/// готовы работать. Экрана входа больше не существует.
+enum SessionStatus { unknown, needsOnboarding, ready }
 
 @immutable
 class SessionState {
   const SessionState({this.status = SessionStatus.unknown, this.profile});
 
   final SessionStatus status;
-  final UserProfile? profile;
+  final UserSpecialization? profile;
 
-  String? get specializationId => profile?.primary?.specializationId;
-
-  SessionState copyWith({SessionStatus? status, UserProfile? profile}) => SessionState(
-        status: status ?? this.status,
-        profile: profile ?? this.profile,
-      );
+  String? get specializationId => profile?.specializationId;
 }
 
 class SessionNotifier extends StateNotifier<SessionState> {
@@ -101,136 +56,65 @@ class SessionNotifier extends StateNotifier<SessionState> {
 
   final Ref _ref;
 
-  AuthRepository get _auth => _ref.read(authRepositoryProvider);
+  AppDatabase get _db => _ref.read(appDatabaseProvider);
 
-  /// Вызывается на старте: решает, показывать вход, онбординг или тренировку.
+  /// Вызывается на старте: решает, показывать онбординг или главный экран.
   Future<void> restore() async {
-    if (!await _auth.hasSession) {
-      state = const SessionState(status: SessionStatus.signedOut);
-      return;
-    }
-    await refreshProfile();
+    final Profile? profile = await _db.primaryProfile();
+    state = profile == null
+        ? const SessionState(status: SessionStatus.needsOnboarding)
+        : SessionState(status: SessionStatus.ready, profile: _toModel(profile));
   }
 
-  Future<void> refreshProfile() async {
-    try {
-      final UserProfile profile = await _auth.me();
-      await _ref.read(appDatabaseProvider).saveProfile(jsonEncode(profile.toJson()));
-      state = SessionState(
-        status: profile.isOnboarded ? SessionStatus.ready : SessionStatus.needsOnboarding,
-        profile: profile,
-      );
-    } on ApiException catch (error) {
-      // Нет сети — это не «сессия недействительна». Токены на месте, работаем
-      // по последнему известному профилю, иначе офлайн-режим недостижим:
-      // приложение выкидывало бы на экран входа при каждом запуске в метро.
-      if (error.isNetworkIssue) {
-        final UserProfile? cached = await _cachedProfile();
-        if (cached != null) {
-          state = SessionState(
-            status: cached.isOnboarded ? SessionStatus.ready : SessionStatus.needsOnboarding,
-            profile: cached,
-          );
-          return;
-        }
-      }
-      state = const SessionState(status: SessionStatus.signedOut);
-    } on Object {
-      state = const SessionState(status: SessionStatus.signedOut);
-    }
-  }
+  Future<void> refreshProfile() => restore();
 
-  Future<UserProfile?> _cachedProfile() async {
-    final String? payload = await _ref.read(appDatabaseProvider).loadProfile();
-    if (payload == null) {
-      return null;
-    }
-    try {
-      return UserProfile.fromJson(jsonDecode(payload) as Map<String, dynamic>);
-    } on Object {
-      return null;
-    }
-  }
-
-  Future<void> register({required String email, required String password}) async {
-    await _auth.register(email: email, password: password);
-    await refreshProfile();
-  }
-
-  Future<void> login({required String email, required String password}) async {
-    await _auth.login(email: email, password: password);
-    await refreshProfile();
-  }
-
+  /// Выбор специализации и уровней. Используется и онбордингом, и сменой стека.
   Future<void> completeOnboarding({
     required String specializationId,
     required int grade,
     int? targetGrade,
   }) async {
-    final UserProfile profile = await _auth.setSpecialization(
+    await _db.saveProfile(
       specializationId: specializationId,
       selfAssessedGrade: grade,
-      targetGrade: targetGrade,
+      // Цель не задана — готовимся на свой же уровень: человек может просто
+      // освежить то, что уже умеет.
+      targetGrade: targetGrade ?? grade,
     );
-    state = SessionState(status: SessionStatus.ready, profile: profile);
+    await restore();
   }
 
-  /// Удаление аккаунта.
+  /// Полное стирание прогресса.
   ///
-  /// Локальные данные стираются только после успеха на сервере: обрыв связи не
-  /// должен стоить человеку скачанного банка и неотправленных ответов при
-  /// живом аккаунте. Ошибка пробрасывается — экран покажет её и оставит
-  /// пользователя в сессии.
-  Future<void> deleteAccount() async {
-    await _auth.deleteAccount();
-    await _ref.read(appDatabaseProvider).wipe();
-    state = const SessionState(status: SessionStatus.signedOut);
+  /// Аккаунта нет, стирать нечего кроме локальных данных — но само действие
+  /// нужно: устройство может смениться владельцем, и чужие ответы ему
+  /// доставаться не должны.
+  Future<void> wipeProgress() async {
+    await _db.wipe();
+    state = const SessionState(status: SessionStatus.needsOnboarding);
   }
 
-  Future<void> logout() async {
-    // Скачанный банк и локальные ответы — данные конкретного человека.
-    // Следующему владельцу устройства они доставаться не должны.
-    await _ref.read(appDatabaseProvider).wipe();
-    await _auth.logout();
-    state = const SessionState(status: SessionStatus.signedOut);
-  }
-
-  void forceLogout() {
-    state = const SessionState(status: SessionStatus.signedOut);
-  }
+  static UserSpecialization _toModel(Profile profile) => UserSpecialization(
+        specializationId: profile.specializationId,
+        selfAssessedGrade: profile.selfAssessedGrade,
+        gradeCode: '',
+        targetGrade: profile.targetGrade,
+        isPrimary: profile.isPrimary,
+        answersCount: profile.answersCount,
+      );
 }
 
 final StateNotifierProvider<SessionNotifier, SessionState> sessionProvider =
     StateNotifierProvider<SessionNotifier, SessionState>((Ref ref) => SessionNotifier(ref));
 
-final FutureProvider<Taxonomy> taxonomyProvider = FutureProvider<Taxonomy>(
-  (Ref ref) => ref.watch(practiceRepositoryProvider).taxonomy(),
-);
-
 final FutureProviderFamily<PracticeStats, String> statsProvider =
     FutureProvider.family<PracticeStats, String>(
-  (Ref ref, String specialization) =>
-      ref.watch(practiceRepositoryProvider).stats(specialization),
+  (Ref ref, String specialization) => ref.watch(practiceServiceProvider).stats(specialization),
 );
 
-/// Список вопросов с отметками о прохождении. Собирается на сервере: статус
-/// зависит от всех ответов пользователя, включая сделанные на других устройствах.
+/// Список вопросов с отметками о прохождении.
 final FutureProviderFamily<QuestionListSummary, String> questionListProvider =
     FutureProvider.family<QuestionListSummary, String>(
   (Ref ref, String specialization) =>
-      ref.watch(practiceRepositoryProvider).questions(specialization),
+      ref.watch(practiceServiceProvider).questionList(specialization),
 );
-
-/// План на сегодня. `null` — плана нет, это нормальное состояние, а не ошибка:
-/// экран в этом случае предлагает его создать.
-final FutureProviderFamily<TodayPlan?, String> todayPlanProvider =
-    FutureProvider.family<TodayPlan?, String>((Ref ref, String specialization) async {
-  try {
-    return await ref.watch(practiceRepositoryProvider).today(specialization);
-  } on ApiException catch (error) {
-    if (error.isNotFound) {
-      return null;
-    }
-    rethrow;
-  }
-});

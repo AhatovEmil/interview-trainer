@@ -2,16 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'core/config/app_config.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'data/content/question_bank.dart';
+import 'presentation/providers.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Раньше любого запроса: релизная сборка без боевого адреса или с http
-  // должна падать здесь, а не молча уехать в магазин.
-  AppConfig.assertConfigured();
-  runApp(const ProviderScope(child: InterviewTrainerApp()));
+
+  // Банк читается один раз до запуска интерфейса. Иначе каждый экран, которому
+  // нужен вопрос, ждал бы разбора файла и обрастал состоянием загрузки.
+  final QuestionBank bank = await QuestionBank.load();
+
+  runApp(
+    ProviderScope(
+      overrides: <Override>[questionBankProvider.overrideWithValue(bank)],
+      child: const InterviewTrainerApp(),
+    ),
+  );
 }
 
 class InterviewTrainerApp extends ConsumerWidget {

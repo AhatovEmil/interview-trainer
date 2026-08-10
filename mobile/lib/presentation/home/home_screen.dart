@@ -9,7 +9,6 @@ import '../../core/theme/app_typography.dart';
 import '../../domain/models/grade.dart';
 import '../../domain/models/profile.dart';
 import '../../domain/models/question_list.dart';
-import '../../domain/models/taxonomy.dart';
 import '../common/section_label.dart';
 import '../common/surface_card.dart';
 import '../profile/rating_meter.dart';
@@ -53,7 +52,7 @@ class HomeScreen extends ConsumerWidget {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
           children: <Widget>[
-            _SpecializationCard(profile: session.profile, specializationId: specialization),
+            _SpecializationCard(current: session.profile, specializationId: specialization),
             const SizedBox(height: 24),
             ref.watch(questionListProvider(specialization)).when(
                   loading: () => const _ProgressPlaceholder(),
@@ -79,24 +78,10 @@ class HomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             _ActionTile(
-              icon: Icons.event_available_outlined,
-              title: 'План к собеседованию',
-              subtitle: 'Что успеть повторить до назначенной даты',
-              onTap: () => context.push(AppRoutes.plan),
-            ),
-            const SizedBox(height: 10),
-            _ActionTile(
               icon: Icons.insights_outlined,
               title: 'Мой уровень',
               subtitle: 'Рейтинги по темам и оценка грейда',
               onTap: () => context.push(AppRoutes.profile),
-            ),
-            const SizedBox(height: 10),
-            _ActionTile(
-              icon: Icons.how_to_vote_outlined,
-              title: 'Прислать вопрос с собеса',
-              subtitle: 'Спросили что-то, чего нет в банке? Расскажите',
-              onTap: () => context.push(AppRoutes.report),
             ),
           ],
         ),
@@ -107,18 +92,19 @@ class HomeScreen extends ConsumerWidget {
 
 /// Текущая специализация с переключателем.
 class _SpecializationCard extends ConsumerWidget {
-  const _SpecializationCard({required this.profile, required this.specializationId});
+  const _SpecializationCard({required this.current, required this.specializationId});
 
-  final UserProfile? profile;
+  final UserSpecialization? current;
   final String specializationId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ThemeData theme = Theme.of(context);
     final AppColors colors = context.colors;
-    final AsyncValue<Taxonomy> taxonomy = ref.watch(taxonomyProvider);
-    final String title = taxonomy.valueOrNull?.titleFor(specializationId) ?? specializationId;
-    final UserSpecialization? current = profile?.primary;
+    final String title = ref.watch(taxonomyProvider).titleFor(specializationId);
+    // Локальная копия: поле виджета Dart не сужает по типу, и обращение к
+    // полям внутри `if (current != null)` иначе не компилируется.
+    final UserSpecialization? profile = current;
 
     return SurfaceCard(
       padding: const EdgeInsets.all(20),
@@ -136,7 +122,7 @@ class _SpecializationCard extends ConsumerWidget {
               ),
             ],
           ),
-          if (current != null) ...<Widget>[
+          if (profile != null) ...<Widget>[
             const SizedBox(height: 16),
             Divider(color: colors.hairline, height: 1),
             const SizedBox(height: 14),
@@ -149,13 +135,13 @@ class _SpecializationCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        Grade.title(current.targetGrade),
+                        Grade.title(profile.targetGrade),
                         style: theme.textTheme.titleLarge,
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        current.isReaching
-                            ? 'Сейчас ${Grade.title(current.selfAssessedGrade)} — '
+                        profile.isReaching
+                            ? 'Сейчас ${Grade.title(profile.selfAssessedGrade)} — '
                                 'вопросы идут на уровень выше'
                             : 'Освежаю то, что уже умею',
                         style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),

@@ -34,7 +34,7 @@ class _TargetGradeSheetState extends ConsumerState<_TargetGradeSheet> {
   int? _saving;
 
   Future<void> _select(int target) async {
-    final UserSpecialization? profile = ref.read(sessionProvider).profile?.primary;
+    final UserSpecialization? profile = ref.read(sessionProvider).profile;
     if (profile == null) {
       return;
     }
@@ -64,7 +64,7 @@ class _TargetGradeSheetState extends ConsumerState<_TargetGradeSheet> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final AppColors colors = context.colors;
-    final UserSpecialization? profile = ref.watch(sessionProvider).profile?.primary;
+    final UserSpecialization? profile = ref.watch(sessionProvider).profile;
     final int current = profile?.selfAssessedGrade ?? Grade.min;
     final int target = profile?.targetGrade ?? current;
 

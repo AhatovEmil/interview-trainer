@@ -24,17 +24,7 @@ class ProfileScreen extends ConsumerWidget {
     final String? specialization = session.specializationId;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Мой уровень'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            tooltip: 'Выйти',
-            onPressed: () => ref.read(sessionProvider.notifier).logout(),
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Мой уровень')),
       body: specialization == null
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
@@ -108,11 +98,12 @@ class _StatsView extends StatelessWidget {
       );
 }
 
-/// Удаление аккаунта.
+/// Стирание прогресса.
 ///
-/// Живёт внизу профиля, а не в списке действий: это необратимая операция, и
-/// попасть в неё случайно не должно быть легко. Требование магазинов —
-/// удаление должно быть доступно из самого приложения.
+/// Аккаунтов нет, стирать нечего кроме локальных данных — но само действие
+/// нужно: устройство может смениться владельцем, и чужие ответы ему доставаться
+/// не должны. Живёт внизу профиля, а не в списке действий: операция необратима,
+/// и попадать в неё случайно не должно быть легко.
 class _DangerZone extends ConsumerStatefulWidget {
   const _DangerZone();
 
@@ -127,10 +118,11 @@ class _DangerZoneState extends ConsumerState<_DangerZone> {
     final bool confirmed = await showDialog<bool>(
           context: context,
           builder: (BuildContext context) => AlertDialog(
-            title: const Text('Удалить аккаунт?'),
+            title: const Text('Стереть весь прогресс?'),
             content: const Text(
-              'Пропадут все ответы, рейтинги по темам, очередь повторений и '
-              'планы подготовки. Восстановить их будет нельзя.',
+              'Пропадут все ответы, рейтинги по темам и очередь повторений. '
+              'Восстановить их будет нельзя: данные хранятся только на этом '
+              'устройстве.',
             ),
             actions: <Widget>[
               TextButton(
@@ -153,8 +145,8 @@ class _DangerZoneState extends ConsumerState<_DangerZone> {
 
     setState(() => _isDeleting = true);
     try {
-      await ref.read(sessionProvider.notifier).deleteAccount();
-      // Дальше роутер сам уводит на экран входа: сессии больше нет.
+      await ref.read(sessionProvider.notifier).wipeProgress();
+      // Дальше роутер сам уводит на онбординг: профиля больше нет.
     } on Object catch (error) {
       if (mounted) {
         setState(() => _isDeleting = false);
@@ -180,10 +172,11 @@ class _DangerZoneState extends ConsumerState<_DangerZone> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text('Удаление аккаунта', style: theme.textTheme.titleMedium),
+          Text('Стереть прогресс', style: theme.textTheme.titleMedium),
           const SizedBox(height: 6),
           Text(
-            'Удалим всё: ответы, рейтинги, повторения и планы. Это необратимо.',
+            'Данные хранятся только на этом устройстве. Стереть можно всё: '
+            'ответы, рейтинги и повторения. Это необратимо.',
             style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
           ),
           const SizedBox(height: 16),
@@ -199,7 +192,7 @@ class _DangerZoneState extends ConsumerState<_DangerZone> {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2.2),
                   )
-                : const Text('Удалить аккаунт'),
+                : const Text('Стереть прогресс'),
           ),
         ],
       ),

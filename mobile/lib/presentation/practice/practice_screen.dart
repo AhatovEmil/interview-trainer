@@ -8,7 +8,6 @@ import '../../core/theme/app_typography.dart';
 import '../common/async_button.dart';
 import '../providers.dart';
 import 'explanation_view.dart';
-import 'pending_banner.dart';
 import 'practice_controller.dart';
 import 'question_card.dart';
 
@@ -27,22 +26,6 @@ class PracticeScreen extends ConsumerStatefulWidget {
 }
 
 class _PracticeScreenState extends ConsumerState<PracticeScreen> {
-  bool _syncStarted = false;
-
-  /// Первая синхронизация при входе в тренировку: скачивает банк, чтобы в
-  /// метро было чем заниматься, и доносит то, что осталось с прошлого раза.
-  void _startSyncOnce(String specialization) {
-    if (_syncStarted) {
-      return;
-    }
-    _syncStarted = true;
-    // Не блокируем первый кадр: тренировка начинается с сетевого запроса,
-    // а пакет догрузится фоном.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(syncControllerProvider(specialization)).syncNow();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final String? specialization = ref.watch(sessionProvider).specializationId;
@@ -50,8 +33,6 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
     if (specialization == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
-
-    _startSyncOnce(specialization);
 
     final PracticeKey key = (
       specialization: specialization,
@@ -77,12 +58,7 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            PendingBanner(specialization: specialization),
-            Expanded(child: _buildBody(context, ref, state, controller, specialization)),
-          ],
-        ),
+        child: _buildBody(context, ref, state, controller, specialization),
       ),
     );
   }

@@ -1,8 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/network/api_exception.dart';
-import '../../data/repositories/offline_practice_repository.dart';
+import '../../data/local/practice_service.dart';
 import '../../domain/models/question.dart';
 import '../providers.dart';
 
@@ -47,21 +46,16 @@ class PracticeState {
 
 class PracticeController extends StateNotifier<PracticeState> {
   PracticeController(
-    this._repository,
-    this._specialization,
-    this._grade, {
+    this._service,
+    this._specialization, {
     String? questionId,
   })  : _fixedQuestionId = questionId,
         super(const PracticeState()) {
     loadNext();
   }
 
-  final OfflinePracticeRepository _repository;
+  final PracticeService _service;
   final String _specialization;
-
-  /// Самооценка грейда: офлайн по ней отбираются вопросы, потому что серверную
-  /// оценку без сети не спросить.
-  final int _grade;
 
   /// Задан, когда вопрос открыт из списка вручную. Тогда «следующий вопрос»
   /// не подбирается: экран показывает ровно то, что человек выбрал.
@@ -69,26 +63,25 @@ class PracticeController extends StateNotifier<PracticeState> {
 
   bool get isSingleQuestion => _fixedQuestionId != null;
 
-  /// Идентификатор попытки живёт, пока пользователь отвечает на этот вопрос:
-  /// ретрай отправки не должен посчитаться вторым ответом.
-  String? _submissionId;
+  /// Идентификатор попытки живёт, пока человек отвечает на этот вопрос:
+  /// повторное нажатие не должно посчитаться вторым ответом.
+  String _submissionId = '';
 
   Future<void> loadNext() async {
     state = state.copyWith(phase: PracticePhase.loading, clearResult: true);
     try {
       final String? fixed = _fixedQuestionId;
-      final NextQuestion next = fixed == null
-          ? await _repository.next(_specialization, grade: _grade)
-          : await _repository.questionById(_specialization, fixed);
-      _submissionId = _repository.newSubmissionId();
+      final NextQuestion? next = fixed == null
+          ? await _service.nextQuestion(_specialization)
+          : await _service.questionById(_specialization, fixed);
+
+      if (next == null) {
+        state = state.copyWith(phase: PracticePhase.exhausted);
+        return;
+      }
+
+      _submissionId = DateTime.now().microsecondsSinceEpoch.toString();
       state = state.copyWith(phase: PracticePhase.answering, current: next);
-    } on ApiException catch (error) {
-      state = state.copyWith(
-        phase: error.isNotFound ? PracticePhase.exhausted : PracticePhase.failed,
-        error: error.message,
-      );
-    } on OfflineExhaustedException catch (error) {
-      state = state.copyWith(phase: PracticePhase.exhausted, error: error.toString());
     } on Object catch (error) {
       state = state.copyWith(phase: PracticePhase.failed, error: error.toString());
     }
@@ -99,17 +92,16 @@ class PracticeController extends StateNotifier<PracticeState> {
     int? selfAssessment,
   }) async {
     final NextQuestion? current = state.current;
-    final String? submissionId = _submissionId;
-    if (current == null || submissionId == null || state.isSubmitting) {
+    if (current == null || state.isSubmitting) {
       return;
     }
 
     state = state.copyWith(isSubmitting: true);
     try {
-      final AnswerResult result = await _repository.answer(
-        submissionId: submissionId,
-        questionId: current.question.id,
+      final AnswerResult result = await _service.submitAnswer(
         specializationId: _specialization,
+        submissionId: _submissionId,
+        questionId: current.question.id,
         selectedOptions: selectedOptions,
         selfAssessment: selfAssessment,
       );
@@ -117,14 +109,13 @@ class PracticeController extends StateNotifier<PracticeState> {
         phase: PracticePhase.reviewing,
         result: result,
         isSubmitting: false,
-        answeredInSession: state.answeredInSession + (result.isDuplicate ? 0 : 1),
+        answeredInSession: state.answeredInSession + 1,
       );
     } on Object catch (error) {
       state = state.copyWith(isSubmitting: false, error: error.toString());
       rethrow;
     }
   }
-
 }
 
 /// Ключ сессии тренировки.
@@ -138,9 +129,8 @@ final StateNotifierProviderFamily<PracticeController, PracticeState, PracticeKey
     practiceProvider =
     StateNotifierProvider.family<PracticeController, PracticeState, PracticeKey>(
   (Ref ref, PracticeKey key) => PracticeController(
-    ref.watch(offlinePracticeRepositoryProvider),
+    ref.watch(practiceServiceProvider),
     key.specialization,
-    ref.watch(sessionProvider).profile?.primary?.selfAssessedGrade ?? 3,
     questionId: key.questionId,
   ),
 );
