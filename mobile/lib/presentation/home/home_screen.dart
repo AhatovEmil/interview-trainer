@@ -140,7 +140,7 @@ class _SpecializationCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        _targetHint(profile),
+                        _targetHint(profile, ref.watch(statsProvider(specializationId)).valueOrNull),
                         style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
                       ),
                     ],
@@ -213,17 +213,22 @@ class _Progress extends StatelessWidget {
 
 /// Подпись под целевым уровнем.
 ///
-/// Три случая, и они разные по смыслу: готовлюсь выше, освежаю своё,
-/// повторяю основы. Раньше последний показывался как «освежаю то, что уже
-/// умею» — то есть врал человеку, выбравшему уровень ниже своего.
-String _targetHint(UserSpecialization profile) {
-  if (profile.isReaching) {
-    return 'Сейчас ${Grade.title(profile.selfAssessedGrade)} — вопросы идут на уровень выше';
+/// Сравнивать есть с чем только тогда, когда приложение измерило уровень само.
+/// Раньше сравнение шло с самооценкой, которую спрашивали на старте, — и
+/// подпись уверенно заявляла «сейчас Middle» человеку, который просто пролистал
+/// экран. Пока измерения нет, подпись объясняет, на что влияет выбор.
+String _targetHint(UserSpecialization profile, PracticeStats? stats) {
+  final int? measured = stats?.overallGrade;
+  if (measured == null) {
+    return 'Вопросы подбираются под этот уровень';
   }
-  if (profile.isRevisiting) {
-    return 'Ниже вашего ${Grade.title(profile.selfAssessedGrade)} — повторяю основы';
+  if (profile.targetGrade > measured) {
+    return 'По ответам сейчас ${Grade.title(measured)} — вопросы идут выше';
   }
-  return 'Освежаю то, что уже умею';
+  if (profile.targetGrade < measured) {
+    return 'По ответам сейчас ${Grade.title(measured)} — повторяю основы';
+  }
+  return 'Совпадает с оценкой по вашим ответам';
 }
 
 /// Счётчик исходов. Цвет дублируется точкой и подписью, а не несёт смысл один.

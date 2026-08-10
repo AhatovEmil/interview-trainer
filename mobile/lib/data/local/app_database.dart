@@ -17,10 +17,11 @@ part 'app_database.g.dart';
 class Profiles extends Table {
   TextColumn get specializationId => text()();
 
-  /// Где человек сейчас — стартовая точка для оценки.
-  IntColumn get selfAssessedGrade => integer()();
-
   /// К какому уровню готовится — именно он определяет выдачу.
+  ///
+  /// Уровень здесь один. Самооценка была вторым полем и не окупала себя: её
+  /// спрашивали на старте, а использовали только для подписи под целевым
+  /// уровнем. Сам уровень приложение всё равно измеряет по ответам.
   IntColumn get targetGrade => integer()();
 
   BoolColumn get isPrimary => boolean().withDefault(const Constant(false))();
@@ -91,7 +92,7 @@ class AppDatabase extends _$AppDatabase {
       : super(executor ?? driftDatabase(name: 'interview_trainer'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -111,6 +112,12 @@ class AppDatabase extends _$AppDatabase {
               await m.database.customStatement('DROP TABLE IF EXISTS $table');
             }
             await m.createAll();
+          }
+          if (from < 3) {
+            // Уходит колонка самооценки: приложение больше не спрашивает
+            // текущий уровень. Таблица пересоздаётся, остальные колонки
+            // переносятся как есть — выбранный стек и прогресс сохраняются.
+            await m.alterTable(TableMigration(profiles));
           }
         },
       );
@@ -140,7 +147,6 @@ class AppDatabase extends _$AppDatabase {
   /// показывает один стек, а тренировка выдаёт вопросы другого.
   Future<void> saveProfile({
     required String specializationId,
-    required int selfAssessedGrade,
     required int targetGrade,
   }) =>
       transaction(() async {
@@ -151,7 +157,6 @@ class AppDatabase extends _$AppDatabase {
         await into(profiles).insertOnConflictUpdate(
           ProfilesCompanion(
             specializationId: Value<String>(specializationId),
-            selfAssessedGrade: Value<int>(selfAssessedGrade),
             targetGrade: Value<int>(targetGrade),
             isPrimary: const Value<bool>(true),
             // Счётчик ответов принадлежит прогрессу, а не выбору уровня:

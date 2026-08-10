@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../domain/models/grade.dart';
 import '../../domain/models/taxonomy.dart';
 import '../common/choice_tile.dart';
 import '../providers.dart';
@@ -31,12 +32,11 @@ class _SpecializationSheet extends ConsumerStatefulWidget {
 class _SpecializationSheetState extends ConsumerState<_SpecializationSheet> {
   String? _switching;
 
-  Future<void> _select(Specialization specialization, int grade, int target) async {
+  Future<void> _select(Specialization specialization, int target) async {
     setState(() => _switching = specialization.id);
     try {
       await ref.read(sessionProvider.notifier).completeOnboarding(
             specializationId: specialization.id,
-            grade: grade,
             targetGrade: target,
           );
       if (mounted) {
@@ -57,10 +57,9 @@ class _SpecializationSheetState extends ConsumerState<_SpecializationSheet> {
     final AppColors colors = context.colors;
     final SessionState session = ref.watch(sessionProvider);
     final String? current = session.specializationId;
-    final int grade = session.profile?.selfAssessedGrade ?? 3;
-    // При переключении стека уровни переносятся как есть: человек не меняет
+    // При переключении стека уровень переносится как есть: человек не меняет
     // грейд, он меняет язык, и переспрашивать было бы навязчиво.
-    final int target = session.profile?.targetGrade ?? grade;
+    final int target = session.profile?.targetGrade ?? Grade.middle;
 
     return SafeArea(
       child: ConstrainedBox(
@@ -101,7 +100,7 @@ class _SpecializationSheetState extends ConsumerState<_SpecializationSheet> {
                 current: current,
                 switching: _switching,
                 onSelected: (Specialization specialization) =>
-                    _select(specialization, grade, target),
+                    _select(specialization, target),
               ),
             ),
           ],

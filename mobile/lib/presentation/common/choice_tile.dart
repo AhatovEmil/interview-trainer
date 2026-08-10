@@ -105,37 +105,3 @@ class SoonBadge extends StatelessWidget {
     );
   }
 }
-
-/// Индикатор шагов онбординга. Точки вместо полосы: их три, и видно,
-/// сколько осталось, без чтения процентов.
-class StepDots extends StatelessWidget {
-  const StepDots({required this.total, required this.current, super.key});
-
-  final int total;
-  final int current;
-
-  @override
-  Widget build(BuildContext context) {
-    final AppColors colors = context.colors;
-
-    return Row(
-      children: List<Widget>.generate(total, (int index) {
-        final bool done = index <= current;
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(right: index == total - 1 ? 0 : 6),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 220),
-              curve: Curves.easeOut,
-              height: 3,
-              decoration: BoxDecoration(
-                color: done ? colors.inkPrimary : colors.hairline,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-        );
-      }),
-    );
-  }
-}

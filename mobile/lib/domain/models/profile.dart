@@ -1,94 +1,24 @@
-class UserProfile {
-  const UserProfile({
-    required this.id,
-    required this.email,
-    required this.isPremium,
-    required this.specializations,
-  });
-
-  final String id;
-  final String email;
-  final bool isPremium;
-  final List<UserSpecialization> specializations;
-
-  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
-        id: json['id'] as String,
-        email: json['email'] as String,
-        isPremium: json['is_premium'] as bool,
-        specializations: (json['specializations'] as List<dynamic>)
-            .map((dynamic item) => UserSpecialization.fromJson(item as Map<String, dynamic>))
-            .toList(),
-      );
-
-  /// Для сохранения на устройстве: без сети профиль неоткуда взять, а без него
-  /// приложение не знает ни специализации, ни грейда.
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'email': email,
-        'is_premium': isPremium,
-        'specializations': specializations
-            .map((UserSpecialization item) => item.toJson())
-            .toList(growable: false),
-      };
-
-  UserSpecialization? get primary {
-    for (final UserSpecialization item in specializations) {
-      if (item.isPrimary) {
-        return item;
-      }
-    }
-    return specializations.isEmpty ? null : specializations.first;
-  }
-
-  bool get isOnboarded => specializations.isNotEmpty;
-}
-
+/// Выбранная специализация и уровень, к которому по ней готовятся.
+///
+/// Самооценки здесь нет намеренно. Приложение не спрашивает, кем человек себя
+/// считает: на входе достаточно стека, а уровень он либо выставляет сам, либо
+/// приложение измеряет его по ответам. Спрашивать то, что всё равно потом
+/// измеряешь, — лишний экран на старте.
 class UserSpecialization {
   const UserSpecialization({
     required this.specializationId,
-    required this.selfAssessedGrade,
-    required this.gradeCode,
     required this.targetGrade,
     required this.isPrimary,
     required this.answersCount,
   });
 
   final String specializationId;
-  final int selfAssessedGrade;
-  final String gradeCode;
 
   /// Уровень, к которому человек готовится. Именно он определяет выдачу.
   final int targetGrade;
 
   final bool isPrimary;
   final int answersCount;
-
-  /// Готовится выше своего текущего уровня.
-  bool get isReaching => targetGrade > selfAssessedGrade;
-
-  /// Целится ниже текущего — повторяет основы. Это законный сценарий: перед
-  /// собеседованием освежают и то, что давно не трогали.
-  bool get isRevisiting => targetGrade < selfAssessedGrade;
-
-  factory UserSpecialization.fromJson(Map<String, dynamic> json) => UserSpecialization(
-        specializationId: json['specialization_id'] as String,
-        selfAssessedGrade: json['self_assessed_grade'] as int,
-        gradeCode: json['grade_code'] as String,
-        // Кеш профиля мог быть записан старой версией приложения — тогда цель
-        // совпадает с самооценкой, как и на сервере при бэкфилле.
-        targetGrade: json['target_grade'] as int? ?? json['self_assessed_grade'] as int,
-        isPrimary: json['is_primary'] as bool,
-        answersCount: json['answers_count'] as int,
-      );
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'specialization_id': specializationId,
-        'self_assessed_grade': selfAssessedGrade,
-        'grade_code': gradeCode,
-        'target_grade': targetGrade,
-        'is_primary': isPrimary,
-        'answers_count': answersCount,
-      };
 }
 
 class TopicStats {

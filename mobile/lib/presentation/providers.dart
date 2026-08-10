@@ -68,19 +68,13 @@ class SessionNotifier extends StateNotifier<SessionState> {
 
   Future<void> refreshProfile() => restore();
 
-  /// Выбор специализации и уровней. Используется и онбордингом, и сменой стека.
+  /// Выбор специализации и уровня. Используется онбордингом, сменой стека и
+  /// сменой уровня — все три случая пишут одну и ту же строку профиля.
   Future<void> completeOnboarding({
     required String specializationId,
-    required int grade,
-    int? targetGrade,
+    required int targetGrade,
   }) async {
-    await _db.saveProfile(
-      specializationId: specializationId,
-      selfAssessedGrade: grade,
-      // Цель не задана — готовимся на свой же уровень: человек может просто
-      // освежить то, что уже умеет.
-      targetGrade: targetGrade ?? grade,
-    );
+    await _db.saveProfile(specializationId: specializationId, targetGrade: targetGrade);
     await restore();
   }
 
@@ -96,8 +90,6 @@ class SessionNotifier extends StateNotifier<SessionState> {
 
   static UserSpecialization _toModel(Profile profile) => UserSpecialization(
         specializationId: profile.specializationId,
-        selfAssessedGrade: profile.selfAssessedGrade,
-        gradeCode: '',
         targetGrade: profile.targetGrade,
         isPrimary: profile.isPrimary,
         answersCount: profile.answersCount,

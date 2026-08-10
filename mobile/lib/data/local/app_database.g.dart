@@ -14,12 +14,6 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
   late final GeneratedColumn<String> specializationId = GeneratedColumn<String>(
       'specialization_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _selfAssessedGradeMeta =
-      const VerificationMeta('selfAssessedGrade');
-  @override
-  late final GeneratedColumn<int> selfAssessedGrade = GeneratedColumn<int>(
-      'self_assessed_grade', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _targetGradeMeta =
       const VerificationMeta('targetGrade');
   @override
@@ -51,14 +45,8 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
       'updated_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [
-        specializationId,
-        selfAssessedGrade,
-        targetGrade,
-        isPrimary,
-        answersCount,
-        updatedAt
-      ];
+  List<GeneratedColumn> get $columns =>
+      [specializationId, targetGrade, isPrimary, answersCount, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -76,14 +64,6 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
               data['specialization_id']!, _specializationIdMeta));
     } else if (isInserting) {
       context.missing(_specializationIdMeta);
-    }
-    if (data.containsKey('self_assessed_grade')) {
-      context.handle(
-          _selfAssessedGradeMeta,
-          selfAssessedGrade.isAcceptableOrUnknown(
-              data['self_assessed_grade']!, _selfAssessedGradeMeta));
-    } else if (isInserting) {
-      context.missing(_selfAssessedGradeMeta);
     }
     if (data.containsKey('target_grade')) {
       context.handle(
@@ -120,8 +100,6 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     return Profile(
       specializationId: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}specialization_id'])!,
-      selfAssessedGrade: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}self_assessed_grade'])!,
       targetGrade: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}target_grade'])!,
       isPrimary: attachedDatabase.typeMapping
@@ -142,17 +120,17 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
 class Profile extends DataClass implements Insertable<Profile> {
   final String specializationId;
 
-  /// Где человек сейчас — стартовая точка для оценки.
-  final int selfAssessedGrade;
-
   /// К какому уровню готовится — именно он определяет выдачу.
+  ///
+  /// Уровень здесь один. Самооценка была вторым полем и не окупала себя: её
+  /// спрашивали на старте, а использовали только для подписи под целевым
+  /// уровнем. Сам уровень приложение всё равно измеряет по ответам.
   final int targetGrade;
   final bool isPrimary;
   final int answersCount;
   final DateTime updatedAt;
   const Profile(
       {required this.specializationId,
-      required this.selfAssessedGrade,
       required this.targetGrade,
       required this.isPrimary,
       required this.answersCount,
@@ -161,7 +139,6 @@ class Profile extends DataClass implements Insertable<Profile> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['specialization_id'] = Variable<String>(specializationId);
-    map['self_assessed_grade'] = Variable<int>(selfAssessedGrade);
     map['target_grade'] = Variable<int>(targetGrade);
     map['is_primary'] = Variable<bool>(isPrimary);
     map['answers_count'] = Variable<int>(answersCount);
@@ -172,7 +149,6 @@ class Profile extends DataClass implements Insertable<Profile> {
   ProfilesCompanion toCompanion(bool nullToAbsent) {
     return ProfilesCompanion(
       specializationId: Value(specializationId),
-      selfAssessedGrade: Value(selfAssessedGrade),
       targetGrade: Value(targetGrade),
       isPrimary: Value(isPrimary),
       answersCount: Value(answersCount),
@@ -185,7 +161,6 @@ class Profile extends DataClass implements Insertable<Profile> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Profile(
       specializationId: serializer.fromJson<String>(json['specializationId']),
-      selfAssessedGrade: serializer.fromJson<int>(json['selfAssessedGrade']),
       targetGrade: serializer.fromJson<int>(json['targetGrade']),
       isPrimary: serializer.fromJson<bool>(json['isPrimary']),
       answersCount: serializer.fromJson<int>(json['answersCount']),
@@ -197,7 +172,6 @@ class Profile extends DataClass implements Insertable<Profile> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'specializationId': serializer.toJson<String>(specializationId),
-      'selfAssessedGrade': serializer.toJson<int>(selfAssessedGrade),
       'targetGrade': serializer.toJson<int>(targetGrade),
       'isPrimary': serializer.toJson<bool>(isPrimary),
       'answersCount': serializer.toJson<int>(answersCount),
@@ -207,14 +181,12 @@ class Profile extends DataClass implements Insertable<Profile> {
 
   Profile copyWith(
           {String? specializationId,
-          int? selfAssessedGrade,
           int? targetGrade,
           bool? isPrimary,
           int? answersCount,
           DateTime? updatedAt}) =>
       Profile(
         specializationId: specializationId ?? this.specializationId,
-        selfAssessedGrade: selfAssessedGrade ?? this.selfAssessedGrade,
         targetGrade: targetGrade ?? this.targetGrade,
         isPrimary: isPrimary ?? this.isPrimary,
         answersCount: answersCount ?? this.answersCount,
@@ -225,9 +197,6 @@ class Profile extends DataClass implements Insertable<Profile> {
       specializationId: data.specializationId.present
           ? data.specializationId.value
           : this.specializationId,
-      selfAssessedGrade: data.selfAssessedGrade.present
-          ? data.selfAssessedGrade.value
-          : this.selfAssessedGrade,
       targetGrade:
           data.targetGrade.present ? data.targetGrade.value : this.targetGrade,
       isPrimary: data.isPrimary.present ? data.isPrimary.value : this.isPrimary,
@@ -242,7 +211,6 @@ class Profile extends DataClass implements Insertable<Profile> {
   String toString() {
     return (StringBuffer('Profile(')
           ..write('specializationId: $specializationId, ')
-          ..write('selfAssessedGrade: $selfAssessedGrade, ')
           ..write('targetGrade: $targetGrade, ')
           ..write('isPrimary: $isPrimary, ')
           ..write('answersCount: $answersCount, ')
@@ -252,14 +220,13 @@ class Profile extends DataClass implements Insertable<Profile> {
   }
 
   @override
-  int get hashCode => Object.hash(specializationId, selfAssessedGrade,
-      targetGrade, isPrimary, answersCount, updatedAt);
+  int get hashCode => Object.hash(
+      specializationId, targetGrade, isPrimary, answersCount, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Profile &&
           other.specializationId == this.specializationId &&
-          other.selfAssessedGrade == this.selfAssessedGrade &&
           other.targetGrade == this.targetGrade &&
           other.isPrimary == this.isPrimary &&
           other.answersCount == this.answersCount &&
@@ -268,7 +235,6 @@ class Profile extends DataClass implements Insertable<Profile> {
 
 class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<String> specializationId;
-  final Value<int> selfAssessedGrade;
   final Value<int> targetGrade;
   final Value<bool> isPrimary;
   final Value<int> answersCount;
@@ -276,7 +242,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<int> rowid;
   const ProfilesCompanion({
     this.specializationId = const Value.absent(),
-    this.selfAssessedGrade = const Value.absent(),
     this.targetGrade = const Value.absent(),
     this.isPrimary = const Value.absent(),
     this.answersCount = const Value.absent(),
@@ -285,19 +250,16 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   });
   ProfilesCompanion.insert({
     required String specializationId,
-    required int selfAssessedGrade,
     required int targetGrade,
     this.isPrimary = const Value.absent(),
     this.answersCount = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   })  : specializationId = Value(specializationId),
-        selfAssessedGrade = Value(selfAssessedGrade),
         targetGrade = Value(targetGrade),
         updatedAt = Value(updatedAt);
   static Insertable<Profile> custom({
     Expression<String>? specializationId,
-    Expression<int>? selfAssessedGrade,
     Expression<int>? targetGrade,
     Expression<bool>? isPrimary,
     Expression<int>? answersCount,
@@ -306,7 +268,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   }) {
     return RawValuesInsertable({
       if (specializationId != null) 'specialization_id': specializationId,
-      if (selfAssessedGrade != null) 'self_assessed_grade': selfAssessedGrade,
       if (targetGrade != null) 'target_grade': targetGrade,
       if (isPrimary != null) 'is_primary': isPrimary,
       if (answersCount != null) 'answers_count': answersCount,
@@ -317,7 +278,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
 
   ProfilesCompanion copyWith(
       {Value<String>? specializationId,
-      Value<int>? selfAssessedGrade,
       Value<int>? targetGrade,
       Value<bool>? isPrimary,
       Value<int>? answersCount,
@@ -325,7 +285,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
       Value<int>? rowid}) {
     return ProfilesCompanion(
       specializationId: specializationId ?? this.specializationId,
-      selfAssessedGrade: selfAssessedGrade ?? this.selfAssessedGrade,
       targetGrade: targetGrade ?? this.targetGrade,
       isPrimary: isPrimary ?? this.isPrimary,
       answersCount: answersCount ?? this.answersCount,
@@ -339,9 +298,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     final map = <String, Expression>{};
     if (specializationId.present) {
       map['specialization_id'] = Variable<String>(specializationId.value);
-    }
-    if (selfAssessedGrade.present) {
-      map['self_assessed_grade'] = Variable<int>(selfAssessedGrade.value);
     }
     if (targetGrade.present) {
       map['target_grade'] = Variable<int>(targetGrade.value);
@@ -365,7 +321,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   String toString() {
     return (StringBuffer('ProfilesCompanion(')
           ..write('specializationId: $specializationId, ')
-          ..write('selfAssessedGrade: $selfAssessedGrade, ')
           ..write('targetGrade: $targetGrade, ')
           ..write('isPrimary: $isPrimary, ')
           ..write('answersCount: $answersCount, ')
@@ -1591,7 +1546,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 
 typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
   required String specializationId,
-  required int selfAssessedGrade,
   required int targetGrade,
   Value<bool> isPrimary,
   Value<int> answersCount,
@@ -1600,7 +1554,6 @@ typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
 });
 typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<String> specializationId,
-  Value<int> selfAssessedGrade,
   Value<int> targetGrade,
   Value<bool> isPrimary,
   Value<int> answersCount,
@@ -1619,10 +1572,6 @@ class $$ProfilesTableFilterComposer
   });
   ColumnFilters<String> get specializationId => $composableBuilder(
       column: $table.specializationId,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get selfAssessedGrade => $composableBuilder(
-      column: $table.selfAssessedGrade,
       builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get targetGrade => $composableBuilder(
@@ -1651,10 +1600,6 @@ class $$ProfilesTableOrderingComposer
       column: $table.specializationId,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get selfAssessedGrade => $composableBuilder(
-      column: $table.selfAssessedGrade,
-      builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<int> get targetGrade => $composableBuilder(
       column: $table.targetGrade, builder: (column) => ColumnOrderings(column));
 
@@ -1680,9 +1625,6 @@ class $$ProfilesTableAnnotationComposer
   });
   GeneratedColumn<String> get specializationId => $composableBuilder(
       column: $table.specializationId, builder: (column) => column);
-
-  GeneratedColumn<int> get selfAssessedGrade => $composableBuilder(
-      column: $table.selfAssessedGrade, builder: (column) => column);
 
   GeneratedColumn<int> get targetGrade => $composableBuilder(
       column: $table.targetGrade, builder: (column) => column);
@@ -1721,7 +1663,6 @@ class $$ProfilesTableTableManager extends RootTableManager<
               $$ProfilesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> specializationId = const Value.absent(),
-            Value<int> selfAssessedGrade = const Value.absent(),
             Value<int> targetGrade = const Value.absent(),
             Value<bool> isPrimary = const Value.absent(),
             Value<int> answersCount = const Value.absent(),
@@ -1730,7 +1671,6 @@ class $$ProfilesTableTableManager extends RootTableManager<
           }) =>
               ProfilesCompanion(
             specializationId: specializationId,
-            selfAssessedGrade: selfAssessedGrade,
             targetGrade: targetGrade,
             isPrimary: isPrimary,
             answersCount: answersCount,
@@ -1739,7 +1679,6 @@ class $$ProfilesTableTableManager extends RootTableManager<
           ),
           createCompanionCallback: ({
             required String specializationId,
-            required int selfAssessedGrade,
             required int targetGrade,
             Value<bool> isPrimary = const Value.absent(),
             Value<int> answersCount = const Value.absent(),
@@ -1748,7 +1687,6 @@ class $$ProfilesTableTableManager extends RootTableManager<
           }) =>
               ProfilesCompanion.insert(
             specializationId: specializationId,
-            selfAssessedGrade: selfAssessedGrade,
             targetGrade: targetGrade,
             isPrimary: isPrimary,
             answersCount: answersCount,
