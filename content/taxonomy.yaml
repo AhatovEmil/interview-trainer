@@ -24,6 +24,7 @@ professions:
         is_active: true
       - id: backend_csharp
         title: C#
+        is_active: true
       - id: backend_php
         title: PHP
       - id: backend_node

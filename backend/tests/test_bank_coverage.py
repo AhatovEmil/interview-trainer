@@ -43,6 +43,7 @@ COVERED = frozenset(
         "backend_python",
         "backend_go",
         "backend_java",
+        "backend_csharp",
     }
 )
 
