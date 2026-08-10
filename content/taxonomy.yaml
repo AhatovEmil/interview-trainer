@@ -79,6 +79,7 @@ professions:
         is_active: true
       - id: data_ml
         title: ML-инженер
+        is_active: true
 
   - id: infra
     title: Инфраструктура
@@ -88,6 +89,7 @@ professions:
         is_active: true
       - id: infra_dba
         title: Администратор БД
+        is_active: true
 
   - id: enterprise
     title: Корпоративная разработка
@@ -853,6 +855,181 @@ topics:
         middle: 0.7
         middle_plus: 0.8
         senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # ML-инженер — не исследователь: на собеседовании проверяют не знание
+  # архитектур нейросетей, а способность довести модель до продакшена и
+  # удержать её там. Отсюда разделы, которых нет ни у аналитика, ни у
+  # инженера данных: корректность оценки качества (утечка признаков губит
+  # проект тише всего) и жизненный цикл модели после выката — деградация,
+  # переобучение, откат.
+  data_ml:
+    - code: ml_basics
+      title: Основы машинного обучения
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.9
+        middle_plus: 0.8
+        senior: 0.7
+        lead: 0.6
+      subtopics:
+        - code: bias_variance
+          title: Смещение и разброс
+        - code: regularization
+          title: Регуляризация
+        - code: linear_models
+          title: Линейные модели
+        - code: trees_ensembles
+          title: Деревья и ансамбли
+        - code: unsupervised
+          title: Обучение без учителя
+
+    - code: validation
+      title: Валидация и метрики
+      # Самый весомый раздел на всех уровнях: ошибка в схеме проверки
+      # обесценивает всё остальное, а заметна она только в продакшене.
+      weights:
+        intern: 0.7
+        junior: 0.9
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: cross_validation
+          title: Кросс-валидация
+        - code: metrics_choice
+          title: Выбор метрики
+        - code: data_leakage
+          title: Утечка данных
+        - code: imbalance
+          title: Несбалансированные классы
+        - code: offline_online
+          title: Офлайн- и онлайн-оценка
+
+    - code: features
+      title: Признаки и данные
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: feature_engineering
+          title: Конструирование признаков
+        - code: categorical
+          title: Категориальные признаки
+        - code: missing_values
+          title: Пропуски и выбросы
+        - code: feature_store
+          title: Хранилище признаков
+
+    - code: deep_learning
+      title: Глубокое обучение
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: training_loop
+          title: Обучение сети
+        - code: overfitting
+          title: Переобучение и регуляризация
+        - code: transfer_learning
+          title: Дообучение и перенос
+        - code: transformers
+          title: Трансформеры и языковые модели
+
+    - code: production
+      title: Модель в продакшене
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.65
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: serving
+          title: Инференс и его режимы
+        - code: monitoring
+          title: Мониторинг и дрейф
+        - code: retraining
+          title: Переобучение и откат
+        - code: ab_testing
+          title: A/B-тесты моделей
+
+    - code: engineering
+      title: Инженерная культура
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.7
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.95
+        lead: 0.95
+      subtopics:
+        - code: reproducibility
+          title: Воспроизводимость
+        - code: experiment_tracking
+          title: Учёт экспериментов
+        - code: pipelines
+          title: Конвейеры обучения
+        - code: testing
+          title: Тестирование ML-кода
+
+    - code: system_design
+      title: Системный дизайн ML
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: recommendations
+          title: Рекомендательные системы
+        - code: search_ranking
+          title: Поиск и ранжирование
+        - code: latency_cost
+          title: Задержка и стоимость
+        - code: baselines
+          title: Простые решения и базовые линии
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
         lead: 1.0
       subtopics:
         - code: conflict
@@ -2269,6 +2446,215 @@ topics:
         middle: 0.7
         middle_plus: 0.8
         senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У администратора БД центр тяжести смещён к эксплуатации, а не к разработке:
+  # разработчику достаточно понимать индексы и транзакции, администратору
+  # приходится отвечать за сохранность данных под нагрузкой. Отсюда разделы,
+  # которых нет у серверных специализаций: резервное копирование и
+  # восстановление (единственный раздел, где ошибка необратима), репликация и
+  # отказоустойчивость, а также сопровождение схемы на живой базе.
+  infra_dba:
+    - code: architecture
+      title: Устройство СУБД
+      weights:
+        intern: 0.8
+        junior: 0.9
+        junior_plus: 0.95
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: storage
+          title: Хранение и страницы
+        - code: wal
+          title: Журнал предзаписи
+        - code: mvcc
+          title: Многоверсионность
+        - code: vacuum
+          title: Очистка и раздувание
+        - code: memory
+          title: Память и буферы
+
+    - code: queries
+      title: Запросы и планы
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: query_plans
+          title: Планы выполнения
+        - code: indexes
+          title: Индексы и их типы
+        - code: statistics
+          title: Статистика и оценки
+        - code: slow_queries
+          title: Поиск медленных запросов
+
+    - code: transactions
+      title: Транзакции и блокировки
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: isolation
+          title: Уровни изоляции
+        - code: locks
+          title: Блокировки
+        - code: deadlocks
+          title: Взаимные блокировки
+        - code: long_transactions
+          title: Долгие транзакции
+
+    - code: backup
+      title: Резервное копирование
+      # Единственный раздел, где ошибка необратима: остальное чинится, потерянные
+      # данные — нет. Поэтому вес высок начиная с junior.
+      weights:
+        intern: 0.7
+        junior: 0.9
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: strategies
+          title: Виды копий
+        - code: pitr
+          title: Восстановление на момент времени
+        - code: restore_drills
+          title: Проверка восстановления
+        - code: rpo_rto
+          title: Допустимые потери и простой
+
+    - code: replication
+      title: Репликация и отказоустойчивость
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: sync_async
+          title: Синхронная и асинхронная
+        - code: failover
+          title: Переключение при отказе
+        - code: read_replicas
+          title: Реплики для чтения
+        - code: split_brain
+          title: Расщепление кластера
+
+    - code: operations
+      title: Эксплуатация
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: monitoring
+          title: Мониторинг и метрики
+        - code: connections
+          title: Соединения и пулеры
+        - code: upgrades
+          title: Обновление версий
+        - code: capacity
+          title: Ёмкость и рост
+
+    - code: schema
+      title: Схема и миграции
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: normalization
+          title: Нормализация
+        - code: data_types
+          title: Типы данных
+        - code: online_migrations
+          title: Миграции без простоя
+        - code: partitioning
+          title: Секционирование
+
+    - code: security
+      title: Безопасность и доступ
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 0.95
+        lead: 1.0
+      subtopics:
+        - code: privileges
+          title: Права и роли
+        - code: encryption
+          title: Шифрование
+        - code: audit
+          title: Аудит доступа
+
+    - code: system_design
+      title: Системный дизайн хранилищ
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: sharding
+          title: Шардирование
+        - code: caching
+          title: Кеширование
+        - code: engine_choice
+          title: Выбор хранилища
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
         lead: 1.0
       subtopics:
         - code: conflict
