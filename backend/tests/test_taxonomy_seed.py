@@ -256,5 +256,13 @@ async def test_taxonomy_endpoint_returns_tree(
     assert len(python["topics"]) == len(payload.topics["backend_python"])
 
     # У неактивной специализации тем нет — она показывается как «скоро».
-    inactive = next(spec for spec in backend["specializations"] if not spec["is_active"])
-    assert inactive["topics"] == []
+    # Ищем по всему дереву: банк вопросов растёт, и внутри одной профессии
+    # неактивных специализаций может не остаться вовсе.
+    inactive = [
+        spec
+        for profession in body["professions"]
+        for spec in profession["specializations"]
+        if not spec["is_active"]
+    ]
+    for spec in inactive:
+        assert spec["topics"] == [], f"{spec['id']}: неактивна, но разделы отдаются наружу"

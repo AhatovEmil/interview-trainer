@@ -50,9 +50,7 @@ async def _count(model: type) -> int:
         return int((await session.execute(select(func.count()).select_from(model))).scalar_one())
 
 
-async def test_seed_loads_all_questions(
-    seeded_taxonomy: None, expected: tuple[int, int]
-) -> None:
+async def test_seed_loads_all_questions(seeded_taxonomy: None, expected: tuple[int, int]) -> None:
     total, _ = expected
 
     report = await seed_questions()

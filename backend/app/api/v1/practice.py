@@ -65,9 +65,7 @@ async def question_list(
     return QuestionListResponse(
         specialization_id=result.specialization_id,
         total=len(result.items),
-        answered=sum(
-            1 for item in result.items if item.status is not QuestionStatus.UNANSWERED
-        ),
+        answered=sum(1 for item in result.items if item.status is not QuestionStatus.UNANSWERED),
         correct=result.count(QuestionStatus.CORRECT),
         partial=result.count(QuestionStatus.PARTIAL),
         wrong=result.count(QuestionStatus.WRONG),

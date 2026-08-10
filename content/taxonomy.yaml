@@ -27,6 +27,7 @@ professions:
         is_active: true
       - id: backend_php
         title: PHP
+        is_active: true
       - id: backend_node
         title: Node.js
         is_active: true
@@ -283,6 +284,209 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У PHP отдельный вес имеет модель выполнения: классически каждый запрос
+  # начинается с чистого состояния и заканчивается его уничтожением, а
+  # долгоживущие процессы меняют правила игры. Отсюда раздел про модель
+  # выполнения, которого нет у других серверных специализаций.
+  backend_php:
+    - code: language
+      title: Язык
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: types
+          title: Типизация и приведение
+        - code: comparison
+          title: Сравнения и равенство
+        - code: arrays
+          title: Массивы
+        - code: oop
+          title: Объектная модель
+        - code: exceptions
+          title: Исключения и ошибки
+
+    - code: runtime
+      title: Модель выполнения
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: request_lifecycle
+          title: Жизненный цикл запроса
+        - code: opcache
+          title: Кеш байт-кода
+        - code: memory
+          title: Память и сборка мусора
+        - code: long_running
+          title: Долгоживущие процессы
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: pdo_prepared
+          title: Подготовленные запросы
+        - code: orm_pitfalls
+          title: Подводные камни ORM
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: indexes
+          title: Индексы
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: http
+          title: HTTP
+        - code: sessions
+          title: Сессии и состояние
+        - code: rest_design
+          title: Дизайн REST API
+        - code: validation
+          title: Валидация
+
+    - code: security
+      title: Безопасность
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: injection
+          title: Инъекции
+        - code: xss_csrf
+          title: XSS и CSRF
+        - code: passwords
+          title: Хранение паролей
+        - code: uploads
+          title: Загрузка файлов
+
+    - code: frameworks
+      title: Фреймворки
+      weights:
+        intern: 0.4
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: di_container
+          title: Контейнер зависимостей
+        - code: middleware
+          title: Конвейер обработки
+        - code: queues
+          title: Очереди и отложенные задачи
+        - code: config
+          title: Конфигурация и окружения
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: solid
+          title: SOLID
+        - code: layered_architecture
+          title: Слоистая архитектура
+        - code: patterns
+          title: Паттерны проектирования
+
+    - code: system_design
+      title: Системный дизайн
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: scaling
+          title: Масштабирование
+        - code: observability
+          title: Наблюдаемость
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: unit
+          title: Юнит-тесты
+        - code: integration
+          title: Интеграционные тесты
+        - code: static_analysis
+          title: Статический анализ
 
     - code: soft
       title: Поведенческая секция
