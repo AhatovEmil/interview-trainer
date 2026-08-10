@@ -9,10 +9,11 @@ from httpx import AsyncClient
 from sqlalchemy import select, update
 
 from app.core.config import get_settings
-from app.core.grades import GRADE_INTERN, GRADE_LEAD, GRADE_MIDDLE
+from app.core.grades import GRADE_INTERN, GRADE_JUNIOR, GRADE_LEAD, GRADE_MIDDLE, GRADE_SENIOR
 from app.db.models.question import Question
 from app.db.models.user import ReviewState, User, UserAnswer, UserTopicRating
 from app.db.session import get_session_factory
+from app.seed.loader import load_taxonomy
 from app.seed.questions import seed_questions
 from app.seed.taxonomy import seed_taxonomy
 from app.services.rating import MIN_ANSWERS_FOR_ESTIMATE, START_RATING
@@ -44,7 +45,12 @@ async def auth_headers(content: None, client: AsyncClient) -> dict[str, str]:
     return {"Authorization": f"Bearer {response.json()['access_token']}"}
 
 
-async def set_profile(client: AsyncClient, headers: dict[str, str], grade: int) -> None:
+async def set_profile(
+    client: AsyncClient,
+    headers: dict[str, str],
+    grade: int,
+    target: int | None = None,
+) -> None:
     response = await client.patch(
         "/api/v1/me",
         headers=headers,
@@ -52,6 +58,7 @@ async def set_profile(client: AsyncClient, headers: dict[str, str], grade: int) 
             "specialization_id": SPECIALIZATION,
             "self_assessed_grade": grade,
             "is_primary": True,
+            **({"target_grade": target} if target is not None else {}),
         },
     )
     assert response.status_code == 200, response.text
@@ -140,6 +147,9 @@ async def test_profile_update_sets_specialization(
             "specialization_id": SPECIALIZATION,
             "self_assessed_grade": GRADE_MIDDLE,
             "grade_code": "middle",
+            # Цель не указана — готовимся на свой же уровень.
+            "target_grade": GRADE_MIDDLE,
+            "target_grade_code": "middle",
             "is_primary": True,
             "answers_count": 0,
         }
@@ -149,11 +159,25 @@ async def test_profile_update_sets_specialization(
 async def test_inactive_specialization_rejected(
     client: AsyncClient, auth_headers: dict[str, str]
 ) -> None:
+    # Пример берём из таксономии, а не зашиваем: банк вопросов пополняется, и
+    # любая конкретная специализация рано или поздно становится активной.
+    payload = load_taxonomy(get_settings().taxonomy_file)
+    inactive = next(
+        (
+            spec.id
+            for profession in payload.professions
+            for spec in profession.specializations
+            if not spec.is_active
+        ),
+        None,
+    )
+    assert inactive is not None, "все специализации активны — проверять нечего"
+
     response = await client.patch(
         "/api/v1/me",
         headers=auth_headers,
         json={
-            "specialization_id": "backend_go",
+            "specialization_id": inactive,
             "self_assessed_grade": GRADE_MIDDLE,
             "is_primary": True,
         },
@@ -260,6 +284,73 @@ async def test_lead_gets_only_questions_within_range(
 
     question = response.json()["question"]
     assert question["min_grade"] <= GRADE_LEAD <= question["max_grade"]
+
+
+# --- Целевой грейд -----------------------------------------------------------------
+
+
+async def test_target_grade_drives_the_feed(
+    client: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Готовлюсь с junior на senior — значит вижу senior-вопросы, а не свои."""
+    await set_profile(client, auth_headers, GRADE_JUNIOR, target=GRADE_SENIOR)
+
+    response = await client.get(
+        f"/api/v1/practice/next?specialization={SPECIALIZATION}", headers=auth_headers
+    )
+
+    question = response.json()["question"]
+    assert question["min_grade"] <= GRADE_SENIOR <= question["max_grade"]
+
+
+async def test_target_grade_is_stored_and_returned(
+    client: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    await set_profile(client, auth_headers, GRADE_MIDDLE, target=GRADE_SENIOR)
+
+    body = (await client.get("/api/v1/me", headers=auth_headers)).json()
+
+    profile = body["specializations"][0]
+    assert profile["self_assessed_grade"] == GRADE_MIDDLE
+    assert profile["target_grade"] == GRADE_SENIOR
+    assert profile["target_grade_code"] == "senior"
+
+
+async def test_target_below_current_is_rejected(
+    client: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Готовиться вниз незачем — это опечатка, а не сценарий."""
+    response = await client.patch(
+        "/api/v1/me",
+        headers=auth_headers,
+        json={
+            "specialization_id": SPECIALIZATION,
+            "self_assessed_grade": GRADE_SENIOR,
+            "target_grade": GRADE_JUNIOR,
+            "is_primary": True,
+        },
+    )
+
+    assert response.status_code == 422
+    assert "ниже текущего" in response.json()["detail"]
+
+
+async def test_question_list_uses_target_grade(
+    client: AsyncClient, auth_headers: dict[str, str]
+) -> None:
+    """Отметка «в вашем диапазоне» должна считаться по цели, а не по самооценке."""
+    await set_profile(client, auth_headers, GRADE_JUNIOR, target=GRADE_SENIOR)
+
+    body = (
+        await client.get(
+            f"/api/v1/practice/questions?specialization={SPECIALIZATION}", headers=auth_headers
+        )
+    ).json()
+
+    in_range = [item for item in body["items"] if item["in_grade_range"]]
+    assert in_range, "при цели senior что-то должно попадать в диапазон"
+    for item in in_range:
+        assert item["peak_grade"] >= GRADE_JUNIOR
 
 
 # --- Ответ -------------------------------------------------------------------------

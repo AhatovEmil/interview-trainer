@@ -183,10 +183,16 @@ def project_questions():
     return load_questions(get_settings().questions_dir / "backend_python.yaml", taxonomy())
 
 
-def test_project_bank_has_thirty_questions() -> None:
+def test_project_bank_meets_stage_two_minimum() -> None:
+    """Приёмка этапа 2 — не меньше тридцати.
+
+    Сверху банк не ограничен: он растёт, чтобы закрывать все уровни, к которым
+    может готовиться пользователь. Проверка на точное число ломалась бы при
+    каждом пополнении, ничего при этом не проверяя.
+    """
     payload = project_questions()
 
-    assert len(payload.questions) == 30
+    assert len(payload.questions) >= 30
 
 
 def test_project_bank_covers_all_topics() -> None:

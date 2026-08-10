@@ -13,11 +13,13 @@ class ExplanationView extends StatelessWidget {
   const ExplanationView({
     required this.result,
     required this.onNext,
+    this.nextLabel = 'Следующий вопрос',
     super.key,
   });
 
   final AnswerResult result;
   final VoidCallback onNext;
+  final String nextLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -72,10 +74,7 @@ class ExplanationView extends StatelessWidget {
           ),
         ),
         _BottomBar(
-          child: FilledButton(
-            onPressed: onNext,
-            child: const Text('Следующий вопрос'),
-          ),
+          child: FilledButton(onPressed: onNext, child: Text(nextLabel)),
         ),
       ],
     );

@@ -19,7 +19,7 @@ async def get_me(user: CurrentUser, session: SessionDep) -> UserResponse:
     return _to_response(user, specializations)
 
 
-@router.patch("", response_model=UserResponse, summary="Специализация и самооценка грейда")
+@router.patch("", response_model=UserResponse, summary="Специализация, текущий и целевой грейд")
 async def update_me(
     payload: UpdateProfileRequest,
     user: CurrentUser,
@@ -30,6 +30,7 @@ async def update_me(
         user,
         specialization_id=payload.specialization_id,
         self_assessed_grade=payload.self_assessed_grade,
+        target_grade=payload.target_grade,
         is_primary=payload.is_primary,
     )
     specializations = await service.list_specializations(user)
@@ -47,6 +48,8 @@ def _to_response(user: User, specializations: list[UserSpecialization]) -> UserR
                 specialization_id=row.specialization_id,
                 self_assessed_grade=row.self_assessed_grade,
                 grade_code=code_from_grade(row.self_assessed_grade),
+                target_grade=row.target_grade,
+                target_grade_code=code_from_grade(row.target_grade),
                 is_primary=row.is_primary,
                 answers_count=row.answers_count,
             )

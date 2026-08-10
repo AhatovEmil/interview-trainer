@@ -12,8 +12,15 @@ import 'pending_banner.dart';
 import 'practice_controller.dart';
 import 'question_card.dart';
 
+/// Экран тренировки.
+///
+/// Без [questionId] работает адаптивная лента: приложение само подбирает
+/// следующий вопрос. С [questionId] показывает ровно один вопрос, открытый
+/// из списка, и после ответа предлагает вернуться, а не идти дальше.
 class PracticeScreen extends ConsumerStatefulWidget {
-  const PracticeScreen({super.key});
+  const PracticeScreen({this.questionId, super.key});
+
+  final String? questionId;
 
   @override
   ConsumerState<PracticeScreen> createState() => _PracticeScreenState();
@@ -46,19 +53,26 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
 
     _startSyncOnce(specialization);
 
-    final PracticeState state = ref.watch(practiceProvider(specialization));
-    final PracticeController controller = ref.read(practiceProvider(specialization).notifier);
+    final PracticeKey key = (
+      specialization: specialization,
+      questionId: widget.questionId,
+    );
+    final PracticeState state = ref.watch(practiceProvider(key));
+    final PracticeController controller = ref.read(practiceProvider(key).notifier);
+    final bool single = widget.questionId != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Тренировка'),
+        title: Text(single ? 'Вопрос' : 'Тренировка'),
         actions: <Widget>[
-          if (state.answeredInSession > 0) _SessionCounter(value: state.answeredInSession),
-          IconButton(
-            icon: const Icon(Icons.insights_outlined),
-            tooltip: 'Мой уровень',
-            onPressed: () => context.push(AppRoutes.profile),
-          ),
+          if (!single && state.answeredInSession > 0)
+            _SessionCounter(value: state.answeredInSession),
+          if (!single)
+            IconButton(
+              icon: const Icon(Icons.insights_outlined),
+              tooltip: 'Мой уровень',
+              onPressed: () => context.push(AppRoutes.profile),
+            ),
           const SizedBox(width: 4),
         ],
       ),
@@ -114,9 +128,17 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
         );
 
       case PracticePhase.reviewing:
+        // Открытый из списка вопрос закончен — возвращаем туда, откуда пришли,
+        // а не тянем в следующий: человек выбирал конкретную формулировку.
         return ExplanationView(
           result: state.result!,
-          onNext: controller.loadNext,
+          nextLabel: controller.isSingleQuestion ? 'Вернуться к списку' : 'Следующий вопрос',
+          onNext: controller.isSingleQuestion
+              ? () {
+                  ref.invalidate(questionListProvider(specialization));
+                  context.pop();
+                }
+              : controller.loadNext,
         );
     }
   }

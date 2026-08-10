@@ -12,7 +12,9 @@ import '../data/repositories/offline_practice_repository.dart';
 import '../data/repositories/practice_repository.dart';
 import '../data/sync/sync_controller.dart';
 import '../data/sync/sync_service.dart';
+import '../domain/models/plan.dart';
 import '../domain/models/profile.dart';
+import '../domain/models/question_list.dart';
 import '../domain/models/taxonomy.dart';
 
 final Provider<TokenStorage> tokenStorageProvider =
@@ -163,10 +165,12 @@ class SessionNotifier extends StateNotifier<SessionState> {
   Future<void> completeOnboarding({
     required String specializationId,
     required int grade,
+    int? targetGrade,
   }) async {
     final UserProfile profile = await _auth.setSpecialization(
       specializationId: specializationId,
       selfAssessedGrade: grade,
+      targetGrade: targetGrade,
     );
     state = SessionState(status: SessionStatus.ready, profile: profile);
   }
@@ -196,3 +200,25 @@ final FutureProviderFamily<PracticeStats, String> statsProvider =
   (Ref ref, String specialization) =>
       ref.watch(practiceRepositoryProvider).stats(specialization),
 );
+
+/// Список вопросов с отметками о прохождении. Собирается на сервере: статус
+/// зависит от всех ответов пользователя, включая сделанные на других устройствах.
+final FutureProviderFamily<QuestionListSummary, String> questionListProvider =
+    FutureProvider.family<QuestionListSummary, String>(
+  (Ref ref, String specialization) =>
+      ref.watch(practiceRepositoryProvider).questions(specialization),
+);
+
+/// План на сегодня. `null` — плана нет, это нормальное состояние, а не ошибка:
+/// экран в этом случае предлагает его создать.
+final FutureProviderFamily<TodayPlan?, String> todayPlanProvider =
+    FutureProvider.family<TodayPlan?, String>((Ref ref, String specialization) async {
+  try {
+    return await ref.watch(practiceRepositoryProvider).today(specialization);
+  } on ApiException catch (error) {
+    if (error.isNotFound) {
+      return null;
+    }
+    rethrow;
+  }
+});

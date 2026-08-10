@@ -8,7 +8,7 @@ from typing import Self
 
 from pydantic import BaseModel, Field, model_validator
 
-from app.core.enums import QuestionType
+from app.core.enums import QuestionStatus, QuestionType
 from app.core.grades import MAX_GRADE, MIN_GRADE
 from app.services.scheduler import MAX_QUALITY, MIN_QUALITY
 
@@ -41,6 +41,36 @@ class NextQuestionResponse(BaseModel):
     question: QuestionOut
     is_review: bool = Field(description="вопрос пришёл из очереди повторений, а не как новый")
     due_at: datetime | None = None
+
+
+class QuestionListItemOut(BaseModel):
+    """Строка списка вопросов. Формулировка есть, разбора и ответов — нет."""
+
+    id: uuid.UUID
+    type: QuestionType
+    title: str
+    topic_code: str
+    topic_title: str
+    peak_grade: int = Field(ge=MIN_GRADE, le=MAX_GRADE)
+    peak_grade_code: str
+    frequency: int = Field(ge=1, le=5)
+    status: QuestionStatus
+    answers_count: int
+    last_answered_at: datetime | None
+    due_at: datetime | None
+    in_grade_range: bool = Field(
+        description="попадает ли вопрос в адаптивную выдачу при текущем грейде"
+    )
+
+
+class QuestionListResponse(BaseModel):
+    specialization_id: str
+    total: int
+    answered: int
+    correct: int
+    partial: int
+    wrong: int
+    items: list[QuestionListItemOut]
 
 
 class QuestionExplanation(BaseModel):

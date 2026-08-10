@@ -46,8 +46,13 @@ class PracticeState {
 }
 
 class PracticeController extends StateNotifier<PracticeState> {
-  PracticeController(this._repository, this._specialization, this._grade)
-      : super(const PracticeState()) {
+  PracticeController(
+    this._repository,
+    this._specialization,
+    this._grade, {
+    String? questionId,
+  })  : _fixedQuestionId = questionId,
+        super(const PracticeState()) {
     loadNext();
   }
 
@@ -58,6 +63,12 @@ class PracticeController extends StateNotifier<PracticeState> {
   /// оценку без сети не спросить.
   final int _grade;
 
+  /// Задан, когда вопрос открыт из списка вручную. Тогда «следующий вопрос»
+  /// не подбирается: экран показывает ровно то, что человек выбрал.
+  final String? _fixedQuestionId;
+
+  bool get isSingleQuestion => _fixedQuestionId != null;
+
   /// Идентификатор попытки живёт, пока пользователь отвечает на этот вопрос:
   /// ретрай отправки не должен посчитаться вторым ответом.
   String? _submissionId;
@@ -65,7 +76,10 @@ class PracticeController extends StateNotifier<PracticeState> {
   Future<void> loadNext() async {
     state = state.copyWith(phase: PracticePhase.loading, clearResult: true);
     try {
-      final NextQuestion next = await _repository.next(_specialization, grade: _grade);
+      final String? fixed = _fixedQuestionId;
+      final NextQuestion next = fixed == null
+          ? await _repository.next(_specialization, grade: _grade)
+          : await _repository.questionById(_specialization, fixed);
       _submissionId = _repository.newSubmissionId();
       state = state.copyWith(phase: PracticePhase.answering, current: next);
     } on ApiException catch (error) {
@@ -113,11 +127,20 @@ class PracticeController extends StateNotifier<PracticeState> {
 
 }
 
-final StateNotifierProviderFamily<PracticeController, PracticeState, String> practiceProvider =
-    StateNotifierProvider.family<PracticeController, PracticeState, String>(
-  (Ref ref, String specialization) => PracticeController(
+/// Ключ сессии тренировки.
+///
+/// `questionId` пуст для обычной адаптивной выдачи и заполнен, когда вопрос
+/// открыт из списка. Это разные экземпляры контроллера: возврат из конкретного
+/// вопроса не должен сбивать ленту, которую человек проходил до этого.
+typedef PracticeKey = ({String specialization, String? questionId});
+
+final StateNotifierProviderFamily<PracticeController, PracticeState, PracticeKey>
+    practiceProvider =
+    StateNotifierProvider.family<PracticeController, PracticeState, PracticeKey>(
+  (Ref ref, PracticeKey key) => PracticeController(
     ref.watch(offlinePracticeRepositoryProvider),
-    specialization,
+    key.specialization,
     ref.watch(sessionProvider).profile?.primary?.selfAssessedGrade ?? 3,
+    questionId: key.questionId,
   ),
 );

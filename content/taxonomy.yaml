@@ -18,60 +18,78 @@ professions:
         is_active: true
       - id: backend_java
         title: Java
+        is_active: true
       - id: backend_go
         title: Go
+        is_active: true
       - id: backend_csharp
         title: C#
+        is_active: true
       - id: backend_php
         title: PHP
+        is_active: true
       - id: backend_node
         title: Node.js
+        is_active: true
 
   - id: frontend
     title: Frontend-разработчик
     specializations:
       - id: frontend_react
         title: React
+        is_active: true
       - id: frontend_vue
         title: Vue
+        is_active: true
       - id: frontend_angular
         title: Angular
+        is_active: true
 
   - id: mobile
     title: Мобильный разработчик
     specializations:
       - id: mobile_android
         title: Android / Kotlin
+        is_active: true
       - id: mobile_ios
         title: iOS / Swift
+        is_active: true
       - id: mobile_flutter
         title: Flutter
+        is_active: true
 
   - id: qa
     title: QA-инженер
     specializations:
       - id: qa_manual
         title: Ручное тестирование
+        is_active: true
       - id: qa_auto
         title: Автоматизация
+        is_active: true
 
   - id: data
     title: Данные
     specializations:
       - id: data_analyst
         title: Аналитик данных
+        is_active: true
       - id: data_engineer
         title: Data Engineer
+        is_active: true
       - id: data_ml
         title: ML-инженер
+        is_active: true
 
   - id: infra
     title: Инфраструктура
     specializations:
       - id: infra_devops
         title: DevOps / SRE
+        is_active: true
       - id: infra_dba
         title: Администратор БД
+        is_active: true
 
   - id: enterprise
     title: Корпоративная разработка
@@ -84,8 +102,10 @@ professions:
     specializations:
       - id: analysis_system
         title: Системный аналитик
+        is_active: true
       - id: analysis_business
         title: Бизнес-аналитик
+        is_active: true
 
 topics:
   backend_python:
@@ -266,6 +286,3994 @@ topics:
           title: Графы
         - code: dp
           title: Динамическое программирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У PHP отдельный вес имеет модель выполнения: классически каждый запрос
+  # начинается с чистого состояния и заканчивается его уничтожением, а
+  # долгоживущие процессы меняют правила игры. Отсюда раздел про модель
+  # выполнения, которого нет у других серверных специализаций.
+  backend_php:
+    - code: language
+      title: Язык
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: types
+          title: Типизация и приведение
+        - code: comparison
+          title: Сравнения и равенство
+        - code: arrays
+          title: Массивы
+        - code: oop
+          title: Объектная модель
+        - code: exceptions
+          title: Исключения и ошибки
+
+    - code: runtime
+      title: Модель выполнения
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: request_lifecycle
+          title: Жизненный цикл запроса
+        - code: opcache
+          title: Кеш байт-кода
+        - code: memory
+          title: Память и сборка мусора
+        - code: long_running
+          title: Долгоживущие процессы
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: pdo_prepared
+          title: Подготовленные запросы
+        - code: orm_pitfalls
+          title: Подводные камни ORM
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: indexes
+          title: Индексы
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: http
+          title: HTTP
+        - code: sessions
+          title: Сессии и состояние
+        - code: rest_design
+          title: Дизайн REST API
+        - code: validation
+          title: Валидация
+
+    - code: security
+      title: Безопасность
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: injection
+          title: Инъекции
+        - code: xss_csrf
+          title: XSS и CSRF
+        - code: passwords
+          title: Хранение паролей
+        - code: uploads
+          title: Загрузка файлов
+
+    - code: frameworks
+      title: Фреймворки
+      weights:
+        intern: 0.4
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: di_container
+          title: Контейнер зависимостей
+        - code: middleware
+          title: Конвейер обработки
+        - code: queues
+          title: Очереди и отложенные задачи
+        - code: config
+          title: Конфигурация и окружения
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: solid
+          title: SOLID
+        - code: layered_architecture
+          title: Слоистая архитектура
+        - code: patterns
+          title: Паттерны проектирования
+
+    - code: system_design
+      title: Системный дизайн
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: scaling
+          title: Масштабирование
+        - code: observability
+          title: Наблюдаемость
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: unit
+          title: Юнит-тесты
+        - code: integration
+          title: Интеграционные тесты
+        - code: static_analysis
+          title: Статический анализ
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # Бизнес-аналитик отличается от системного точкой приложения: он работает с
+  # процессами и выгодой, а не с интеграциями и схемами. Отсюда разделы про
+  # экономическое обоснование и управление изменениями, которых нет у
+  # системного аналитика, и отсутствие раздела про интеграции.
+  analysis_business:
+    - code: requirements
+      title: Требования
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: elicitation
+          title: Выявление требований
+        - code: prioritization
+          title: Приоритизация
+        - code: acceptance
+          title: Критерии приёмки
+        - code: scope
+          title: Границы объёма
+
+    - code: processes
+      title: Бизнес-процессы
+      weights:
+        intern: 0.7
+        junior: 0.85
+        junior_plus: 0.95
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: as_is_to_be
+          title: Текущее и целевое состояние
+        - code: modeling
+          title: Моделирование процессов
+        - code: bottlenecks
+          title: Узкие места
+        - code: metrics
+          title: Метрики процесса
+
+    - code: business_case
+      title: Экономическое обоснование
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.85
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: value
+          title: Оценка ценности
+        - code: costs
+          title: Затраты и окупаемость
+        - code: risks
+          title: Риски и допущения
+
+    - code: stakeholders
+      title: Заинтересованные стороны
+      weights:
+        intern: 0.5
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: mapping
+          title: Карта участников
+        - code: communication
+          title: Коммуникация
+        - code: conflicts
+          title: Разрешение противоречий
+
+    - code: data
+      title: Работа с данными
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: sql_basics
+          title: Запросы к данным
+        - code: metrics_definition
+          title: Определение метрик
+        - code: interpretation
+          title: Интерпретация результатов
+
+    - code: solutions
+      title: Проработка решений
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: options
+          title: Варианты решения
+        - code: mvp
+          title: Минимальный объём
+        - code: tradeoffs
+          title: Компромиссы
+
+    - code: change_management
+      title: Управление изменениями
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: adoption
+          title: Внедрение и принятие
+        - code: training
+          title: Обучение пользователей
+        - code: measurement
+          title: Измерение эффекта
+
+    - code: documentation
+      title: Документация
+      weights:
+        intern: 0.7
+        junior: 0.85
+        junior_plus: 0.9
+        middle: 0.85
+        middle_plus: 0.8
+        senior: 0.75
+        lead: 0.7
+      subtopics:
+        - code: specifications
+          title: Описание требований
+        - code: presentations
+          title: Представление результатов
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У инженера данных центр тяжести — надёжность конвейеров и моделирование
+  # хранилища. Отдельные разделы про качество данных и обработку сбоев есть
+  # только здесь: перезапуск упавшей загрузки не должен задваивать данные,
+  # а расхождение с источником нужно обнаружить раньше, чем аналитик.
+  data_engineer:
+    - code: sql
+      title: SQL и аналитические запросы
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.9
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.7
+      subtopics:
+        - code: window_functions
+          title: Оконные функции
+        - code: joins_aggregation
+          title: Соединения и агрегация
+        - code: query_plans
+          title: Планы выполнения
+        - code: incremental
+          title: Инкрементальная обработка
+
+    - code: modeling
+      title: Моделирование данных
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: star_schema
+          title: Схема звезды
+        - code: slowly_changing
+          title: Медленно меняющиеся измерения
+        - code: normalization
+          title: Нормализация и денормализация
+        - code: grain
+          title: Гранулярность таблиц
+
+    - code: pipelines
+      title: Конвейеры обработки
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: orchestration
+          title: Оркестрация и расписания
+        - code: idempotency
+          title: Идемпотентность и перезапуск
+        - code: backfill
+          title: Дозагрузка исторических данных
+        - code: dependencies
+          title: Зависимости между задачами
+
+    - code: storage
+      title: Хранилища и форматы
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: columnar
+          title: Колоночные форматы
+        - code: partitioning
+          title: Партиционирование
+        - code: lakehouse
+          title: Озеро и витрины
+        - code: compression
+          title: Сжатие и размер файлов
+
+    - code: streaming
+      title: Потоковая обработка
+      weights:
+        intern: 0.15
+        junior: 0.35
+        junior_plus: 0.55
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: delivery_guarantees
+          title: Гарантии доставки
+        - code: event_time
+          title: Время события и опоздания
+        - code: windowing
+          title: Оконные вычисления
+        - code: ordering
+          title: Порядок и партиционирование
+
+    - code: data_quality
+      title: Качество данных
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: validation
+          title: Проверки и контракты
+        - code: reconciliation
+          title: Сверка с источником
+        - code: monitoring
+          title: Мониторинг конвейеров
+        - code: lineage
+          title: Происхождение данных
+
+    - code: distributed
+      title: Распределённая обработка
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: shuffle
+          title: Перераспределение данных
+        - code: skew
+          title: Перекос данных
+        - code: resources
+          title: Ресурсы и параллелизм
+
+    - code: engineering
+      title: Инженерные практики
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: testing
+          title: Тестирование конвейеров
+        - code: versioning
+          title: Версионирование и миграции
+        - code: cost
+          title: Стоимость обработки
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # ML-инженер — не исследователь: на собеседовании проверяют не знание
+  # архитектур нейросетей, а способность довести модель до продакшена и
+  # удержать её там. Отсюда разделы, которых нет ни у аналитика, ни у
+  # инженера данных: корректность оценки качества (утечка признаков губит
+  # проект тише всего) и жизненный цикл модели после выката — деградация,
+  # переобучение, откат.
+  data_ml:
+    - code: ml_basics
+      title: Основы машинного обучения
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.9
+        middle_plus: 0.8
+        senior: 0.7
+        lead: 0.6
+      subtopics:
+        - code: bias_variance
+          title: Смещение и разброс
+        - code: regularization
+          title: Регуляризация
+        - code: linear_models
+          title: Линейные модели
+        - code: trees_ensembles
+          title: Деревья и ансамбли
+        - code: unsupervised
+          title: Обучение без учителя
+
+    - code: validation
+      title: Валидация и метрики
+      # Самый весомый раздел на всех уровнях: ошибка в схеме проверки
+      # обесценивает всё остальное, а заметна она только в продакшене.
+      weights:
+        intern: 0.7
+        junior: 0.9
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: cross_validation
+          title: Кросс-валидация
+        - code: metrics_choice
+          title: Выбор метрики
+        - code: data_leakage
+          title: Утечка данных
+        - code: imbalance
+          title: Несбалансированные классы
+        - code: offline_online
+          title: Офлайн- и онлайн-оценка
+
+    - code: features
+      title: Признаки и данные
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: feature_engineering
+          title: Конструирование признаков
+        - code: categorical
+          title: Категориальные признаки
+        - code: missing_values
+          title: Пропуски и выбросы
+        - code: feature_store
+          title: Хранилище признаков
+
+    - code: deep_learning
+      title: Глубокое обучение
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: training_loop
+          title: Обучение сети
+        - code: overfitting
+          title: Переобучение и регуляризация
+        - code: transfer_learning
+          title: Дообучение и перенос
+        - code: transformers
+          title: Трансформеры и языковые модели
+
+    - code: production
+      title: Модель в продакшене
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.65
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: serving
+          title: Инференс и его режимы
+        - code: monitoring
+          title: Мониторинг и дрейф
+        - code: retraining
+          title: Переобучение и откат
+        - code: ab_testing
+          title: A/B-тесты моделей
+
+    - code: engineering
+      title: Инженерная культура
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.7
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.95
+        lead: 0.95
+      subtopics:
+        - code: reproducibility
+          title: Воспроизводимость
+        - code: experiment_tracking
+          title: Учёт экспериментов
+        - code: pipelines
+          title: Конвейеры обучения
+        - code: testing
+          title: Тестирование ML-кода
+
+    - code: system_design
+      title: Системный дизайн ML
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: recommendations
+          title: Рекомендательные системы
+        - code: search_ranking
+          title: Поиск и ранжирование
+        - code: latency_cost
+          title: Задержка и стоимость
+        - code: baselines
+          title: Простые решения и базовые линии
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Angular два раздела, которых нет у других фронтенд-специализаций:
+  # обнаружение изменений (его механика — половина вопросов про
+  # производительность) и внедрение зависимостей с иерархией инжекторов.
+  # Плюс RxJS, который здесь не библиотека по выбору, а часть каркаса.
+  frontend_angular:
+    - code: typescript
+      title: TypeScript
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.9
+        middle_plus: 0.8
+        senior: 0.7
+        lead: 0.6
+      subtopics:
+        - code: types_generics
+          title: Типы и обобщения
+        - code: narrowing
+          title: Сужение типов
+        - code: decorators
+          title: Декораторы
+        - code: strict_mode
+          title: Строгий режим
+
+    - code: components
+      title: Компоненты и шаблоны
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: standalone
+          title: Автономные компоненты
+        - code: inputs_outputs
+          title: Входные и выходные свойства
+        - code: lifecycle
+          title: Жизненный цикл
+        - code: content_projection
+          title: Проекция содержимого
+        - code: control_flow
+          title: Управляющие конструкции шаблона
+
+    - code: signals
+      title: Сигналы
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: basics
+          title: Основы сигналов
+        - code: computed_effect
+          title: Вычисляемые сигналы и эффекты
+        - code: interop_rxjs
+          title: Совместимость с потоками
+        - code: signal_inputs
+          title: Сигнальные входные свойства
+
+    - code: rxjs
+      title: RxJS
+      weights:
+        intern: 0.35
+        junior: 0.6
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: operators
+          title: Операторы
+        - code: flattening
+          title: Стратегии вложенных потоков
+        - code: subscriptions
+          title: Подписки и утечки
+        - code: subjects
+          title: Субъекты и мультикаст
+
+    - code: change_detection
+      title: Обнаружение изменений
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: strategies
+          title: Стратегии проверки
+        - code: zone
+          title: Зона выполнения
+        - code: async_pipe
+          title: Асинхронный канал
+        - code: performance
+          title: Стоимость проверок
+
+    - code: di
+      title: Внедрение зависимостей
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: hierarchy
+          title: Иерархия инжекторов
+        - code: providers
+          title: Поставщики и токены
+        - code: scopes
+          title: Область видимости сервисов
+
+    - code: forms
+      title: Формы
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.85
+        middle: 0.85
+        middle_plus: 0.8
+        senior: 0.75
+        lead: 0.65
+      subtopics:
+        - code: reactive
+          title: Реактивные формы
+        - code: validation
+          title: Валидация
+        - code: dynamic
+          title: Динамические формы
+
+    - code: routing
+      title: Маршрутизация
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.85
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: guards
+          title: Защита маршрутов
+        - code: lazy_loading
+          title: Ленивая загрузка
+        - code: resolvers
+          title: Предзагрузка данных
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: bundle_size
+          title: Размер бандла
+        - code: lists
+          title: Списки и отслеживание
+        - code: ssr_hydration
+          title: Серверный рендеринг и гидратация
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: component_tests
+          title: Тесты компонентов
+        - code: async_testing
+          title: Тестирование асинхронного кода
+        - code: mocking
+          title: Подмена зависимостей
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У C# отдельный вес имеет асинхронность: async/await появился здесь раньше,
+  # чем в большинстве языков, и на собеседованиях его разбирают глубоко —
+  # вплоть до контекста синхронизации и взаимных блокировок. Плюс ASP.NET Core
+  # с EF Core как де-факто обязательная часть стека.
+  backend_csharp:
+    - code: language
+      title: Язык
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: value_reference
+          title: Значимые и ссылочные типы
+        - code: equality
+          title: Равенство и хеш-код
+        - code: nullable
+          title: Ссылочные типы с null
+        - code: generics
+          title: Обобщения
+        - code: records
+          title: Записи и неизменяемость
+        - code: exceptions
+          title: Исключения
+
+    - code: async
+      title: Асинхронность
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: async_await
+          title: async и await
+        - code: deadlocks
+          title: Взаимные блокировки
+        - code: cancellation
+          title: Отмена операций
+        - code: parallel
+          title: Параллелизм и потоки
+
+    - code: dotnet
+      title: Платформа
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: gc
+          title: Сборка мусора
+        - code: memory
+          title: Управление памятью
+        - code: disposable
+          title: Освобождение ресурсов
+        - code: spans
+          title: Работа без лишних выделений
+
+    - code: aspnet
+      title: ASP.NET Core
+      weights:
+        intern: 0.4
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: di_lifetime
+          title: Внедрение зависимостей и время жизни
+        - code: middleware
+          title: Конвейер обработки
+        - code: configuration
+          title: Конфигурация
+        - code: hosted_services
+          title: Фоновые службы
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: ef_tracking
+          title: Отслеживание изменений
+        - code: lazy_loading
+          title: Ленивая загрузка
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: migrations
+          title: Миграции
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.55
+        junior: 0.75
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: rest_design
+          title: Дизайн REST API
+        - code: auth
+          title: Аутентификация и авторизация
+        - code: validation
+          title: Валидация
+        - code: error_handling
+          title: Обработка ошибок
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: solid
+          title: SOLID
+        - code: layered_architecture
+          title: Слоистая архитектура
+        - code: patterns
+          title: Паттерны проектирования
+        - code: microservices
+          title: Микросервисы
+
+    - code: system_design
+      title: Системный дизайн
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: queues
+          title: Очереди и брокеры
+        - code: scaling
+          title: Масштабирование
+        - code: observability
+          title: Наблюдаемость
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: unit
+          title: Юнит-тесты
+        - code: integration
+          title: Интеграционные тесты
+        - code: mocking
+          title: Моки и подмены
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Vue отдельный вес имеет система реактивности: она работает на прокси и
+  # отслеживает зависимости автоматически, поэтому спрашивают именно про её
+  # устройство и границы — где отслеживание теряется. В React такого раздела
+  # нет, потому что там перерисовка запускается иначе.
+  frontend_vue:
+    - code: javascript
+      title: JavaScript
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: closures
+          title: Замыкания
+        - code: event_loop
+          title: Event loop и микрозадачи
+        - code: promises_async
+          title: Промисы и async/await
+        - code: prototypes
+          title: Прототипы
+        - code: proxy_reflect
+          title: Прокси и перехват
+
+    - code: reactivity
+      title: Реактивность
+      weights:
+        intern: 0.5
+        junior: 0.75
+        junior_plus: 0.9
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: ref_reactive
+          title: ref и reactive
+        - code: computed_watch
+          title: Вычисляемые свойства и наблюдатели
+        - code: tracking_limits
+          title: Границы отслеживания
+        - code: shallow
+          title: Поверхностная реактивность
+
+    - code: components
+      title: Компоненты
+      weights:
+        intern: 0.85
+        junior: 0.95
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: props_events
+          title: Свойства и события
+        - code: slots
+          title: Слоты
+        - code: lifecycle
+          title: Жизненный цикл
+        - code: composition_api
+          title: Composition API
+        - code: provide_inject
+          title: Передача через контекст
+
+    - code: state_management
+      title: Управление состоянием
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.65
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: store
+          title: Хранилище
+        - code: server_state
+          title: Серверное состояние
+        - code: composables
+          title: Переиспользуемая логика
+
+    - code: routing
+      title: Маршрутизация
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.85
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: guards
+          title: Защита маршрутов
+        - code: lazy_routes
+          title: Ленивая загрузка
+        - code: params
+          title: Параметры и запросы
+
+    - code: browser
+      title: Браузер и сеть
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: rendering_pipeline
+          title: Конвейер отрисовки
+        - code: http_caching
+          title: HTTP-кеширование
+        - code: cors
+          title: CORS
+        - code: web_security
+          title: XSS и защита
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: core_web_vitals
+          title: Core Web Vitals
+        - code: bundle_size
+          title: Размер бандла
+        - code: rerender_cost
+          title: Лишние обновления
+        - code: lists_virtualization
+          title: Виртуализация списков
+
+    - code: architecture
+      title: Архитектура приложения
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: component_design
+          title: Проектирование компонентов
+        - code: rendering_strategies
+          title: Стратегии рендеринга
+        - code: module_boundaries
+          title: Границы модулей
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: component_tests
+          title: Тесты компонентов
+        - code: mocking_network
+          title: Моки сети
+        - code: e2e
+          title: Сквозные тесты
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У системного аналитика ядро — требования и интеграции: он стоит между
+  # бизнесом и разработкой, поэтому проверяют умение довести размытое желание
+  # до однозначной спецификации и спроектировать обмен между системами.
+  # Кода здесь почти нет, зато есть SQL и чтение схем.
+  analysis_system:
+    - code: requirements
+      title: Требования
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: elicitation
+          title: Выявление требований
+        - code: functional
+          title: Функциональные требования
+        - code: non_functional
+          title: Нефункциональные требования
+        - code: acceptance
+          title: Критерии приёмки
+        - code: traceability
+          title: Прослеживаемость
+
+    - code: modeling
+      title: Моделирование
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: use_cases
+          title: Сценарии использования
+        - code: uml
+          title: Диаграммы UML
+        - code: bpmn
+          title: Модели процессов
+        - code: data_model
+          title: Модель данных
+
+    - code: integrations
+      title: Интеграции
+      weights:
+        intern: 0.3
+        junior: 0.6
+        junior_plus: 0.8
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: rest_design
+          title: Проектирование REST API
+        - code: contracts
+          title: Контракты и версионирование
+        - code: async_messaging
+          title: Асинхронный обмен
+        - code: idempotency
+          title: Идемпотентность и повторы
+        - code: error_contracts
+          title: Договорённости об ошибках
+
+    - code: databases
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: sql_basics
+          title: Запросы SQL
+        - code: normalization
+          title: Нормализация
+        - code: keys_relations
+          title: Ключи и связи
+        - code: transactions
+          title: Транзакции
+
+    - code: architecture
+      title: Архитектура систем
+      weights:
+        intern: 0.15
+        junior: 0.35
+        junior_plus: 0.55
+        middle: 0.8
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: components
+          title: Компоненты и границы
+        - code: sync_async
+          title: Синхронный и асинхронный обмен
+        - code: reliability
+          title: Отказоустойчивость
+        - code: security_basics
+          title: Основы безопасности
+
+    - code: documentation
+      title: Документация
+      weights:
+        intern: 0.7
+        junior: 0.85
+        junior_plus: 0.9
+        middle: 0.9
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: specifications
+          title: Спецификации
+        - code: api_docs
+          title: Описание интерфейсов
+        - code: change_management
+          title: Управление изменениями
+
+    - code: process
+      title: Процесс и команда
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.95
+      subtopics:
+        - code: backlog
+          title: Работа с бэклогом
+        - code: estimation
+          title: Оценка и декомпозиция
+        - code: stakeholders
+          title: Заинтересованные стороны
+        - code: testing_support
+          title: Поддержка тестирования
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.45
+        junior: 0.55
+        junior_plus: 0.65
+        middle: 0.75
+        middle_plus: 0.85
+        senior: 0.95
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У iOS отдельный вес имеет управление памятью: подсчёт ссылок вместо
+  # сборщика мусора делает циклы удержания повседневной темой собеседования,
+  # чего нет ни у одной другой специализации в банке.
+  mobile_ios:
+    - code: swift
+      title: Swift
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: optionals
+          title: Опционалы
+        - code: value_reference
+          title: Значимые и ссылочные типы
+        - code: protocols
+          title: Протоколы и обобщения
+        - code: closures
+          title: Замыкания
+        - code: error_handling
+          title: Обработка ошибок
+
+    - code: memory
+      title: Управление памятью
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.85
+      subtopics:
+        - code: arc
+          title: Подсчёт ссылок
+        - code: retain_cycles
+          title: Циклы удержания
+        - code: weak_unowned
+          title: weak и unowned
+        - code: copy_on_write
+          title: Копирование при записи
+
+    - code: concurrency
+      title: Конкурентность
+      weights:
+        intern: 0.25
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: async_await
+          title: async и await
+        - code: actors
+          title: Акторы и изоляция
+        - code: main_thread
+          title: Главный поток
+        - code: task_cancellation
+          title: Отмена задач
+
+    - code: ui
+      title: Интерфейс
+      weights:
+        intern: 0.85
+        junior: 0.95
+        junior_plus: 0.95
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: swiftui_state
+          title: Состояние в SwiftUI
+        - code: view_identity
+          title: Идентичность представлений
+        - code: uikit_lifecycle
+          title: Жизненный цикл UIKit
+        - code: layout
+          title: Раскладка и адаптивность
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.15
+        junior: 0.35
+        junior_plus: 0.55
+        middle: 0.85
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: mvvm
+          title: MVVM и разделение слоёв
+        - code: dependency_injection
+          title: Внедрение зависимостей
+        - code: navigation
+          title: Навигация
+        - code: modularization
+          title: Модульность
+
+    - code: data
+      title: Данные и сеть
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: networking
+          title: Сеть
+        - code: codable
+          title: Сериализация
+        - code: persistence
+          title: Локальное хранилище
+        - code: offline
+          title: Офлайн и синхронизация
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: instruments
+          title: Профилирование
+        - code: scrolling
+          title: Плавность прокрутки
+        - code: launch_time
+          title: Время запуска
+        - code: memory_footprint
+          title: Расход памяти
+
+    - code: release
+      title: Сборка и релиз
+      weights:
+        intern: 0.3
+        junior: 0.45
+        junior_plus: 0.6
+        middle: 0.75
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.95
+      subtopics:
+        - code: signing
+          title: Подпись и профили
+        - code: app_review
+          title: Проверка в App Store
+        - code: distribution
+          title: Распространение сборок
+        - code: privacy
+          title: Приватность и разрешения
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: unit
+          title: Юнит-тесты
+        - code: ui_tests
+          title: Тесты интерфейса
+        - code: async_testing
+          title: Тестирование асинхронного кода
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Android центр тяжести — жизненный цикл и ограничения устройства: система
+  # в любой момент может убить процесс, а батарея и память конечны. Отсюда
+  # отдельные разделы про жизненный цикл и фоновую работу, которых нет
+  # у серверных специализаций.
+  mobile_android:
+    - code: kotlin
+      title: Kotlin
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: null_safety
+          title: Безопасность null
+        - code: data_classes
+          title: Классы данных и sealed
+        - code: extensions
+          title: Функции-расширения
+        - code: scope_functions
+          title: Функции области видимости
+        - code: collections
+          title: Коллекции и последовательности
+
+    - code: coroutines
+      title: Корутины
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: structured_concurrency
+          title: Структурная конкурентность
+        - code: dispatchers
+          title: Диспетчеры и потоки
+        - code: flow
+          title: Flow и холодные потоки
+        - code: cancellation
+          title: Отмена и исключения
+
+    - code: lifecycle
+      title: Жизненный цикл
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.8
+        lead: 0.7
+      subtopics:
+        - code: activity_fragment
+          title: Активности и фрагменты
+        - code: configuration_change
+          title: Смена конфигурации
+        - code: process_death
+          title: Убийство процесса
+        - code: viewmodel
+          title: ViewModel и состояние
+
+    - code: ui
+      title: Интерфейс
+      weights:
+        intern: 0.8
+        junior: 0.9
+        junior_plus: 0.95
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: compose_basics
+          title: Основы Compose
+        - code: recomposition
+          title: Рекомпозиция
+        - code: state_hoisting
+          title: Подъём состояния
+        - code: lists
+          title: Списки и производительность
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.15
+        junior: 0.35
+        junior_plus: 0.55
+        middle: 0.85
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: mvvm_mvi
+          title: MVVM и MVI
+        - code: layers
+          title: Слои и модули
+        - code: di
+          title: Внедрение зависимостей
+        - code: navigation
+          title: Навигация
+
+    - code: data
+      title: Данные и сеть
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: networking
+          title: Сеть и клиенты
+        - code: local_storage
+          title: Локальное хранилище
+        - code: offline_sync
+          title: Офлайн и синхронизация
+        - code: caching
+          title: Кеширование
+
+    - code: background
+      title: Фоновая работа
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: workmanager
+          title: Отложенные задачи
+        - code: services
+          title: Службы и уведомления
+        - code: battery
+          title: Батарея и ограничения
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: memory_leaks
+          title: Утечки памяти
+        - code: rendering
+          title: Плавность отрисовки
+        - code: startup
+          title: Время запуска
+        - code: apk_size
+          title: Размер приложения
+
+    - code: release
+      title: Сборка и релиз
+      weights:
+        intern: 0.3
+        junior: 0.45
+        junior_plus: 0.55
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.85
+        lead: 0.9
+      subtopics:
+        - code: gradle
+          title: Сборка
+        - code: proguard
+          title: Сокращение и обфускация
+        - code: permissions
+          title: Разрешения
+        - code: store
+          title: Публикация и обновления
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: unit
+          title: Юнит-тесты
+        - code: ui_tests
+          title: Тесты интерфейса
+        - code: coroutines_test
+          title: Тестирование корутин
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У аналитика вес смещён не в технологии, а в постановку задачи и выводы:
+  # SQL и статистика — инструменты, а спрашивают прежде всего умение
+  # превратить размытый вопрос бизнеса в проверяемую гипотезу и не соврать
+  # цифрой. Отсюда отдельные разделы про метрики и коммуникацию.
+  data_analyst:
+    - code: sql
+      title: SQL
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.8
+        lead: 0.7
+      subtopics:
+        - code: joins
+          title: Соединения таблиц
+        - code: aggregation
+          title: Группировка и агрегаты
+        - code: window_functions
+          title: Оконные функции
+        - code: subqueries_cte
+          title: Подзапросы и CTE
+        - code: nulls
+          title: Работа с NULL
+        - code: performance
+          title: Скорость запросов
+
+    - code: statistics
+      title: Статистика
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: descriptive
+          title: Описательные статистики
+        - code: distributions
+          title: Распределения
+        - code: hypothesis_testing
+          title: Проверка гипотез
+        - code: correlation_causation
+          title: Корреляция и причинность
+        - code: sampling
+          title: Выборки и смещения
+
+    - code: ab_testing
+      title: A/B-тесты
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: design
+          title: Дизайн эксперимента
+        - code: sample_size
+          title: Размер выборки и мощность
+        - code: pitfalls
+          title: Ловушки и подглядывание
+        - code: interpretation
+          title: Интерпретация результата
+
+    - code: metrics
+      title: Метрики продукта
+      weights:
+        intern: 0.4
+        junior: 0.65
+        junior_plus: 0.8
+        middle: 0.95
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: definition
+          title: Определение метрик
+        - code: cohorts
+          title: Когорты и удержание
+        - code: unit_economics
+          title: Юнит-экономика
+        - code: guardrails
+          title: Контрольные метрики
+
+    - code: data_quality
+      title: Качество данных
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: validation
+          title: Проверка данных
+        - code: missing_data
+          title: Пропуски и выбросы
+        - code: tracking
+          title: Сбор событий
+
+    - code: visualization
+      title: Визуализация
+      weights:
+        intern: 0.6
+        junior: 0.75
+        junior_plus: 0.8
+        middle: 0.85
+        middle_plus: 0.85
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: chart_choice
+          title: Выбор типа графика
+        - code: dashboards
+          title: Дашборды
+        - code: misleading
+          title: Вводящие в заблуждение графики
+
+    - code: tools
+      title: Инструменты
+      weights:
+        intern: 0.7
+        junior: 0.8
+        junior_plus: 0.8
+        middle: 0.75
+        middle_plus: 0.7
+        senior: 0.6
+        lead: 0.5
+      subtopics:
+        - code: python_pandas
+          title: Python и таблицы
+        - code: excel
+          title: Таблицы и сводные
+        - code: bi
+          title: BI-системы
+
+    - code: communication
+      title: Коммуникация
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: problem_framing
+          title: Постановка задачи
+        - code: presenting
+          title: Представление результатов
+        - code: stakeholders
+          title: Работа с заказчиками
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У администратора БД центр тяжести смещён к эксплуатации, а не к разработке:
+  # разработчику достаточно понимать индексы и транзакции, администратору
+  # приходится отвечать за сохранность данных под нагрузкой. Отсюда разделы,
+  # которых нет у серверных специализаций: резервное копирование и
+  # восстановление (единственный раздел, где ошибка необратима), репликация и
+  # отказоустойчивость, а также сопровождение схемы на живой базе.
+  infra_dba:
+    - code: architecture
+      title: Устройство СУБД
+      weights:
+        intern: 0.8
+        junior: 0.9
+        junior_plus: 0.95
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: storage
+          title: Хранение и страницы
+        - code: wal
+          title: Журнал предзаписи
+        - code: mvcc
+          title: Многоверсионность
+        - code: vacuum
+          title: Очистка и раздувание
+        - code: memory
+          title: Память и буферы
+
+    - code: queries
+      title: Запросы и планы
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: query_plans
+          title: Планы выполнения
+        - code: indexes
+          title: Индексы и их типы
+        - code: statistics
+          title: Статистика и оценки
+        - code: slow_queries
+          title: Поиск медленных запросов
+
+    - code: transactions
+      title: Транзакции и блокировки
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: isolation
+          title: Уровни изоляции
+        - code: locks
+          title: Блокировки
+        - code: deadlocks
+          title: Взаимные блокировки
+        - code: long_transactions
+          title: Долгие транзакции
+
+    - code: backup
+      title: Резервное копирование
+      # Единственный раздел, где ошибка необратима: остальное чинится, потерянные
+      # данные — нет. Поэтому вес высок начиная с junior.
+      weights:
+        intern: 0.7
+        junior: 0.9
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: strategies
+          title: Виды копий
+        - code: pitr
+          title: Восстановление на момент времени
+        - code: restore_drills
+          title: Проверка восстановления
+        - code: rpo_rto
+          title: Допустимые потери и простой
+
+    - code: replication
+      title: Репликация и отказоустойчивость
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: sync_async
+          title: Синхронная и асинхронная
+        - code: failover
+          title: Переключение при отказе
+        - code: read_replicas
+          title: Реплики для чтения
+        - code: split_brain
+          title: Расщепление кластера
+
+    - code: operations
+      title: Эксплуатация
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: monitoring
+          title: Мониторинг и метрики
+        - code: connections
+          title: Соединения и пулеры
+        - code: upgrades
+          title: Обновление версий
+        - code: capacity
+          title: Ёмкость и рост
+
+    - code: schema
+      title: Схема и миграции
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: normalization
+          title: Нормализация
+        - code: data_types
+          title: Типы данных
+        - code: online_migrations
+          title: Миграции без простоя
+        - code: partitioning
+          title: Секционирование
+
+    - code: security
+      title: Безопасность и доступ
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 0.95
+        lead: 1.0
+      subtopics:
+        - code: privileges
+          title: Права и роли
+        - code: encryption
+          title: Шифрование
+        - code: audit
+          title: Аудит доступа
+
+    - code: system_design
+      title: Системный дизайн хранилищ
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: sharding
+          title: Шардирование
+        - code: caching
+          title: Кеширование
+        - code: engine_choice
+          title: Выбор хранилища
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У DevOps разделы отражают не язык, а слои эксплуатации: Linux и сеть внизу,
+  # контейнеры и оркестрация посередине, конвейеры и наблюдаемость сверху.
+  # Надёжность вынесена отдельно: именно про инциденты и SLO спрашивают на
+  # старших грейдах, а не про синтаксис манифестов.
+  infra_devops:
+    - code: linux
+      title: Linux
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.8
+        senior: 0.75
+        lead: 0.65
+      subtopics:
+        - code: processes
+          title: Процессы и сигналы
+        - code: filesystem
+          title: Файловая система и права
+        - code: resources
+          title: Память, диск, нагрузка
+        - code: troubleshooting
+          title: Диагностика на сервере
+
+    - code: networking
+      title: Сети
+      weights:
+        intern: 0.7
+        junior: 0.85
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: tcp_ip
+          title: TCP/IP
+        - code: dns
+          title: DNS
+        - code: tls
+          title: TLS и сертификаты
+        - code: load_balancing
+          title: Балансировка нагрузки
+        - code: firewall
+          title: Фильтрация трафика
+
+    - code: containers
+      title: Контейнеры
+      weights:
+        intern: 0.6
+        junior: 0.85
+        junior_plus: 0.95
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: images
+          title: Образы и слои
+        - code: isolation
+          title: Изоляция и лимиты
+        - code: storage_networking
+          title: Тома и сеть контейнеров
+        - code: security
+          title: Безопасность контейнеров
+
+    - code: kubernetes
+      title: Оркестрация
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: workloads
+          title: Поды и контроллеры
+        - code: services_ingress
+          title: Сервисы и входящий трафик
+        - code: config_secrets
+          title: Конфигурация и секреты
+        - code: scheduling
+          title: Планирование и ресурсы
+        - code: probes
+          title: Пробы и жизненный цикл
+
+    - code: ci_cd
+      title: Конвейеры
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: pipeline_design
+          title: Устройство конвейера
+        - code: artifacts
+          title: Артефакты и версии
+        - code: deployment_strategies
+          title: Стратегии выката
+        - code: secrets_in_ci
+          title: Секреты в конвейере
+
+    - code: iac
+      title: Инфраструктура как код
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.95
+        lead: 0.95
+      subtopics:
+        - code: declarative
+          title: Декларативный подход
+        - code: state
+          title: Состояние и дрейф
+        - code: modules
+          title: Модули и переиспользование
+
+    - code: observability
+      title: Наблюдаемость
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: metrics
+          title: Метрики
+        - code: logs
+          title: Логи
+        - code: tracing
+          title: Трассировка
+        - code: alerting
+          title: Оповещения
+
+    - code: reliability
+      title: Надёжность
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: slo
+          title: SLI, SLO и бюджет ошибок
+        - code: incidents
+          title: Инциденты и разбор
+        - code: capacity
+          title: Ёмкость и масштабирование
+        - code: backups
+          title: Резервные копии и восстановление
+
+    - code: security
+      title: Безопасность
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 0.95
+        lead: 0.95
+      subtopics:
+        - code: secrets_management
+          title: Управление секретами
+        - code: access_control
+          title: Доступы и права
+        - code: supply_chain
+          title: Цепочка поставки
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У ручного тестирования центр тяжести не в коде, а в мышлении: техники
+  # тест-дизайна, работа с требованиями и качество баг-репортов. Это и
+  # проверяют на собеседовании в первую очередь.
+  qa_manual:
+    - code: fundamentals
+      title: Основы тестирования
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.9
+        middle: 0.8
+        middle_plus: 0.7
+        senior: 0.6
+        lead: 0.5
+      subtopics:
+        - code: levels_types
+          title: Уровни и виды тестирования
+        - code: verification_validation
+          title: Верификация и валидация
+        - code: static_testing
+          title: Статическое тестирование
+        - code: principles
+          title: Принципы тестирования
+
+    - code: test_design
+      title: Тест-дизайн
+      weights:
+        intern: 0.7
+        junior: 0.9
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: equivalence_boundary
+          title: Классы эквивалентности и границы
+        - code: decision_table
+          title: Таблицы решений
+        - code: state_transition
+          title: Переходы состояний
+        - code: pairwise
+          title: Попарное тестирование
+        - code: error_guessing
+          title: Предугадывание ошибок
+
+    - code: documentation
+      title: Документация
+      weights:
+        intern: 0.8
+        junior: 0.95
+        junior_plus: 0.95
+        middle: 0.9
+        middle_plus: 0.85
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: bug_report
+          title: Баг-репорт
+        - code: test_cases
+          title: Тест-кейсы и чек-листы
+        - code: requirements
+          title: Работа с требованиями
+        - code: test_plan
+          title: Тест-план и стратегия
+
+    - code: web_mobile
+      title: Веб и мобильные приложения
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: devtools
+          title: Инструменты разработчика
+        - code: http_basics
+          title: Основы HTTP
+        - code: cross_browser
+          title: Кросс-браузерность и адаптивность
+        - code: mobile_specifics
+          title: Особенности мобильных приложений
+
+    - code: api_db
+      title: API и базы данных
+      weights:
+        intern: 0.35
+        junior: 0.6
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: rest_testing
+          title: Тестирование REST API
+        - code: status_codes
+          title: Коды ответов
+        - code: sql_queries
+          title: SQL-запросы
+        - code: postman
+          title: Инструменты работы с API
+
+    - code: process
+      title: Процессы
+      weights:
+        intern: 0.4
+        junior: 0.55
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: sdlc
+          title: Жизненный цикл разработки
+        - code: agile
+          title: Гибкие методологии
+        - code: bug_lifecycle
+          title: Жизненный цикл дефекта
+        - code: release_criteria
+          title: Критерии выпуска
+
+    - code: nonfunctional
+      title: Нефункциональное тестирование
+      weights:
+        intern: 0.2
+        junior: 0.35
+        junior_plus: 0.5
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: performance
+          title: Производительность
+        - code: security_basics
+          title: Основы безопасности
+        - code: usability
+          title: Удобство использования
+        - code: accessibility
+          title: Доступность
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.5
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У автоматизации к навыкам тестировщика добавляется инженерная часть:
+  # устойчивость тестов, архитектура фреймворка и место прогона в конвейере.
+  # Именно на них, а не на знании селекторов, разваливаются собеседования.
+  qa_auto:
+    - code: fundamentals
+      title: Основы тестирования
+      weights:
+        intern: 0.9
+        junior: 0.9
+        junior_plus: 0.85
+        middle: 0.75
+        middle_plus: 0.65
+        senior: 0.55
+        lead: 0.5
+      subtopics:
+        - code: pyramid
+          title: Пирамида тестов
+        - code: what_to_automate
+          title: Что автоматизировать
+        - code: test_design
+          title: Тест-дизайн для автоматизации
+
+    - code: programming
+      title: Программирование
+      weights:
+        intern: 0.8
+        junior: 0.95
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: language_basics
+          title: Основы языка
+        - code: oop
+          title: Объектно-ориентированный подход
+        - code: async_waits
+          title: Асинхронность и ожидания
+        - code: data_structures
+          title: Структуры данных
+
+    - code: ui_automation
+      title: Автоматизация интерфейса
+      weights:
+        intern: 0.6
+        junior: 0.85
+        junior_plus: 0.95
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: locators
+          title: Локаторы
+        - code: waits
+          title: Ожидания
+        - code: page_object
+          title: Page Object
+        - code: flakiness
+          title: Нестабильные тесты
+
+    - code: api_automation
+      title: Автоматизация API
+      weights:
+        intern: 0.5
+        junior: 0.75
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: request_testing
+          title: Проверка запросов
+        - code: contract_testing
+          title: Контрактное тестирование
+        - code: mocks_stubs
+          title: Моки и заглушки
+
+    - code: test_data
+      title: Тестовые данные
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: isolation
+          title: Изоляция тестов
+        - code: fixtures
+          title: Подготовка данных
+        - code: environments
+          title: Тестовые окружения
+
+    - code: ci_cd
+      title: CI и запуск
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: pipeline
+          title: Конвейер сборки
+        - code: parallel_runs
+          title: Параллельный запуск
+        - code: reporting
+          title: Отчёты и анализ падений
+        - code: containers
+          title: Контейнеры в тестах
+
+    - code: architecture
+      title: Архитектура фреймворка
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: layers
+          title: Слои фреймворка
+        - code: maintainability
+          title: Поддерживаемость
+        - code: reporting_design
+          title: Отчётность и логирование
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.45
+        junior: 0.55
+        junior_plus: 0.65
+        middle: 0.75
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У мобильной разработки свои разделы: жизненный цикл приложения и платформа
+  # (разрешения, фон, публикация) весят столько же, сколько язык. Вместо баз
+  # данных — локальное хранилище и работа в офлайне: связь на телефоне рвётся,
+  # и это спрашивают предметно.
+  mobile_flutter:
+    - code: dart
+      title: Dart
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: null_safety
+          title: Безопасность null
+        - code: async_futures
+          title: Future и async/await
+        - code: streams
+          title: Потоки
+        - code: isolates
+          title: Изоляты
+        - code: collections_equality
+          title: Коллекции и равенство
+
+    - code: widgets
+      title: Виджеты и рендеринг
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.75
+      subtopics:
+        - code: stateless_stateful
+          title: Stateless и Stateful
+        - code: three_trees
+          title: Дерево виджетов, элементов и слоёв
+        - code: keys
+          title: Ключи
+        - code: build_context
+          title: BuildContext
+        - code: layout
+          title: Раскладка и ограничения
+
+    - code: state_management
+      title: Управление состоянием
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.9
+        middle_plus: 0.95
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: lifting_state
+          title: Подъём состояния
+        - code: inherited_widget
+          title: InheritedWidget и провайдеры
+        - code: server_state
+          title: Серверное состояние
+        - code: forms
+          title: Формы
+
+    - code: navigation
+      title: Навигация
+      weights:
+        intern: 0.4
+        junior: 0.6
+        junior_plus: 0.7
+        middle: 0.8
+        middle_plus: 0.8
+        senior: 0.75
+        lead: 0.7
+      subtopics:
+        - code: routing
+          title: Маршрутизация
+        - code: deep_links
+          title: Глубокие ссылки
+        - code: nested_navigation
+          title: Вложенная навигация
+
+    - code: storage
+      title: Хранилище и офлайн
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: local_db
+          title: Локальная база
+        - code: caching_sync
+          title: Кеш и синхронизация
+        - code: secure_storage
+          title: Безопасное хранение
+
+    - code: platform
+      title: Платформа
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: lifecycle
+          title: Жизненный цикл приложения
+        - code: permissions
+          title: Разрешения
+        - code: platform_channels
+          title: Каналы к нативному коду
+        - code: background
+          title: Фоновая работа
+        - code: release
+          title: Сборка и публикация
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: rebuilds
+          title: Лишние перестроения
+        - code: jank
+          title: Пропуск кадров
+        - code: lists
+          title: Длинные списки
+        - code: images
+          title: Изображения и память
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: layers
+          title: Слои приложения
+        - code: dependency_injection
+          title: Внедрение зависимостей
+        - code: error_handling
+          title: Обработка ошибок
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: widget_tests
+          title: Тесты виджетов
+        - code: golden_tests
+          title: Golden-тесты
+        - code: integration_tests
+          title: Интеграционные тесты
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Java собеседование традиционно тяжелее на устройстве платформы: JVM,
+  # сборка мусора и модель памяти вынесены в отдельные разделы, а Spring —
+  # де-факто обязательная часть, поэтому у него свой раздел.
+  backend_java:
+    - code: language
+      title: Язык
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: equals_hashcode
+          title: equals и hashCode
+        - code: immutability
+          title: Неизменяемость
+        - code: generics
+          title: Дженерики и стирание типов
+        - code: exceptions
+          title: Исключения
+        - code: optional_null
+          title: Optional и null
+        - code: records_sealed
+          title: Записи и запечатанные типы
+
+    - code: collections
+      title: Коллекции
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: hashmap_internals
+          title: Устройство HashMap
+        - code: list_set
+          title: Списки и множества
+        - code: comparable_comparator
+          title: Сравнение и сортировка
+        - code: streams_api
+          title: Stream API
+
+    - code: jvm
+      title: JVM и память
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: memory_areas
+          title: Области памяти
+        - code: garbage_collection
+          title: Сборка мусора
+        - code: class_loading
+          title: Загрузка классов
+        - code: jit
+          title: JIT-компиляция
+
+    - code: concurrency
+      title: Многопоточность
+      weights:
+        intern: 0.2
+        junior: 0.45
+        junior_plus: 0.7
+        middle: 0.9
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: memory_model
+          title: Модель памяти и happens-before
+        - code: synchronization
+          title: Синхронизация и блокировки
+        - code: executors
+          title: Пулы потоков
+        - code: concurrent_collections
+          title: Конкурентные коллекции
+        - code: virtual_threads
+          title: Виртуальные потоки
+
+    - code: spring
+      title: Spring
+      weights:
+        intern: 0.4
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 0.95
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: di_context
+          title: Контекст и внедрение зависимостей
+        - code: bean_scopes
+          title: Области видимости бинов
+        - code: transactions
+          title: Декларативные транзакции
+        - code: aop_proxies
+          title: Прокси и AOP
+        - code: boot_config
+          title: Конфигурация Spring Boot
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: jpa_lifecycle
+          title: Жизненный цикл сущности в JPA
+        - code: lazy_loading
+          title: Ленивая загрузка
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: indexes
+          title: Индексы
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.55
+        junior: 0.75
+        junior_plus: 0.85
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: rest_design
+          title: Дизайн REST API
+        - code: auth
+          title: Аутентификация и авторизация
+        - code: validation
+          title: Валидация
+        - code: error_handling
+          title: Обработка ошибок
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: solid
+          title: SOLID
+        - code: patterns
+          title: Паттерны проектирования
+        - code: layered_architecture
+          title: Слоистая архитектура
+        - code: microservices
+          title: Микросервисы
+
+    - code: system_design
+      title: Системный дизайн
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: queues
+          title: Очереди и брокеры
+        - code: scaling
+          title: Масштабирование
+        - code: observability
+          title: Наблюдаемость
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: junit_mockito
+          title: JUnit и Mockito
+        - code: spring_test
+          title: Тесты в Spring
+        - code: testcontainers
+          title: Тесты с реальными зависимостями
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У Node свой центр тяжести: однопоточный event loop вместо потоков, поэтому
+  # блокировка главного потока и работа с потоками данных вынесены в отдельные
+  # разделы. Безопасность цепочки зависимостей вынесена явно: в npm-экосистеме
+  # это спрашивают предметно.
+  backend_node:
+    - code: language
+      title: JavaScript и TypeScript
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: closures
+          title: Замыкания
+        - code: promises_async
+          title: Промисы и async/await
+        - code: error_handling
+          title: Обработка ошибок
+        - code: modules
+          title: Модули CommonJS и ESM
+        - code: typing
+          title: Типизация
+
+    - code: event_loop
+      title: Event loop и асинхронность
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: phases
+          title: Фазы цикла событий
+        - code: microtasks
+          title: Микрозадачи и nextTick
+        - code: blocking
+          title: Блокировка главного потока
+        - code: worker_threads
+          title: Рабочие потоки и процессы
+
+    - code: streams
+      title: Потоки и буферы
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: backpressure
+          title: Обратное давление
+        - code: pipeline
+          title: Конвейеры и ошибки
+        - code: buffers
+          title: Буферы и кодировки
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: connection_pool
+          title: Пул соединений
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: indexes
+          title: Индексы
+        - code: orm_pitfalls
+          title: Подводные камни ORM
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: http
+          title: HTTP
+        - code: rest_design
+          title: Дизайн REST API
+        - code: auth_jwt_oauth
+          title: "Аутентификация: JWT и OAuth"
+        - code: idempotency
+          title: Идемпотентность
+        - code: validation
+          title: Валидация входных данных
+
+    - code: security
+      title: Безопасность
+      weights:
+        intern: 0.3
+        junior: 0.5
+        junior_plus: 0.65
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.9
+      subtopics:
+        - code: injection
+          title: Инъекции
+        - code: secrets
+          title: Секреты и конфигурация
+        - code: supply_chain
+          title: Безопасность зависимостей
+        - code: headers_cors
+          title: Заголовки и CORS
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: layered_architecture
+          title: Слоистая архитектура
+        - code: solid
+          title: SOLID
+        - code: dependency_injection
+          title: Внедрение зависимостей
+        - code: monorepo
+          title: Монорепозиторий и границы модулей
+
+    - code: system_design
+      title: Системный дизайн
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: queues
+          title: Очереди и брокеры
+        - code: scaling
+          title: Масштабирование процессов
+        - code: rate_limiting
+          title: Ограничение частоты запросов
+        - code: observability
+          title: Наблюдаемость
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: unit_integration
+          title: Юнит- и интеграционные тесты
+        - code: mocking
+          title: Моки и подмены
+        - code: test_containers
+          title: Тесты с реальными зависимостями
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # У фронтенда свои разделы: вместо баз данных — браузер и производительность
+  # рендеринга, вместо системного дизайна серверов — архитектура клиентского
+  # приложения. Алгоритмы спрашивают заметно реже, чем на бэкенде.
+  frontend_react:
+    - code: javascript
+      title: JavaScript
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.65
+        lead: 0.55
+      subtopics:
+        - code: closures
+          title: Замыкания
+        - code: this_binding
+          title: Контекст this
+        - code: prototypes
+          title: Прототипы и наследование
+        - code: event_loop
+          title: Event loop и микрозадачи
+        - code: promises_async
+          title: Промисы и async/await
+        - code: equality_coercion
+          title: Приведение типов и сравнения
+
+    - code: typescript
+      title: TypeScript
+      weights:
+        intern: 0.3
+        junior: 0.55
+        junior_plus: 0.75
+        middle: 0.85
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: structural_typing
+          title: Структурная типизация
+        - code: generics
+          title: Дженерики
+        - code: utility_types
+          title: Утилитарные типы
+        - code: narrowing
+          title: Сужение типов
+        - code: unknown_any_never
+          title: unknown, any и never
+
+    - code: react
+      title: React
+      weights:
+        intern: 0.9
+        junior: 1.0
+        junior_plus: 1.0
+        middle: 1.0
+        middle_plus: 0.95
+        senior: 0.9
+        lead: 0.8
+      subtopics:
+        - code: hooks_rules
+          title: Правила хуков
+        - code: reconciliation
+          title: Согласование и ключи
+        - code: state_updates
+          title: Обновления состояния
+        - code: effects
+          title: Эффекты и очистка
+        - code: memoization
+          title: Мемоизация
+        - code: context
+          title: Контекст
+        - code: server_components
+          title: Серверные компоненты
+
+    - code: state_management
+      title: Управление состоянием
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.85
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: local_vs_global
+          title: Локальное и глобальное состояние
+        - code: server_state
+          title: Серверное состояние и кеш запросов
+        - code: derived_state
+          title: Производное состояние
+        - code: forms
+          title: Формы
+
+    - code: browser
+      title: Браузер и сеть
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.8
+        middle: 0.9
+        middle_plus: 0.9
+        senior: 0.9
+        lead: 0.85
+      subtopics:
+        - code: rendering_pipeline
+          title: Конвейер отрисовки
+        - code: http_caching
+          title: HTTP-кеширование
+        - code: cors
+          title: CORS
+        - code: storage
+          title: Хранилища и куки
+        - code: web_security
+          title: XSS, CSRF и защита
+
+    - code: performance
+      title: Производительность
+      weights:
+        intern: 0.2
+        junior: 0.4
+        junior_plus: 0.6
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 0.95
+      subtopics:
+        - code: core_web_vitals
+          title: Core Web Vitals
+        - code: bundle_size
+          title: Размер бандла и разделение кода
+        - code: rerender_cost
+          title: Лишние перерисовки
+        - code: lists_virtualization
+          title: Виртуализация списков
+        - code: images_fonts
+          title: Изображения и шрифты
+
+    - code: architecture
+      title: Архитектура приложения
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: component_design
+          title: Проектирование компонентов
+        - code: rendering_strategies
+          title: Стратегии рендеринга
+        - code: module_boundaries
+          title: Границы модулей
+        - code: design_system
+          title: Дизайн-система
+
+    - code: accessibility
+      title: Доступность
+      # Спрашивают редко, но на продуктовых собеседованиях это заметный плюс.
+      weights:
+        intern: 0.25
+        junior: 0.35
+        junior_plus: 0.45
+        middle: 0.55
+        middle_plus: 0.6
+        senior: 0.65
+        lead: 0.7
+      subtopics:
+        - code: semantics
+          title: Семантика разметки
+        - code: keyboard_focus
+          title: Клавиатура и фокус
+        - code: aria
+          title: ARIA
+        - code: contrast
+          title: Контраст и типографика
+
+    - code: testing
+      title: Тестирование
+      weights:
+        intern: 0.35
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.75
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: testing_library
+          title: Тестирование поведения
+        - code: mocking_network
+          title: Моки сети
+        - code: e2e
+          title: Сквозные тесты
+
+    - code: soft
+      title: Поведенческая секция
+      weights:
+        intern: 0.4
+        junior: 0.5
+        junior_plus: 0.6
+        middle: 0.7
+        middle_plus: 0.8
+        senior: 0.9
+        lead: 1.0
+      subtopics:
+        - code: conflict
+          title: Конфликты в команде
+        - code: failure_story
+          title: История провала
+        - code: motivation
+          title: Мотивация и смена работы
+        - code: teamwork
+          title: Работа в команде
+        - code: salary_talk
+          title: Разговор о зарплате
+
+  # Структура намеренно отличается от Python: у Go своя модель конкурентности
+  # (горутины и каналы вместо event loop) и заметная на собеседованиях секция
+  # про рантайм — планировщик, escape-анализ, сборщик мусора.
+  backend_go:
+    - code: language
+      title: Язык
+      weights:
+        intern: 1.0
+        junior: 1.0
+        junior_plus: 0.95
+        middle: 0.85
+        middle_plus: 0.75
+        senior: 0.6
+        lead: 0.5
+      subtopics:
+        - code: slices_arrays
+          title: Слайсы и массивы
+        - code: maps
+          title: Отображения
+        - code: interfaces
+          title: Интерфейсы
+        - code: errors
+          title: Обработка ошибок
+        - code: generics
+          title: Дженерики
+        - code: embedding
+          title: Встраивание структур
+        - code: defer_panic
+          title: defer, panic и recover
+
+    - code: concurrency
+      title: Конкурентность
+      # Ради этого Go и берут: спрашивают почти всегда и почти на всех уровнях.
+      weights:
+        intern: 0.5
+        junior: 0.75
+        junior_plus: 0.9
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 1.0
+        lead: 0.9
+      subtopics:
+        - code: goroutines
+          title: Горутины
+        - code: channels
+          title: Каналы
+        - code: select
+          title: select и таймауты
+        - code: sync_primitives
+          title: Примитивы sync
+        - code: context
+          title: Контекст и отмена
+        - code: race_conditions
+          title: Гонки данных
+
+    - code: runtime
+      title: Рантайм
+      weights:
+        intern: 0.1
+        junior: 0.25
+        junior_plus: 0.45
+        middle: 0.7
+        middle_plus: 0.85
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: scheduler
+          title: Планировщик GMP
+        - code: gc
+          title: Сборка мусора
+        - code: escape_analysis
+          title: Escape-анализ
+        - code: memory_model
+          title: Модель памяти
+        - code: profiling
+          title: Профилирование
+
+    - code: db
+      title: Базы данных
+      weights:
+        intern: 0.5
+        junior: 0.7
+        junior_plus: 0.85
+        middle: 1.0
+        middle_plus: 1.0
+        senior: 0.95
+        lead: 0.9
+      subtopics:
+        - code: indexes
+          title: Индексы
+        - code: transactions_isolation
+          title: Транзакции и уровни изоляции
+        - code: query_plans
+          title: Планы запросов
+        - code: connection_pool
+          title: Пул соединений
+        - code: sql_pitfalls
+          title: Подводные камни database/sql
+
+    - code: web
+      title: Веб и API
+      weights:
+        intern: 0.6
+        junior: 0.8
+        junior_plus: 0.9
+        middle: 0.95
+        middle_plus: 0.9
+        senior: 0.85
+        lead: 0.8
+      subtopics:
+        - code: http_server
+          title: net/http и роутинг
+        - code: rest_design
+          title: Дизайн REST API
+        - code: auth_jwt_oauth
+          title: "Аутентификация: JWT и OAuth"
+        - code: idempotency
+          title: Идемпотентность
+        - code: grpc
+          title: gRPC и protobuf
+
+    - code: architecture
+      title: Архитектура
+      weights:
+        intern: 0.1
+        junior: 0.3
+        junior_plus: 0.5
+        middle: 0.8
+        middle_plus: 0.9
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: project_layout
+          title: Структура проекта
+        - code: dependency_injection
+          title: Внедрение зависимостей
+        - code: patterns
+          title: Паттерны проектирования
+        - code: layered_architecture
+          title: Слоистая архитектура
+
+    - code: system_design
+      title: Системный дизайн
+      weights:
+        intern: 0.0
+        junior: 0.1
+        junior_plus: 0.3
+        middle: 0.6
+        middle_plus: 0.85
+        senior: 1.0
+        lead: 1.0
+      subtopics:
+        - code: caching
+          title: Кеширование
+        - code: sharding
+          title: Шардирование и репликация
+        - code: queues
+          title: Очереди и брокеры
+        - code: rate_limiting
+          title: Ограничение частоты запросов
+        - code: observability
+          title: Наблюдаемость
+        - code: graceful_shutdown
+          title: Корректное завершение
+
+    - code: testing
+      title: Тестирование
+      # В Go это отдельная тема собеседования: табличные тесты и бенчмарки
+      # входят в стандартную библиотеку, поэтому спрашивают предметно.
+      weights:
+        intern: 0.4
+        junior: 0.55
+        junior_plus: 0.65
+        middle: 0.75
+        middle_plus: 0.8
+        senior: 0.8
+        lead: 0.75
+      subtopics:
+        - code: table_tests
+          title: Табличные тесты
+        - code: mocks
+          title: Моки и интерфейсы
+        - code: benchmarks
+          title: Бенчмарки
+        - code: race_detector
+          title: Детектор гонок
+
+    - code: infra
+      title: Инфраструктура
+      weights:
+        intern: 0.3
+        junior: 0.4
+        junior_plus: 0.5
+        middle: 0.6
+        middle_plus: 0.7
+        senior: 0.8
+        lead: 0.85
+      subtopics:
+        - code: docker
+          title: Docker
+        - code: ci_cd
+          title: CI/CD
+        - code: linux_basics
+          title: Основы Linux
+        - code: networking
+          title: Сети
 
     - code: soft
       title: Поведенческая секция

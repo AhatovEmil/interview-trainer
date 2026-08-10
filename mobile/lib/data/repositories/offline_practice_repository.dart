@@ -50,6 +50,30 @@ class OfflinePracticeRepository {
     }
   }
 
+  /// Конкретный вопрос, открытый из списка.
+  ///
+  /// Офлайн берём из скачанного банка: список без сети недоступен, но вернуться
+  /// по прямой ссылке или из истории навигации человек может.
+  Future<NextQuestion> questionById(String specialization, String questionId) async {
+    try {
+      return await _remote.questionById(specialization, questionId);
+    } on ApiException catch (error) {
+      if (!error.isNetworkIssue) {
+        rethrow;
+      }
+      final CachedQuestion? cached =
+          await _database.questionById(questionId, specialization);
+      if (cached == null) {
+        throw const OfflineUnavailableException();
+      }
+      return NextQuestion(
+        question: _mapper.toQuestion(cached),
+        isReview: false,
+        dueAt: null,
+      );
+    }
+  }
+
   Future<NextQuestion> _nextFromCache(String specialization, int grade) async {
     final List<CachedQuestion> candidates = await _database.unansweredQuestions(
       specializationId: specialization,

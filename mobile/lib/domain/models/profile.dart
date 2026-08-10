@@ -48,6 +48,7 @@ class UserSpecialization {
     required this.specializationId,
     required this.selfAssessedGrade,
     required this.gradeCode,
+    required this.targetGrade,
     required this.isPrimary,
     required this.answersCount,
   });
@@ -55,13 +56,23 @@ class UserSpecialization {
   final String specializationId;
   final int selfAssessedGrade;
   final String gradeCode;
+
+  /// Уровень, к которому человек готовится. Именно он определяет выдачу.
+  final int targetGrade;
+
   final bool isPrimary;
   final int answersCount;
+
+  /// Готовится выше своего текущего уровня, а не просто освежает знания.
+  bool get isReaching => targetGrade > selfAssessedGrade;
 
   factory UserSpecialization.fromJson(Map<String, dynamic> json) => UserSpecialization(
         specializationId: json['specialization_id'] as String,
         selfAssessedGrade: json['self_assessed_grade'] as int,
         gradeCode: json['grade_code'] as String,
+        // Кеш профиля мог быть записан старой версией приложения — тогда цель
+        // совпадает с самооценкой, как и на сервере при бэкфилле.
+        targetGrade: json['target_grade'] as int? ?? json['self_assessed_grade'] as int,
         isPrimary: json['is_primary'] as bool,
         answersCount: json['answers_count'] as int,
       );
@@ -70,6 +81,7 @@ class UserSpecialization {
         'specialization_id': specializationId,
         'self_assessed_grade': selfAssessedGrade,
         'grade_code': gradeCode,
+        'target_grade': targetGrade,
         'is_primary': isPrimary,
         'answers_count': answersCount,
       };

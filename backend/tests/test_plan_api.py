@@ -228,6 +228,24 @@ async def test_today_returns_first_day_with_questions(
         assert "answer_short" not in question
 
 
+async def test_today_returns_topic_titles_not_codes(
+    client: AsyncClient, premium_headers: dict[str, str]
+) -> None:
+    """На экране «сегодня» должно стоять «Базы данных», а не код db."""
+    await create_plan(client, premium_headers, days=7)
+
+    body = (
+        await client.get(
+            f"/api/v1/plan/today?specialization={SPECIALIZATION}", headers=premium_headers
+        )
+    ).json()
+
+    assert len(body["topic_titles"]) == len(body["topic_codes"])
+    assert body["topic_titles"] != body["topic_codes"]
+    for question in body["new_questions"]:
+        assert question["topic_title"] != question["topic_code"]
+
+
 async def test_today_counts_due_reviews_first(
     client: AsyncClient, premium_headers: dict[str, str]
 ) -> None:

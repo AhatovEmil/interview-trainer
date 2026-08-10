@@ -11,6 +11,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.enums import QuestionStatus
 from app.core.exceptions import ConflictError, InvalidInputError, NotFoundError
 from app.db.models.question import Question, question_specializations
 from app.db.models.taxonomy import Specialization, Subtopic, Topic, TopicWeight
@@ -78,6 +79,39 @@ class AnswerResult:
 
 
 @dataclass(frozen=True, slots=True)
+class _AnswerSummary:
+    status: QuestionStatus
+    count: int
+    at: datetime | None
+
+
+_NO_ANSWERS = _AnswerSummary(status=QuestionStatus.UNANSWERED, count=0, at=None)
+
+
+@dataclass(frozen=True, slots=True)
+class QuestionListItem:
+    """Строка списка вопросов: сам вопрос плюс то, как он закрыт пользователем."""
+
+    question: Question
+    topic_title: str
+    status: QuestionStatus
+    answers_count: int
+    last_answered_at: datetime | None
+    due_at: datetime | None
+    in_grade_range: bool
+
+
+@dataclass(frozen=True, slots=True)
+class QuestionList:
+    specialization_id: str
+    grade: int
+    items: list[QuestionListItem]
+
+    def count(self, status: QuestionStatus) -> int:
+        return sum(1 for item in self.items if item.status is status)
+
+
+@dataclass(frozen=True, slots=True)
 class QuestionPackage:
     """Пакет вопросов для офлайна вместе со словарями названий тем."""
 
@@ -133,7 +167,7 @@ class PracticeService:
 
     async def next_question(self, user: User, specialization_id: str) -> NextQuestion:
         profile = await self._require_profile(user, specialization_id)
-        grade = await self.effective_grade(user, profile)
+        grade = self.feed_grade(profile)
 
         due = await self._next_due_question(user, specialization_id)
         if due is not None:
@@ -324,6 +358,108 @@ class PracticeService:
             is_duplicate=False,
         )
 
+    async def question_list(self, user: User, specialization_id: str) -> QuestionList:
+        """Все вопросы специализации с отметкой, как пользователь их закрыл."""
+        profile = await self._require_profile(user, specialization_id)
+        grade = self.feed_grade(profile)
+
+        statement: Select[tuple[Question]] = (
+            select(Question)
+            .join(
+                question_specializations,
+                question_specializations.c.question_id == Question.id,
+            )
+            .where(question_specializations.c.specialization_id == specialization_id)
+            .order_by(Question.topic_code, Question.slug)
+        )
+        questions = list(await self._session.scalars(statement))
+
+        answers = await self._answer_index(user, specialization_id)
+        due = await self._due_index(user)
+        titles = await self._topic_titles(specialization_id)
+
+        items = [
+            QuestionListItem(
+                question=question,
+                topic_title=titles.get(question.topic_code, question.topic_code),
+                status=answers.get(question.id, _NO_ANSWERS).status,
+                answers_count=answers.get(question.id, _NO_ANSWERS).count,
+                last_answered_at=answers.get(question.id, _NO_ANSWERS).at,
+                due_at=due.get(question.id),
+                in_grade_range=question.min_grade <= grade <= question.max_grade,
+            )
+            for question in questions
+        ]
+        return QuestionList(specialization_id=specialization_id, grade=grade, items=items)
+
+    async def question_by_id(
+        self, user: User, specialization_id: str, question_id: uuid.UUID
+    ) -> NextQuestion:
+        """Конкретный вопрос, выбранный из списка вручную.
+
+        Грейд здесь не фильтрует: пользователь сам открыл вопрос и вправе его
+        увидеть, даже если адаптивная выдача его бы не предложила.
+        """
+        await self._require_profile(user, specialization_id)
+
+        statement = (
+            select(Question)
+            .join(
+                question_specializations,
+                question_specializations.c.question_id == Question.id,
+            )
+            .where(
+                Question.id == question_id,
+                question_specializations.c.specialization_id == specialization_id,
+            )
+            .options(selectinload(Question.options))
+            .limit(1)
+        )
+        question = (await self._session.scalars(statement)).first()
+        if question is None:
+            raise NotFoundError("вопрос не найден в этой специализации")
+
+        state = await self._session.get(ReviewState, (user.id, question.id))
+        return await self._with_titles(
+            question,
+            specialization_id,
+            is_review=state is not None,
+            due_at=state.due_at if state else None,
+        )
+
+    async def _answer_index(
+        self, user: User, specialization_id: str
+    ) -> dict[uuid.UUID, _AnswerSummary]:
+        """Сводка по ответам: сколько раз отвечали и чем закончилась последняя попытка."""
+        rows = list(
+            await self._session.scalars(
+                select(UserAnswer)
+                .where(
+                    UserAnswer.user_id == user.id,
+                    UserAnswer.specialization_id == specialization_id,
+                )
+                .order_by(UserAnswer.answered_at)
+            )
+        )
+
+        summary: dict[uuid.UUID, _AnswerSummary] = {}
+        for answer in rows:
+            previous = summary.get(answer.question_id)
+            summary[answer.question_id] = _AnswerSummary(
+                status=QuestionStatus.from_score(answer.score),
+                count=(previous.count if previous else 0) + 1,
+                at=answer.answered_at,
+            )
+        return summary
+
+    async def _due_index(self, user: User) -> dict[uuid.UUID, datetime]:
+        rows = await self._session.execute(
+            select(ReviewState.question_id, ReviewState.due_at).where(
+                ReviewState.user_id == user.id
+            )
+        )
+        return {question_id: due_at for question_id, due_at in rows.all()}
+
     async def question_package(
         self, specialization_id: str, since: datetime | None = None
     ) -> QuestionPackage:
@@ -451,7 +587,9 @@ class PracticeService:
 
     async def stats(self, user: User, specialization_id: str) -> SpecializationStats:
         profile = await self._require_profile(user, specialization_id)
-        grade = profile.self_assessed_grade
+        # Веса берём для целевого уровня: важно, насколько тема весит на том
+        # собеседовании, к которому человек готовится, а не на текущей позиции.
+        grade = profile.target_grade
 
         weights = await self._topic_weights(specialization_id, grade)
         titles = await self._topic_titles(specialization_id)
@@ -506,12 +644,23 @@ class PracticeService:
             return "premium_required"
         return None
 
+    @staticmethod
+    def feed_grade(profile: UserSpecialization) -> int:
+        """Грейд, под который подбираются вопросы.
+
+        Это цель, а не измеренный уровень: человек, идущий с middle на senior,
+        готовится к senior-собеседованию и должен видеть senior-вопросы. Оценка
+        Elo по-прежнему считается — она отвечает на другой вопрос, «где я
+        сейчас», и живёт на экране уровня.
+        """
+        return profile.target_grade
+
     async def effective_grade(self, user: User, profile: UserSpecialization) -> int:
-        """Грейд для выдачи: измеренный, если данных хватает, иначе самооценка."""
+        """Измеренный уровень: Elo, если данных хватает, иначе самооценка."""
         if profile.answers_count < elo.MIN_ANSWERS_FOR_ESTIMATE:
             return profile.self_assessed_grade
 
-        weights = await self._topic_weights(profile.specialization_id, profile.self_assessed_grade)
+        weights = await self._topic_weights(profile.specialization_id, profile.target_grade)
         ratings = await self._topic_ratings(user, profile.specialization_id)
         overall = elo.overall_rating(ratings, weights)
         if overall is None:

@@ -10,6 +10,7 @@ from app.core.config import get_settings
 from app.core.enums import QuestionSource, QuestionType
 from app.db.models.question import Question, QuestionOption, difficulty_from_peak_grade
 from app.db.session import get_session_factory
+from app.seed.loader import load_questions, load_taxonomy
 from app.seed.questions import seed_questions
 from app.seed.taxonomy import seed_taxonomy
 
@@ -27,16 +28,37 @@ async def seeded_taxonomy(clean_db: None) -> None:
     await seed_taxonomy(get_settings().taxonomy_file)
 
 
+@pytest.fixture
+def expected() -> tuple[int, int]:
+    """Сколько вопросов и вариантов лежит в файлах — считаем, а не зашиваем.
+
+    Банк пополняется специализациями, и фиксированное число ломало бы тесты
+    при каждом добавлении, ничего при этом не проверяя.
+    """
+    taxonomy = load_taxonomy(get_settings().taxonomy_file)
+    questions = [
+        question
+        for path in sorted(get_settings().questions_dir.glob("*.yaml"))
+        for question in load_questions(path, taxonomy).questions
+    ]
+    options = sum(len(question.options) for question in questions)
+    return len(questions), options
+
+
 async def _count(model: type) -> int:
     async with get_session_factory()() as session:
         return int((await session.execute(select(func.count()).select_from(model))).scalar_one())
 
 
-async def test_seed_loads_thirty_questions(seeded_taxonomy: None) -> None:
+async def test_seed_loads_all_questions(seeded_taxonomy: None, expected: tuple[int, int]) -> None:
+    total, _ = expected
+
     report = await seed_questions()
 
-    assert report.questions.created == 30
-    assert await _count(Question) == 30
+    assert report.questions.created == total
+    assert await _count(Question) == total
+    # Приёмка этапа 2: на backend_python должно быть не меньше тридцати.
+    assert total >= 30
 
 
 async def test_all_questions_are_unverified(seeded_taxonomy: None) -> None:
@@ -55,14 +77,15 @@ async def test_all_questions_are_unverified(seeded_taxonomy: None) -> None:
     assert sources == {QuestionSource.SEED}
 
 
-async def test_seed_is_idempotent(seeded_taxonomy: None) -> None:
+async def test_seed_is_idempotent(seeded_taxonomy: None, expected: tuple[int, int]) -> None:
+    total, options = expected
     await seed_questions()
 
     second = await seed_questions()
 
     assert not second.has_changes, second.as_lines()
-    assert await _count(Question) == 30
-    assert await _count(QuestionOption) == 28
+    assert await _count(Question) == total
+    assert await _count(QuestionOption) == options
 
 
 async def test_difficulty_derived_from_peak_grade(seeded_taxonomy: None) -> None:
@@ -134,8 +157,11 @@ async def test_seed_updates_changed_question(seeded_taxonomy: None) -> None:
     assert question.title.startswith("Что такое GIL")
 
 
-async def test_seed_keeps_crowdsourced_questions(seeded_taxonomy: None) -> None:
+async def test_seed_keeps_crowdsourced_questions(
+    seeded_taxonomy: None, expected: tuple[int, int]
+) -> None:
     """Присланное пользователями не управляется файлами и не должно удаляться сидом."""
+    total, _ = expected
     await seed_questions()
 
     async with get_session_factory()() as session:
@@ -167,5 +193,7 @@ async def test_seed_keeps_crowdsourced_questions(seeded_taxonomy: None) -> None:
 
     report = await seed_questions()
 
+    # Сид синхронизирует только свои вопросы: присланное пользователями
+    # остаётся нетронутым, иначе краудсорсинг стирался бы каждым деплоем.
     assert report.questions.deleted == 0
-    assert await _count(Question) == 31
+    assert await _count(Question) == total + 1

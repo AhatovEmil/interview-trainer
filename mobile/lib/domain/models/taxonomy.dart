@@ -19,6 +19,19 @@ class Taxonomy {
       .expand((Profession profession) => profession.specializations)
       .where((Specialization specialization) => specialization.isActive)
       .toList();
+
+  /// Человекочитаемое название специализации по её коду.
+  /// Если код неизвестен — возвращаем его же: лучше код, чем пустота.
+  String titleFor(String specializationId) {
+    for (final Profession profession in professions) {
+      for (final Specialization specialization in profession.specializations) {
+        if (specialization.id == specializationId) {
+          return specialization.title;
+        }
+      }
+    }
+    return specializationId;
+  }
 }
 
 class Profession {

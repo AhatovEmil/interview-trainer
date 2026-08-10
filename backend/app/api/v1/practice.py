@@ -1,10 +1,14 @@
-"""Тренировка: следующий вопрос, приём ответа, статистика по темам."""
+"""Тренировка: список вопросов, выдача, приём ответа, статистика по темам."""
 
 from __future__ import annotations
+
+import uuid
+from typing import Annotated
 
 from fastapi import APIRouter, Query
 
 from app.core.deps import CurrentUser, SessionDep
+from app.core.enums import QuestionStatus
 from app.core.grades import code_from_grade
 from app.db.models.question import Question
 from app.schemas.practice import (
@@ -12,12 +16,19 @@ from app.schemas.practice import (
     AnswerResponse,
     NextQuestionResponse,
     QuestionExplanation,
+    QuestionListItemOut,
+    QuestionListResponse,
     QuestionOptionOut,
     QuestionOut,
     StatsResponse,
     TopicStatsOut,
 )
-from app.services.practice import AnswerResult, AnswerSubmission, PracticeService
+from app.services.practice import (
+    AnswerResult,
+    AnswerSubmission,
+    PracticeService,
+    QuestionListItem,
+)
 
 router = APIRouter(prefix="/practice", tags=["practice"])
 
@@ -29,6 +40,51 @@ async def next_question(
     specialization: str = Query(min_length=1, examples=["backend_python"]),
 ) -> NextQuestionResponse:
     result = await PracticeService(session).next_question(user, specialization)
+    return NextQuestionResponse(
+        question=to_question(
+            result.question,
+            topic_title=result.topic_title,
+            subtopic_title=result.subtopic_title,
+        ),
+        is_review=result.is_review,
+        due_at=result.due_at,
+    )
+
+
+@router.get(
+    "/questions",
+    response_model=QuestionListResponse,
+    summary="Все вопросы специализации с отметкой о прохождении",
+)
+async def question_list(
+    user: CurrentUser,
+    session: SessionDep,
+    specialization: Annotated[str, Query(min_length=1, examples=["backend_python"])],
+) -> QuestionListResponse:
+    result = await PracticeService(session).question_list(user, specialization)
+    return QuestionListResponse(
+        specialization_id=result.specialization_id,
+        total=len(result.items),
+        answered=sum(1 for item in result.items if item.status is not QuestionStatus.UNANSWERED),
+        correct=result.count(QuestionStatus.CORRECT),
+        partial=result.count(QuestionStatus.PARTIAL),
+        wrong=result.count(QuestionStatus.WRONG),
+        items=[_to_list_item(item) for item in result.items],
+    )
+
+
+@router.get(
+    "/questions/{question_id}",
+    response_model=NextQuestionResponse,
+    summary="Конкретный вопрос, открытый из списка",
+)
+async def question_by_id(
+    question_id: uuid.UUID,
+    user: CurrentUser,
+    session: SessionDep,
+    specialization: Annotated[str, Query(min_length=1, examples=["backend_python"])],
+) -> NextQuestionResponse:
+    result = await PracticeService(session).question_by_id(user, specialization, question_id)
     return NextQuestionResponse(
         question=to_question(
             result.question,
@@ -116,6 +172,25 @@ def to_question(
             QuestionOptionOut(code=option.code, text=option.text) for option in question.options
         ],
         is_verified=question.is_verified,
+    )
+
+
+def _to_list_item(item: QuestionListItem) -> QuestionListItemOut:
+    question = item.question
+    return QuestionListItemOut(
+        id=question.id,
+        type=question.type,
+        title=question.title,
+        topic_code=question.topic_code,
+        topic_title=item.topic_title,
+        peak_grade=question.peak_grade,
+        peak_grade_code=code_from_grade(question.peak_grade),
+        frequency=question.frequency,
+        status=item.status,
+        answers_count=item.answers_count,
+        last_answered_at=item.last_answered_at,
+        due_at=item.due_at,
+        in_grade_range=item.in_grade_range,
     )
 
 

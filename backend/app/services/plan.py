@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import InvalidInputError, NotFoundError, PremiumRequiredError
 from app.db.models.plan import StudyPlan, StudyPlanDay
 from app.db.models.question import Question, question_specializations
-from app.db.models.taxonomy import Topic, TopicWeight
+from app.db.models.taxonomy import Subtopic, Topic, TopicWeight
 from app.db.models.user import ReviewState, User, UserAnswer, UserSpecialization, UserTopicRating
 from app.services import rating as elo
 from app.services.planner import (
@@ -30,6 +30,10 @@ class TodayPlan:
     due_reviews: int
     new_questions: list[Question]
     completed_today: int
+    # Названия разделов из таксономии: на экране «сегодня» должно стоять
+    # «Базы данных», а не код db.
+    topic_titles: dict[str, str]
+    subtopic_titles: dict[str, str]
 
     @property
     def total_target(self) -> int:
@@ -60,9 +64,7 @@ class PlanService:
 
         try:
             days = plan_days(current_day, interview_date)
-            priorities = await self._topic_priorities(
-                user, specialization_id, profile.self_assessed_grade
-            )
+            priorities = await self._topic_priorities(user, specialization_id, profile.target_grade)
             schedule = build_plan(priorities, days, daily_capacity)
         except PlanError as exc:
             raise InvalidInputError(str(exc)) from exc
@@ -73,7 +75,7 @@ class PlanService:
             user_id=user.id,
             specialization_id=specialization_id,
             interview_date=interview_date,
-            target_grade=profile.self_assessed_grade,
+            target_grade=profile.target_grade,
             daily_capacity=daily_capacity,
             is_active=True,
             days=[
@@ -119,6 +121,8 @@ class PlanService:
             due_reviews=due_reviews,
             new_questions=new_questions,
             completed_today=completed,
+            topic_titles=await self._topic_titles(specialization_id),
+            subtopic_titles=await self._subtopic_titles(specialization_id),
         )
 
     @staticmethod
@@ -199,6 +203,24 @@ class PlanService:
             )
             for code, weight in weights
         ]
+
+    async def _topic_titles(self, specialization_id: str) -> dict[str, str]:
+        rows = (
+            await self._session.execute(
+                select(Topic.code, Topic.title).where(Topic.specialization_id == specialization_id)
+            )
+        ).all()
+        return {code: title for code, title in rows}
+
+    async def _subtopic_titles(self, specialization_id: str) -> dict[str, str]:
+        rows = (
+            await self._session.execute(
+                select(Subtopic.code, Subtopic.title)
+                .join(Topic, Topic.id == Subtopic.topic_id)
+                .where(Topic.specialization_id == specialization_id)
+            )
+        ).all()
+        return {code: title for code, title in rows}
 
     async def _count_due_reviews(self, user: User, specialization_id: str) -> int:
         now = datetime.now(UTC)

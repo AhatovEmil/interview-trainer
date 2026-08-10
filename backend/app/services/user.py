@@ -20,6 +20,7 @@ class UserService:
         specialization_id: str,
         self_assessed_grade: int,
         is_primary: bool,
+        target_grade: int | None = None,
     ) -> UserSpecialization:
         specialization = await self._session.get(Specialization, specialization_id)
         if specialization is None:
@@ -29,17 +30,25 @@ class UserService:
                 f"специализация {specialization_id!r} пока недоступна — «скоро»"
             )
 
+        # Цель не задана — готовимся на свой же уровень. Это честный вариант по
+        # умолчанию: человек может просто освежить то, что уже умеет.
+        target = self_assessed_grade if target_grade is None else target_grade
+        if target < self_assessed_grade:
+            raise InvalidInputError("целевой грейд ниже текущего — готовиться вниз незачем")
+
         profile = await self._session.get(UserSpecialization, (user.id, specialization_id))
         if profile is None:
             profile = UserSpecialization(
                 user_id=user.id,
                 specialization_id=specialization_id,
                 self_assessed_grade=self_assessed_grade,
+                target_grade=target,
                 is_primary=is_primary,
             )
             self._session.add(profile)
         else:
             profile.self_assessed_grade = self_assessed_grade
+            profile.target_grade = target
             profile.is_primary = is_primary
 
         if is_primary:

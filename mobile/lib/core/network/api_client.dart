@@ -41,7 +41,7 @@ class ApiClient {
   final TokenStorage _tokens;
 
   /// Чтобы параллельные запросы не устроили гонку обновлений.
-  Future<bool>? _refreshInFlight;
+  Future<_RefreshOutcome>? _refreshInFlight;
 
   /// Вызывается, когда сессия окончательно протухла: роутер уводит на вход.
   void Function()? onSessionExpired;
@@ -94,10 +94,20 @@ class ApiClient {
     }
 
     if (response.statusCode == 401 && !skipAuth) {
-      final bool refreshed = await _refreshTokens();
-      if (!refreshed) {
-        onSessionExpired?.call();
-        throw const ApiException('Сессия истекла, войдите заново', statusCode: 401);
+      final _RefreshOutcome outcome = await _refreshTokens();
+      switch (outcome) {
+        case _RefreshOutcome.rejected:
+          onSessionExpired?.call();
+          throw const ApiException('Сессия истекла, войдите заново', statusCode: 401);
+        case _RefreshOutcome.unreachable:
+          // Сервер не ответил — это не «сессия недействительна». Токены живы,
+          // выкидывать человека на вход из-за обрыва связи нельзя: в метро он
+          // после каждого просроченного access-токена оставался бы без входа.
+          throw const ApiException(
+            'Не удаётся связаться с сервером. Проверьте подключение.',
+          );
+        case _RefreshOutcome.ok:
+          break;
       }
       try {
         response = await request();
@@ -140,14 +150,14 @@ class ApiClient {
     return null;
   }
 
-  Future<bool> _refreshTokens() {
+  Future<_RefreshOutcome> _refreshTokens() {
     return _refreshInFlight ??= _doRefresh().whenComplete(() => _refreshInFlight = null);
   }
 
-  Future<bool> _doRefresh() async {
+  Future<_RefreshOutcome> _doRefresh() async {
     final String? refresh = await _tokens.readRefresh();
     if (refresh == null) {
-      return false;
+      return _RefreshOutcome.rejected;
     }
 
     try {
@@ -158,16 +168,27 @@ class ApiClient {
       );
       if (response.statusCode != 200 || response.data is! Map<String, dynamic>) {
         await _tokens.clear();
-        return false;
+        return _RefreshOutcome.rejected;
       }
       final Map<String, dynamic> data = response.data as Map<String, dynamic>;
       await _tokens.save(
         access: data['access_token'] as String,
         refresh: data['refresh_token'] as String,
       );
-      return true;
-    } on DioException {
-      return false;
+      return _RefreshOutcome.ok;
+    } on DioException catch (error) {
+      // Ответа нет вовсе — связь, а не отказ. Токены не трогаем.
+      if (error.response == null) {
+        return _RefreshOutcome.unreachable;
+      }
+      await _tokens.clear();
+      return _RefreshOutcome.rejected;
     }
   }
 }
+
+/// Чем закончилась попытка обновить токены.
+///
+/// Разделение принципиальное: «сервер отказал» ведёт к выходу из аккаунта,
+/// «сервер не ответил» — нет.
+enum _RefreshOutcome { ok, rejected, unreachable }

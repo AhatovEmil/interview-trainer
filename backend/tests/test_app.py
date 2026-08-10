@@ -26,7 +26,11 @@ def test_v1_prefix_is_mounted(app: FastAPI) -> None:
 
 def _production(monkeypatch, secret: str | None) -> Settings:
     monkeypatch.setenv("ENVIRONMENT", "production")
-    if secret is not None:
+    if secret is None:
+        # Внутри контейнера SECRET_KEY задан compose-файлом; без удаления
+        # переменной тест проверял бы не значение по умолчанию, а окружение.
+        monkeypatch.delenv("SECRET_KEY", raising=False)
+    else:
         monkeypatch.setenv("SECRET_KEY", secret)
     return Settings(_env_file=None)
 
