@@ -44,6 +44,7 @@ COVERED = frozenset(
         "backend_go",
         "backend_java",
         "backend_csharp",
+        "backend_php",
     }
 )
 

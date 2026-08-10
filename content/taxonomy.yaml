@@ -27,6 +27,7 @@ professions:
         is_active: true
       - id: backend_php
         title: PHP
+        is_active: true
       - id: backend_node
         title: Node.js
 
