@@ -12,6 +12,7 @@ import '../data/repositories/offline_practice_repository.dart';
 import '../data/repositories/practice_repository.dart';
 import '../data/sync/sync_controller.dart';
 import '../data/sync/sync_service.dart';
+import '../domain/models/plan.dart';
 import '../domain/models/profile.dart';
 import '../domain/models/question_list.dart';
 import '../domain/models/taxonomy.dart';
@@ -205,3 +206,17 @@ final FutureProviderFamily<QuestionListSummary, String> questionListProvider =
   (Ref ref, String specialization) =>
       ref.watch(practiceRepositoryProvider).questions(specialization),
 );
+
+/// План на сегодня. `null` — плана нет, это нормальное состояние, а не ошибка:
+/// экран в этом случае предлагает его создать.
+final FutureProviderFamily<TodayPlan?, String> todayPlanProvider =
+    FutureProvider.family<TodayPlan?, String>((Ref ref, String specialization) async {
+  try {
+    return await ref.watch(practiceRepositoryProvider).today(specialization);
+  } on ApiException catch (error) {
+    if (error.isNotFound) {
+      return null;
+    }
+    rethrow;
+  }
+});

@@ -49,6 +49,9 @@ class TodayResponse(BaseModel):
     days_left: int = Field(description="сколько дней осталось до собеседования")
     review_only: bool
     topic_codes: list[str]
+    topic_titles: list[str] = Field(
+        description="названия тех же разделов по порядку — интерфейсу незачем знать про коды"
+    )
     due_reviews: int = Field(description="вопросов из очереди повторений на сегодня")
     completed_today: int
     total_target: int

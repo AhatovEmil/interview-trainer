@@ -78,6 +78,13 @@ class HomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             _ActionTile(
+              icon: Icons.event_available_outlined,
+              title: 'План к собеседованию',
+              subtitle: 'Что успеть повторить до назначенной даты',
+              onTap: () => context.push(AppRoutes.plan),
+            ),
+            const SizedBox(height: 10),
+            _ActionTile(
               icon: Icons.insights_outlined,
               title: 'Мой уровень',
               subtitle: 'Рейтинги по темам и оценка грейда',

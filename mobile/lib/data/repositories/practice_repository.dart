@@ -1,4 +1,5 @@
 import '../../core/network/api_client.dart';
+import '../../domain/models/plan.dart';
 import '../../domain/models/profile.dart';
 import '../../domain/models/question.dart';
 import '../../domain/models/question_list.dart';
@@ -65,6 +66,31 @@ class PracticeRepository {
         ),
       );
 
+  /// План подготовки к дате собеседования. Платная фича: без подписки 402.
+  Future<StudyPlan> createPlan({
+    required String specializationId,
+    required DateTime interviewDate,
+    required int dailyCapacity,
+  }) async =>
+      StudyPlan.fromJson(
+        await _client.post(
+          '/plan',
+          body: <String, dynamic>{
+            'specialization_id': specializationId,
+            'interview_date': _isoDate(interviewDate),
+            'daily_capacity': dailyCapacity,
+          },
+        ),
+      );
+
+  /// Что делать сегодня. 404 означает «плана нет», а не поломку.
+  Future<TodayPlan> today(String specialization) async => TodayPlan.fromJson(
+        await _client.get(
+          '/plan/today',
+          query: <String, dynamic>{'specialization': specialization},
+        ),
+      );
+
   /// Вопрос с реального собеседования. В банк не попадает: уходит на модерацию.
   Future<QuestionReportResult> reportQuestion({
     required String specializationId,
@@ -87,3 +113,10 @@ class PracticeRepository {
     );
   }
 }
+
+/// Дата без времени и без часового пояса: сервер ждёт календарный день, а
+/// toIso8601String() добавил бы время и сдвинул бы день на границе суток.
+String _isoDate(DateTime value) =>
+    '${value.year.toString().padLeft(4, '0')}-'
+    '${value.month.toString().padLeft(2, '0')}-'
+    '${value.day.toString().padLeft(2, '0')}';

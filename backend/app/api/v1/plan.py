@@ -70,8 +70,20 @@ def _to_today(result: TodayPlan) -> TodayResponse:
         days_left=result.days_left,
         review_only=result.day.review_only,
         topic_codes=result.day.topic_codes,
+        topic_titles=[result.topic_titles.get(code, code) for code in result.day.topic_codes],
         due_reviews=result.due_reviews,
         completed_today=result.completed_today,
         total_target=result.total_target,
-        new_questions=[to_question(question) for question in result.new_questions],
+        new_questions=[
+            to_question(
+                question,
+                topic_title=result.topic_titles.get(question.topic_code),
+                subtopic_title=(
+                    result.subtopic_titles.get(question.subtopic_code)
+                    if question.subtopic_code
+                    else None
+                ),
+            )
+            for question in result.new_questions
+        ],
     )
