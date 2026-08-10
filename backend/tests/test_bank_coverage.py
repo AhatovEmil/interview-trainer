@@ -41,6 +41,7 @@ MIN_PER_TOPIC_GRADE = 3
 COVERED = frozenset(
     {
         "backend_python",
+        "backend_go",
     }
 )
 

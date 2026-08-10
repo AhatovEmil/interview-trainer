@@ -20,6 +20,7 @@ professions:
         title: Java
       - id: backend_go
         title: Go
+        is_active: true
       - id: backend_csharp
         title: C#
       - id: backend_php

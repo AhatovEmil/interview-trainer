@@ -77,6 +77,19 @@ class TaxonomyService:
         result = await self._session.execute(select(Profession).order_by(Profession.sort_order))
         return list(result.scalars().all())
 
+    @staticmethod
+    def visible_topics(specialization: Specialization) -> list[Topic]:
+        """Разделы, которые видит клиент.
+
+        Неактивная специализация показывается как «скоро»: её банк вопросов ещё
+        не доведён до планки по грейдам. Разделы для неё в БД есть — иначе при
+        включении пришлось бы пересеивать, — но наружу они не отдаются: дерево
+        тем выглядит как готовый продукт, которого пока нет.
+        """
+        if not specialization.is_active:
+            return []
+        return list(specialization.topics)
+
     async def _sync_professions(self, payload: TaxonomyFile, report: SyncReport) -> None:
         existing = {row.id: row for row in (await self._session.scalars(select(Profession)))}
 
