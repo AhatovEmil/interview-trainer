@@ -142,10 +142,12 @@ def build(output: Path | None = None) -> Path:
     target.parent.mkdir(parents=True, exist_ok=True)
     # Отступы и сортировка ключей — чтобы diff в git был читаемым, а проверка
     # свежести в CI сравнивала содержимое, а не порядок полей.
-    target.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    #
+    # Перевод строки задан явно: на Windows запись в текстовом режиме подставила
+    # бы CRLF, и файл, собранный там и в CI, отличался бы каждым байтом перевода
+    # строки. Проверка свежести на этом бы и падала.
+    with target.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps(payload, ensure_ascii=False, indent=1, sort_keys=True) + "\n")
     return target
 
 
