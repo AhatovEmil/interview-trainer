@@ -18,6 +18,7 @@ professions:
         is_active: true
       - id: backend_java
         title: Java
+        is_active: true
       - id: backend_go
         title: Go
         is_active: true
