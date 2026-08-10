@@ -83,6 +83,13 @@ class HomeScreen extends ConsumerWidget {
               subtitle: 'Рейтинги по темам и оценка грейда',
               onTap: () => context.push(AppRoutes.profile),
             ),
+            const SizedBox(height: 10),
+            _ActionTile(
+              icon: Icons.how_to_vote_outlined,
+              title: 'Прислать вопрос с собеса',
+              subtitle: 'Спросили что-то, чего нет в банке? Расскажите',
+              onTap: () => context.push(AppRoutes.report),
+            ),
           ],
         ),
       ),

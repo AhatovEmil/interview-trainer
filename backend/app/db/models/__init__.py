@@ -12,6 +12,7 @@ from app.db.models.question import (
     QuestionOption,
     question_specializations,
 )
+from app.db.models.report import QuestionReport
 from app.db.models.taxonomy import (
     Profession,
     Specialization,
@@ -32,6 +33,7 @@ __all__ = [
     "Profession",
     "Question",
     "QuestionOption",
+    "QuestionReport",
     "ReviewState",
     "Specialization",
     "StudyPlan",

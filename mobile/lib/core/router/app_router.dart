@@ -9,6 +9,7 @@ import '../../presentation/onboarding/onboarding_screen.dart';
 import '../../presentation/practice/practice_screen.dart';
 import '../../presentation/profile/profile_screen.dart';
 import '../../presentation/questions/question_list_screen.dart';
+import '../../presentation/report/report_question_screen.dart';
 import '../../presentation/providers.dart';
 import '../../presentation/splash_screen.dart';
 
@@ -25,6 +26,9 @@ class AppRoutes {
   static const String practice = '/practice';
   static const String questions = '/questions';
   static const String profile = '/profile';
+
+  /// Краудсорсинг: пользователь присылает вопрос со своего собеседования.
+  static const String report = '/report';
 }
 
 final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
@@ -73,6 +77,10 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
       GoRoute(
         path: AppRoutes.profile,
         builder: (BuildContext context, GoRouterState state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.report,
+        builder: (BuildContext context, GoRouterState state) => const ReportQuestionScreen(),
       ),
     ],
     redirect: (BuildContext context, GoRouterState state) {

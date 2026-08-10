@@ -2,6 +2,7 @@ import '../../core/network/api_client.dart';
 import '../../domain/models/profile.dart';
 import '../../domain/models/question.dart';
 import '../../domain/models/question_list.dart';
+import '../../domain/models/question_report.dart';
 import '../../domain/models/taxonomy.dart';
 
 class PracticeRepository {
@@ -63,4 +64,26 @@ class PracticeRepository {
           query: <String, dynamic>{'specialization': specialization},
         ),
       );
+
+  /// Вопрос с реального собеседования. В банк не попадает: уходит на модерацию.
+  Future<QuestionReportResult> reportQuestion({
+    required String specializationId,
+    required String title,
+    String? topicCode,
+    String? details,
+    String? company,
+    int? askedGrade,
+  }) async {
+    final Map<String, dynamic> body = <String, dynamic>{
+      'specialization_id': specializationId,
+      'title': title,
+      if (topicCode != null) 'topic_code': topicCode,
+      if (details != null && details.isNotEmpty) 'details': details,
+      if (company != null && company.isNotEmpty) 'company': company,
+      if (askedGrade != null) 'asked_grade': askedGrade,
+    };
+    return QuestionReportResult.fromJson(
+      await _client.post('/questions/report', body: body),
+    );
+  }
 }
