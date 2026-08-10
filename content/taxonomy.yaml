@@ -30,6 +30,7 @@ professions:
         is_active: true
       - id: backend_node
         title: Node.js
+        is_active: true
 
   - id: frontend
     title: Frontend-разработчик
