@@ -31,3 +31,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    # Банк вопросов и таксономия едут внутри установочного пакета: сервера у
+    # приложения нет. Файл собирается из /content командой
+    # `python -m app.seed.export_bundle` и коммитится — сборка не должна
+    # зависеть от установленного Python.
+    - assets/content/bank.json
