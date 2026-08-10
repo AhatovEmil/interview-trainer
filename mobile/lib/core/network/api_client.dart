@@ -82,6 +82,11 @@ class ApiClient {
         () => _dio.patch<dynamic>(path, data: body),
       );
 
+  /// Успешный ответ здесь — 204 без тела, поэтому карта возвращается пустой.
+  Future<Map<String, dynamic>> delete(String path) => _send(
+        () => _dio.delete<dynamic>(path),
+      );
+
   Future<Map<String, dynamic>> _send(
     Future<Response<dynamic>> Function() request, {
     bool skipAuth = false,

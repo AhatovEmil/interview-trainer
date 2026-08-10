@@ -239,16 +239,34 @@ class AppDatabase extends _$AppDatabase {
 
   // --- профиль ----------------------------------------------------------------
 
+  /// Идентификатор задаётся явно.
+  ///
+  /// Без него SQLite не применяет DEFAULT к колонке INTEGER PRIMARY KEY —
+  /// она ведёт себя как rowid и получает новое значение на каждой вставке.
+  /// Конфликт при этом не возникал, строки копились, и профиль переставал
+  /// читаться после первого же обновления.
+  static const int _profileRowId = 1;
+
   Future<void> saveProfile(String payloadJson) =>
       into(cachedProfile).insertOnConflictUpdate(
         CachedProfileCompanion.insert(
+          id: const Value<int>(_profileRowId),
           payloadJson: payloadJson,
           savedAt: DateTime.now(),
         ),
       );
 
+  /// Берём самую свежую запись, а не единственную: на устройствах, где успела
+  /// поработать версия с ошибкой выше, строк может оказаться больше одной, и
+  /// падать из-за этого приложение не должно.
   Future<String?> loadProfile() async {
-    final CachedProfileData? row = await select(cachedProfile).getSingleOrNull();
+    final CachedProfileData? row = await (select(cachedProfile)
+          ..orderBy(<OrderClauseGenerator<$CachedProfileTable>>[
+            ($CachedProfileTable table) =>
+                OrderingTerm(expression: table.savedAt, mode: OrderingMode.desc),
+          ])
+          ..limit(1))
+        .getSingleOrNull();
     return row?.payloadJson;
   }
 

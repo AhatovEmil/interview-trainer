@@ -57,6 +57,20 @@ class UserService:
         await self._session.flush()
         return profile
 
+    async def delete_account(self, user: User) -> None:
+        """Полное удаление аккаунта со всеми данными.
+
+        Требование магазинов: у приложения с регистрацией должно быть удаление
+        изнутри приложения, и оно должно быть настоящим, а не пометкой. Мягкое
+        удаление здесь было бы обманом — данные остались бы на месте.
+
+        Связанные записи (ответы, рейтинги, повторения, планы, присланные
+        вопросы) уезжают каскадом на уровне внешних ключей: держать это в
+        Python значило бы забыть про новую таблицу при следующем расширении.
+        """
+        await self._session.delete(user)
+        await self._session.flush()
+
     async def list_specializations(self, user: User) -> list[UserSpecialization]:
         rows = await self._session.scalars(
             select(UserSpecialization)

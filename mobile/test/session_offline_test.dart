@@ -28,12 +28,25 @@ final Map<String, dynamic> _profileJson = <String, dynamic>{
 };
 
 class _StubAuth extends AuthRepository {
-  _StubAuth({required this.failure, this.profile})
+  _StubAuth({required this.failure, this.profile, this.deleteFailure})
       : super(client: _UnusedClient(), tokens: TokenStorage());
 
   /// Что случится при обращении к /me.
   final Object? failure;
   final Map<String, dynamic>? profile;
+
+  /// Что случится при удалении аккаунта.
+  final Object? deleteFailure;
+
+  bool deleteCalled = false;
+
+  @override
+  Future<void> deleteAccount() async {
+    deleteCalled = true;
+    if (deleteFailure != null) {
+      throw deleteFailure!;
+    }
+  }
 
   @override
   Future<bool> get hasSession async => true;
@@ -72,6 +85,9 @@ class _UnusedClient implements ApiClient {
   @override
   Future<Map<String, dynamic>> patch(String path, {Object? body, bool skipAuth = false}) =>
       throw UnimplementedError();
+
+  @override
+  Future<Map<String, dynamic>> delete(String path) => throw UnimplementedError();
 }
 
 ProviderContainer _container({
@@ -90,6 +106,16 @@ void main() {
 
   setUp(() => database = AppDatabase(NativeDatabase.memory()));
   tearDown(() async => database.close());
+
+  test('повторное сохранение профиля не плодит строки', () async {
+    // Регрессия: колонка INTEGER PRIMARY KEY игнорировала DEFAULT, каждая
+    // запись создавала новую строку, и после второго обновления профиля
+    // чтение падало на «too many elements».
+    await database.saveProfile(jsonEncode(_profileJson));
+    await database.saveProfile(jsonEncode(_profileJson));
+
+    expect(await database.loadProfile(), isNotNull);
+  });
 
   test('успешный вход кеширует профиль', () async {
     final ProviderContainer container = _container(
@@ -170,5 +196,42 @@ void main() {
 
     expect(await database.loadProfile(), isNull);
     expect(container.read(sessionProvider).status, SessionStatus.signedOut);
+  });
+
+  group('Удаление аккаунта', () {
+    test('успех стирает локальные данные и завершает сессию', () async {
+      await database.saveProfile(jsonEncode(_profileJson));
+      final _StubAuth auth = _StubAuth(failure: null, profile: _profileJson);
+      final ProviderContainer container = _container(database: database, auth: auth);
+      addTearDown(container.dispose);
+
+      await container.read(sessionProvider.notifier).deleteAccount();
+
+      expect(auth.deleteCalled, isTrue);
+      expect(await database.loadProfile(), isNull);
+      expect(container.read(sessionProvider).status, SessionStatus.signedOut);
+    });
+
+    test('обрыв связи не стирает данные и не выкидывает из сессии', () async {
+      // Аккаунт на сервере жив: удалять локальный банк и неотправленные
+      // ответы из-за пропавшей сети значило бы потерять их ни за что.
+      await database.saveProfile(jsonEncode(_profileJson));
+      final _StubAuth auth = _StubAuth(
+        failure: null,
+        profile: _profileJson,
+        deleteFailure: const ApiException('Не удаётся связаться с сервером.'),
+      );
+      final ProviderContainer container = _container(database: database, auth: auth);
+      addTearDown(container.dispose);
+      await container.read(sessionProvider.notifier).restore();
+
+      await expectLater(
+        container.read(sessionProvider.notifier).deleteAccount(),
+        throwsA(isA<ApiException>()),
+      );
+
+      expect(await database.loadProfile(), isNotNull);
+      expect(container.read(sessionProvider).status, SessionStatus.ready);
+    });
   });
 }

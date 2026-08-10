@@ -158,6 +158,12 @@ class FakeApi implements ApiClient {
     _requireNetwork();
     throw ApiException('неожиданный PATCH $path', statusCode: 500);
   }
+
+  @override
+  Future<Map<String, dynamic>> delete(String path) async {
+    _requireNetwork();
+    throw ApiException('неожиданный DELETE $path', statusCode: 500);
+  }
 }
 
 Map<String, dynamic> questionJson(

@@ -175,6 +175,18 @@ class SessionNotifier extends StateNotifier<SessionState> {
     state = SessionState(status: SessionStatus.ready, profile: profile);
   }
 
+  /// Удаление аккаунта.
+  ///
+  /// Локальные данные стираются только после успеха на сервере: обрыв связи не
+  /// должен стоить человеку скачанного банка и неотправленных ответов при
+  /// живом аккаунте. Ошибка пробрасывается — экран покажет её и оставит
+  /// пользователя в сессии.
+  Future<void> deleteAccount() async {
+    await _auth.deleteAccount();
+    await _ref.read(appDatabaseProvider).wipe();
+    state = const SessionState(status: SessionStatus.signedOut);
+  }
+
   Future<void> logout() async {
     // Скачанный банк и локальные ответы — данные конкретного человека.
     // Следующему владельцу устройства они доставаться не должны.

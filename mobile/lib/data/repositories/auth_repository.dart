@@ -30,6 +30,13 @@ class AuthRepository {
 
   Future<void> logout() => _tokens.clear();
 
+  /// Необратимое удаление аккаунта. Токены чистим сами: сервер их не отзывает
+  /// поимённо, а после удаления пользователя они всё равно недействительны.
+  Future<void> deleteAccount() async {
+    await _client.delete('/me');
+    await _tokens.clear();
+  }
+
   Future<bool> get hasSession => _tokens.hasSession;
 
   Future<UserProfile> me() async => UserProfile.fromJson(await _client.get('/me'));

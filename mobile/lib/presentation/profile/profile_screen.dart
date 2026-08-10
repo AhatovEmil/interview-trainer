@@ -102,8 +102,109 @@ class _StatsView extends StatelessWidget {
             _EmptyTopics()
           else
             ...stats.topics.map((TopicStats topic) => _TopicRow(topic: topic)),
+          const SizedBox(height: 40),
+          const _DangerZone(),
         ],
       );
+}
+
+/// Удаление аккаунта.
+///
+/// Живёт внизу профиля, а не в списке действий: это необратимая операция, и
+/// попасть в неё случайно не должно быть легко. Требование магазинов —
+/// удаление должно быть доступно из самого приложения.
+class _DangerZone extends ConsumerStatefulWidget {
+  const _DangerZone();
+
+  @override
+  ConsumerState<_DangerZone> createState() => _DangerZoneState();
+}
+
+class _DangerZoneState extends ConsumerState<_DangerZone> {
+  bool _isDeleting = false;
+
+  Future<void> _confirmAndDelete() async {
+    final bool confirmed = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Удалить аккаунт?'),
+            content: const Text(
+              'Пропадут все ответы, рейтинги по темам, очередь повторений и '
+              'планы подготовки. Восстановить их будет нельзя.',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Отмена'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(foregroundColor: context.colors.critical),
+                child: const Text('Удалить'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirmed) {
+      return;
+    }
+
+    setState(() => _isDeleting = true);
+    try {
+      await ref.read(sessionProvider.notifier).deleteAccount();
+      // Дальше роутер сам уводит на экран входа: сессии больше нет.
+    } on Object catch (error) {
+      if (mounted) {
+        setState(() => _isDeleting = false);
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(error.toString()),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AppColors colors = context.colors;
+    final ThemeData theme = Theme.of(context);
+
+    return SurfaceCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('Удаление аккаунта', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 6),
+          Text(
+            'Удалим всё: ответы, рейтинги, повторения и планы. Это необратимо.',
+            style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: _isDeleting ? null : _confirmAndDelete,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: colors.critical,
+              side: BorderSide(color: colors.critical),
+            ),
+            child: _isDeleting
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2.2),
+                  )
+                : const Text('Удалить аккаунт'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Главный блок: оценка уровня крупным планом.
