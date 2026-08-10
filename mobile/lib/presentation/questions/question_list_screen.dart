@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/inline_markup.dart';
+import '../../core/plural.dart';
 import '../../core/router/app_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -25,6 +26,26 @@ class QuestionListScreen extends ConsumerStatefulWidget {
 class _QuestionListScreenState extends ConsumerState<QuestionListScreen> {
   _Filter _filter = _Filter.all;
 
+  final TextEditingController _search = TextEditingController();
+  String _query = '';
+  bool _searching = false;
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      _searching = !_searching;
+      if (!_searching) {
+        _search.clear();
+        _query = '';
+      }
+    });
+  }
+
   /// Уровень, по которому отфильтрован список. `null` — показывать все.
   ///
   /// По умолчанию берётся целевой уровень из профиля: человек его уже выбрал,
@@ -46,7 +67,19 @@ class _QuestionListScreenState extends ConsumerState<QuestionListScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Все вопросы')),
+      appBar: AppBar(
+        title: _searching
+            ? _SearchField(controller: _search, onChanged: (String v) => setState(() => _query = v))
+            : const Text('Все вопросы'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(_searching ? Icons.close_rounded : Icons.search_rounded),
+            tooltip: _searching ? 'Закрыть поиск' : 'Найти вопрос',
+            onPressed: _toggleSearch,
+          ),
+          const SizedBox(width: 4),
+        ],
+      ),
       body: ref.watch(questionListProvider(specialization)).when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (Object error, StackTrace _) => _Error(
@@ -59,6 +92,7 @@ class _QuestionListScreenState extends ConsumerState<QuestionListScreen> {
                 summary: summary,
                 filter: _filter,
                 grade: _grade,
+                query: _query,
                 onFilter: (_Filter value) => setState(() => _filter = value),
                 onGrade: () => _pickGrade(summary),
                 onOpen: (QuestionListItem item) => context.push(
@@ -94,9 +128,9 @@ const int _anyGrade = -1;
 
 enum _Filter {
   all('Все'),
-  unanswered('Не решённые'),
+  unanswered('Новые'),
   wrong('Ошибки'),
-  due('К повторению');
+  due('Повторить');
 
   const _Filter(this.label);
 
@@ -116,6 +150,7 @@ class _Body extends StatelessWidget {
     required this.summary,
     required this.filter,
     required this.grade,
+    required this.query,
     required this.onFilter,
     required this.onGrade,
     required this.onOpen,
@@ -124,12 +159,15 @@ class _Body extends StatelessWidget {
   final QuestionListSummary summary;
   final _Filter filter;
   final int? grade;
+  final String query;
   final ValueChanged<_Filter> onFilter;
   final VoidCallback onGrade;
   final ValueChanged<QuestionListItem> onOpen;
 
   @override
   Widget build(BuildContext context) {
+    final bool isSearching = query.trim().isNotEmpty;
+
     // Уровень отсекает первым: счётчики у остальных фильтров должны считаться
     // от того, что человек реально видит, а не от всего банка.
     final List<QuestionListItem> byGrade = grade == null
@@ -138,7 +176,14 @@ class _Body extends StatelessWidget {
             .where((QuestionListItem item) => item.suitsGrade(grade!))
             .toList(growable: false);
 
-    final List<QuestionListItem> visible = byGrade.where(filter.matches).toList(growable: false);
+    // Поиск идёт по всему банку и не оглядывается на фильтры. Иначе человек,
+    // ищущий конкретную формулировку, получал бы пусто из-за выставленного
+    // уровня и решал, что такого вопроса нет.
+    final List<QuestionListItem> visible = isSearching
+        ? summary.items
+            .where((QuestionListItem item) => item.matchesQuery(query))
+            .toList(growable: false)
+        : byGrade.where(filter.matches).toList(growable: false);
 
     final Map<String, List<QuestionListItem>> grouped = <String, List<QuestionListItem>>{};
     for (final QuestionListItem item in visible) {
@@ -147,15 +192,21 @@ class _Body extends StatelessWidget {
 
     return CustomScrollView(
       slivers: <Widget>[
-        SliverToBoxAdapter(
-          child: _GradeButton(grade: grade, total: byGrade.length, onTap: onGrade),
-        ),
-        SliverToBoxAdapter(
-          child: _Filters(current: filter, onChanged: onFilter, items: byGrade),
-        ),
+        if (isSearching)
+          SliverToBoxAdapter(child: _SearchSummary(found: visible.length))
+        else ...<Widget>[
+          SliverToBoxAdapter(
+            child: _GradeButton(grade: grade, total: byGrade.length, onTap: onGrade),
+          ),
+          SliverToBoxAdapter(
+            child: _Filters(current: filter, onChanged: onFilter, items: byGrade),
+          ),
+        ],
         if (visible.isEmpty)
           SliverToBoxAdapter(
-            child: _Empty(filter: filter, grade: grade, onGrade: onGrade),
+            child: isSearching
+                ? _NothingFound(query: query)
+                : _Empty(filter: filter, grade: grade, onGrade: onGrade),
           )
         else
           for (final MapEntry<String, List<QuestionListItem>> entry in grouped.entries) ...<Widget>[
@@ -183,7 +234,8 @@ class _Body extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: _QuestionRow(
                   item: entry.value[index],
-                  showOutOfRange: grade == null && !entry.value[index].inGradeRange,
+                  showOutOfRange:
+                      !isSearching && grade == null && !entry.value[index].inGradeRange,
                   onTap: () => onOpen(entry.value[index]),
                 ),
               ),
@@ -191,6 +243,110 @@ class _Body extends StatelessWidget {
           ],
         const SliverToBoxAdapter(child: SizedBox(height: 32)),
       ],
+    );
+  }
+}
+
+/// Строка поиска в шапке.
+///
+/// Открывается кнопкой и сразу забирает фокус: человек нажал лупу, значит уже
+/// знает, что искать, и лишнее касание по полю ему ни к чему.
+class _SearchField extends StatefulWidget {
+  const _SearchField({required this.controller, required this.onChanged});
+
+  final TextEditingController controller;
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<_SearchField> createState() => _SearchFieldState();
+}
+
+class _SearchFieldState extends State<_SearchField> {
+  final FocusNode _focus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _focus.requestFocus());
+  }
+
+  @override
+  void dispose() {
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AppColors colors = context.colors;
+
+    return TextField(
+      controller: widget.controller,
+      focusNode: _focus,
+      onChanged: widget.onChanged,
+      textInputAction: TextInputAction.search,
+      style: Theme.of(context).textTheme.titleMedium,
+      decoration: InputDecoration(
+        hintText: 'Слово из вопроса или раздел',
+        hintStyle: Theme.of(context).textTheme.titleMedium?.copyWith(color: colors.inkMuted),
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
+      ),
+    );
+  }
+}
+
+/// Итог поиска. Отдельной строкой, а не в шапке: в шапке уже поле ввода, и
+/// счётчик там читался бы как часть запроса.
+class _SearchSummary extends StatelessWidget {
+  const _SearchSummary({required this.found});
+
+  final int found;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 2),
+      child: Text(
+        found == 0 ? 'Ничего не нашлось' : 'Найдено ${questionsLabel(found)} во всём банке',
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colors.inkMuted),
+      ),
+    );
+  }
+}
+
+class _NothingFound extends StatelessWidget {
+  const _NothingFound({required this.query});
+
+  final String query;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final AppColors colors = context.colors;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(32, 60, 32, 32),
+      child: Column(
+        children: <Widget>[
+          Icon(Icons.search_off_rounded, size: 34, color: colors.inkMuted),
+          const SizedBox(height: 14),
+          Text(
+            'По запросу «$query» ничего нет',
+            style: theme.textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Поиск идёт по формулировке и разделу. Попробуйте одно слово вместо фразы.',
+            style: theme.textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -552,7 +708,10 @@ class _QuestionRow extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       stripInlineMarkup(item.title),
-                      maxLines: 2,
+                      // Три строки вместо двух: формулировки в банке длинные, и
+                      // на двух строках обрывались посреди слова — понять, о чём
+                      // вопрос, было нельзя, не открыв его.
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: colors.inkPrimary,
@@ -565,10 +724,14 @@ class _QuestionRow extends StatelessWidget {
                       runSpacing: 4,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: <Widget>[
-                        Text(
-                          look.label,
-                          style: theme.textTheme.labelMedium?.copyWith(color: look.tone),
-                        ),
+                        // У неотвеченного вопроса подпись «Не отвечен» дублирует
+                        // пустой кружок слева и занимает место, которое нужнее
+                        // формулировке.
+                        if (item.status.isAnswered)
+                          Text(
+                            look.label,
+                            style: theme.textTheme.labelMedium?.copyWith(color: look.tone),
+                          ),
                         Text(
                           Grade.title(item.peakGrade),
                           style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),

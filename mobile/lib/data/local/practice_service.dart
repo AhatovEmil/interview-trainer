@@ -50,7 +50,12 @@ class PracticeService {
 
   // --- выдача -----------------------------------------------------------------
 
-  Future<NextQuestion?> nextQuestion(String specializationId) async {
+  /// Следующий вопрос: сперва просроченные повторения, потом новые.
+  ///
+  /// [skipId] исключает вопрос, который человек только что пропустил. Без
+  /// этого «другой вопрос» мог вернуть тот же самый: повторение всегда идёт
+  /// первым в очереди, а новый выбирается случайно из короткого списка.
+  Future<NextQuestion?> nextQuestion(String specializationId, {String? skipId}) async {
     final Profile? profile = await _db.profileFor(specializationId);
     if (profile == null) {
       return null;
@@ -59,6 +64,9 @@ class PracticeService {
     final DateTime now = _now();
     final List<ReviewState> due = await _db.dueReviews(now);
     for (final ReviewState state in due) {
+      if (state.questionId == skipId) {
+        continue;
+      }
       final BankQuestion? candidate = _bank.byId(state.questionId);
       if (candidate != null && candidate.specializations.contains(specializationId)) {
         return NextQuestion(
@@ -69,14 +77,14 @@ class PracticeService {
       }
     }
 
-    final BankQuestion? fresh = await _pickNew(specializationId, profile.targetGrade);
+    final BankQuestion? fresh = await _pickNew(specializationId, profile.targetGrade, skipId);
     if (fresh == null) {
       return null;
     }
     return NextQuestion(question: fresh.question, isReview: false, dueAt: null);
   }
 
-  Future<BankQuestion?> _pickNew(String specializationId, int targetGrade) async {
+  Future<BankQuestion?> _pickNew(String specializationId, int targetGrade, String? skipId) async {
     final Set<String> answered = await _db.answeredQuestionIds(specializationId);
     final Map<String, TopicRating> ratings = await _db.ratingsFor(specializationId);
     final Map<String, double> weights = _bank.topicWeights(specializationId, targetGrade);
@@ -86,6 +94,7 @@ class PracticeService {
         .where(
           (BankQuestion item) =>
               !answered.contains(item.question.id) &&
+              item.question.id != skipId &&
               item.question.minGrade <= targetGrade &&
               item.question.maxGrade >= targetGrade,
         )

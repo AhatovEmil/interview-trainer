@@ -97,6 +97,9 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
         return QuestionCard(
           next: state.current!,
           isSubmitting: state.isSubmitting,
+          // Пропуск есть только в адаптивной ленте: вопрос, открытый из
+          // списка, человек выбрал сам.
+          onSkip: controller.isSingleQuestion ? null : controller.skip,
           onSubmitChoice: (List<String> codes) =>
               _submit(context, ref, controller, specialization, selectedOptions: codes),
           onSubmitSelfAssessment: (int quality) =>

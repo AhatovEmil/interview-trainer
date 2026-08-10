@@ -66,6 +66,22 @@ class QuestionListItem {
   /// Спрашивают ли этот вопрос на таком уровне.
   bool suitsGrade(int grade) => minGrade <= grade && grade <= maxGrade;
 
+  /// Совпадает ли вопрос с поисковым запросом.
+  ///
+  /// Ищем и по формулировке, и по названию раздела: человек одинаково часто
+  /// помнит либо слово из вопроса, либо тему целиком («покажи всё про
+  /// транзакции»). Запрос разбивается на слова, и все они должны найтись —
+  /// иначе «gil потоки» выдавало бы всё, где есть хоть одно из двух.
+  bool matchesQuery(String query) {
+    final String haystack = '$title $topicTitle'.toLowerCase();
+    for (final String word in query.toLowerCase().split(RegExp(r'\s+'))) {
+      if (word.isNotEmpty && !haystack.contains(word)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   factory QuestionListItem.fromJson(Map<String, dynamic> json) => QuestionListItem(
         id: json['id'] as String,
         title: json['title'] as String,
@@ -105,6 +121,12 @@ class QuestionListSummary {
   final List<QuestionListItem> items;
 
   double get progress => total == 0 ? 0 : answered / total;
+
+  /// Сколько вопросов ждут повторения прямо сейчас.
+  ///
+  /// Планировщик работал и раньше, но нигде не был виден: человек не знал, что
+  /// к нему что-то вернулось, и повторения делались только случайно.
+  int get dueCount => items.where((QuestionListItem item) => item.isDue).length;
 
   /// Вопросы, сгруппированные по разделу, в порядке появления.
   Map<String, List<QuestionListItem>> get byTopic {

@@ -57,7 +57,18 @@ class HomeScreen extends ConsumerWidget {
             ref.watch(questionListProvider(specialization)).when(
                   loading: () => const _ProgressPlaceholder(),
                   error: (Object error, StackTrace _) => _OfflineNote(message: error.toString()),
-                  data: (QuestionListSummary summary) => _Progress(summary: summary),
+                  data: (QuestionListSummary summary) => Column(
+                    children: <Widget>[
+                      if (summary.dueCount > 0) ...<Widget>[
+                        _DueCard(
+                          count: summary.dueCount,
+                          onTap: () => context.push(AppRoutes.practice),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      _Progress(summary: summary),
+                    ],
+                  ),
                 ),
             const SizedBox(height: 24),
             const SectionLabel('Куда дальше'),
@@ -154,6 +165,64 @@ class _SpecializationCard extends ConsumerWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// Напоминание о повторениях.
+///
+/// Интервальные повторения — половина ценности продукта, но раньше о них
+/// нигде не говорилось: вопрос возвращался в выдачу молча, и человек не знал,
+/// что к нему что-то накопилось. Карточка появляется, только когда есть что
+/// повторять, — постоянный ноль превратился бы в фон.
+class _DueCard extends StatelessWidget {
+  const _DueCard({required this.count, required this.onTap});
+
+  final int count;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final AppColors colors = context.colors;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppTypography.radiusLarge),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: colors.accentWash,
+            borderRadius: BorderRadius.circular(AppTypography.radiusLarge),
+            border: Border.all(color: colors.accent.withValues(alpha: 0.35)),
+          ),
+          child: Row(
+            children: <Widget>[
+              Icon(Icons.history_rounded, size: 22, color: colors.accent),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'К повторению ${questionsLabel(count)}',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Сроки подошли — тренировка начнёт с них',
+                      style: theme.textTheme.bodySmall?.copyWith(color: colors.inkSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded, size: 20, color: colors.accent),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -367,7 +436,3 @@ class _ActionTile extends StatelessWidget {
     );
   }
 }
-
-/// Подпись под счётчиком вопросов: «12 вопросов».
-String questionsLabel(int count) =>
-    withPlural(count, 'вопрос', 'вопроса', 'вопросов');

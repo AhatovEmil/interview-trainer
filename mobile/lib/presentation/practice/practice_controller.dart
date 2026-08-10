@@ -67,12 +67,20 @@ class PracticeController extends StateNotifier<PracticeState> {
   /// повторное нажатие не должно посчитаться вторым ответом.
   String _submissionId = '';
 
-  Future<void> loadNext() async {
+  /// Пропустить вопрос, не отвечая.
+  ///
+  /// Нужен, когда вопрос не про то, к чему человек готовится прямо сейчас.
+  /// Ответ не записывается: пропуск — не «не знаю», и в оценку уровня он
+  /// попадать не должен. Вопрос вернётся позже, в обычном порядке.
+  Future<void> skip() => loadNext(skipCurrent: true);
+
+  Future<void> loadNext({bool skipCurrent = false}) async {
+    final String? skipId = skipCurrent ? state.current?.question.id : null;
     state = state.copyWith(phase: PracticePhase.loading, clearResult: true);
     try {
       final String? fixed = _fixedQuestionId;
       final NextQuestion? next = fixed == null
-          ? await _service.nextQuestion(_specialization)
+          ? await _service.nextQuestion(_specialization, skipId: skipId)
           : await _service.questionById(_specialization, fixed);
 
       if (next == null) {
