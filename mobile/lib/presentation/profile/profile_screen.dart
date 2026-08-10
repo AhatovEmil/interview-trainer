@@ -94,8 +94,44 @@ class _StatsView extends StatelessWidget {
             ...stats.topics.map((TopicStats topic) => _TopicRow(topic: topic)),
           const SizedBox(height: 40),
           const _DangerZone(),
+          const SizedBox(height: 20),
+          const _PrivacyNote(),
         ],
       );
+}
+
+/// Что приложение делает с данными.
+///
+/// Магазины требуют, чтобы политика была доступна и из приложения, а не только
+/// по ссылке в карточке. Здесь же самое важное сказано прямо, без перехода:
+/// большинство людей по ссылке не пойдёт.
+class _PrivacyNote extends StatelessWidget {
+  const _PrivacyNote();
+
+  static const String _policyUrl =
+      'https://ahatovemil.github.io/interview-trainer/privacy.html';
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final AppColors colors = context.colors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Приложение не собирает данные и не выходит в сеть. Ответы и прогресс '
+          'остаются на этом устройстве.',
+          style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
+        ),
+        const SizedBox(height: 8),
+        SelectableText(
+          _policyUrl,
+          style: theme.textTheme.bodySmall?.copyWith(color: colors.accent),
+        ),
+      ],
+    );
+  }
 }
 
 /// Стирание прогресса.

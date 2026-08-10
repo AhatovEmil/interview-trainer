@@ -11,7 +11,6 @@ from fastapi import FastAPI
 from app import __version__
 from app.api.errors import register_error_handlers
 from app.api.health import router as health_router
-from app.api.public import router as public_router
 from app.api.v1.router import api_router
 from app.core.config import Settings, get_settings
 from app.db.redis import close_redis
@@ -44,9 +43,6 @@ def create_app() -> FastAPI:
     )
     register_error_handlers(app)
     app.include_router(health_router)
-    # Вне версии API: адреса страниц указываются в карточке приложения в
-    # магазине и меняться при выходе v2 не должны.
-    app.include_router(public_router)
     app.include_router(api_router, prefix=settings.api_v1_prefix)
     return app
 
