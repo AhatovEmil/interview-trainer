@@ -2,15 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../presentation/auth/login_screen.dart';
-import '../../presentation/auth/register_screen.dart';
 import '../../presentation/home/home_screen.dart';
 import '../../presentation/onboarding/onboarding_screen.dart';
-import '../../presentation/plan/plan_screen.dart';
 import '../../presentation/practice/practice_screen.dart';
 import '../../presentation/profile/profile_screen.dart';
 import '../../presentation/questions/question_list_screen.dart';
-import '../../presentation/report/report_question_screen.dart';
 import '../../presentation/providers.dart';
 import '../../presentation/splash_screen.dart';
 
@@ -18,8 +14,6 @@ class AppRoutes {
   const AppRoutes._();
 
   static const String splash = '/';
-  static const String login = '/login';
-  static const String register = '/register';
   static const String onboarding = '/onboarding';
 
   /// Точка входа после онбординга: обзор, выбор специализации, переходы.
@@ -27,12 +21,6 @@ class AppRoutes {
   static const String practice = '/practice';
   static const String questions = '/questions';
   static const String profile = '/profile';
-
-  /// Краудсорсинг: пользователь присылает вопрос со своего собеседования.
-  static const String report = '/report';
-
-  /// План подготовки к дате собеседования и экран «сегодня».
-  static const String plan = '/plan';
 }
 
 final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
@@ -46,14 +34,6 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
       GoRoute(
         path: AppRoutes.splash,
         builder: (BuildContext context, GoRouterState state) => const SplashScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.login,
-        builder: (BuildContext context, GoRouterState state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.register,
-        builder: (BuildContext context, GoRouterState state) => const RegisterScreen(),
       ),
       GoRoute(
         path: AppRoutes.onboarding,
@@ -82,39 +62,22 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
         path: AppRoutes.profile,
         builder: (BuildContext context, GoRouterState state) => const ProfileScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.report,
-        builder: (BuildContext context, GoRouterState state) => const ReportQuestionScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.plan,
-        builder: (BuildContext context, GoRouterState state) => const PlanScreen(),
-      ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
       final SessionStatus status = ref.read(sessionProvider).status;
       final String location = state.matchedLocation;
 
-      if (status == SessionStatus.unknown) {
-        return location == AppRoutes.splash ? null : AppRoutes.splash;
-      }
-
-      final bool onAuthScreen =
-          location == AppRoutes.login || location == AppRoutes.register;
-
       switch (status) {
-        case SessionStatus.signedOut:
-          return onAuthScreen ? null : AppRoutes.login;
+        case SessionStatus.unknown:
+          // Профиль ещё читается из базы: держим заставку, чтобы не мигнуть
+          // онбордингом человеку, который его давно прошёл.
+          return location == AppRoutes.splash ? null : AppRoutes.splash;
         case SessionStatus.needsOnboarding:
           return location == AppRoutes.onboarding ? null : AppRoutes.onboarding;
         case SessionStatus.ready:
-          if (onAuthScreen ||
-              location == AppRoutes.splash ||
-              location == AppRoutes.onboarding) {
+          if (location == AppRoutes.splash || location == AppRoutes.onboarding) {
             return AppRoutes.home;
           }
-          return null;
-        case SessionStatus.unknown:
           return null;
       }
     },

@@ -57,10 +57,10 @@ class _SpecializationSheetState extends ConsumerState<_SpecializationSheet> {
     final AppColors colors = context.colors;
     final SessionState session = ref.watch(sessionProvider);
     final String? current = session.specializationId;
-    final int grade = session.profile?.primary?.selfAssessedGrade ?? 3;
+    final int grade = session.profile?.selfAssessedGrade ?? 3;
     // При переключении стека уровни переносятся как есть: человек не меняет
     // грейд, он меняет язык, и переспрашивать было бы навязчиво.
-    final int target = session.profile?.primary?.targetGrade ?? grade;
+    final int target = session.profile?.targetGrade ?? grade;
 
     return SafeArea(
       child: ConstrainedBox(
@@ -94,23 +94,15 @@ class _SpecializationSheetState extends ConsumerState<_SpecializationSheet> {
               ),
             ),
             Flexible(
-              child: ref.watch(taxonomyProvider).when(
-                    loading: () => const Padding(
-                      padding: EdgeInsets.all(40),
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                    error: (Object error, StackTrace _) => Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(error.toString(), style: theme.textTheme.bodyMedium),
-                    ),
-                    data: (Taxonomy taxonomy) => _List(
-                      taxonomy: taxonomy,
-                      current: current,
-                      switching: _switching,
-                      onSelected: (Specialization specialization) =>
-                          _select(specialization, grade, target),
-                    ),
-                  ),
+              // Таксономия лежит в ресурсах приложения — ждать и падать здесь
+              // нечему, состояний загрузки и ошибки больше нет.
+              child: _List(
+                taxonomy: ref.watch(taxonomyProvider),
+                current: current,
+                switching: _switching,
+                onSelected: (Specialization specialization) =>
+                    _select(specialization, grade, target),
+              ),
             ),
           ],
         ),

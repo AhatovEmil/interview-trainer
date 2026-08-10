@@ -4,10 +4,22 @@ import 'package:go_router/go_router.dart';
 
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'data/content/question_bank.dart';
+import 'presentation/providers.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const ProviderScope(child: InterviewTrainerApp()));
+
+  // Банк читается один раз до запуска интерфейса. Иначе каждый экран, которому
+  // нужен вопрос, ждал бы разбора файла и обрастал состоянием загрузки.
+  final QuestionBank bank = await QuestionBank.load();
+
+  runApp(
+    ProviderScope(
+      overrides: <Override>[questionBankProvider.overrideWithValue(bank)],
+      child: const InterviewTrainerApp(),
+    ),
+  );
 }
 
 class InterviewTrainerApp extends ConsumerWidget {

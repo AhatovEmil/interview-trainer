@@ -63,7 +63,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final AsyncValue<Taxonomy> taxonomy = ref.watch(taxonomyProvider);
+    // Таксономия лежит в ресурсах приложения: ждать нечего и падать нечему.
+    final Taxonomy taxonomy = ref.watch(taxonomyProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -79,14 +80,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ),
         ),
       ),
-      body: taxonomy.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object error, StackTrace _) => _ErrorState(
-          error: error,
-          onRetry: () => ref.invalidate(taxonomyProvider),
-        ),
-        data: (Taxonomy data) => SafeArea(child: _buildStep(data)),
-      ),
+      body: SafeArea(child: _buildStep(taxonomy)),
     );
   }
 
@@ -298,26 +292,3 @@ class _GradeStep extends StatelessWidget {
   }
 }
 
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.error, required this.onRetry});
-
-  final Object error;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(error.toString(), textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            OutlinedButton(onPressed: onRetry, child: const Text('Повторить')),
-          ],
-        ),
-      ),
-    );
-  }
-}

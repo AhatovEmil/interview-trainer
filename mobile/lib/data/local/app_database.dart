@@ -3,263 +3,265 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 part 'app_database.g.dart';
 
-/// Скачанный банк вопросов.
+/// Локальное состояние пользователя.
 ///
-/// Вопрос может относиться к нескольким специализациям, поэтому ключ составной:
-/// одна и та же формулировка живёт в пакете каждого стека, к которому привязана.
-class CachedQuestions extends Table {
-  TextColumn get id => text()();
+/// Вопросы здесь не хранятся: банк едет в ресурсах приложения и живёт в памяти.
+/// В базе только то, что накопил человек, — профиль, ответы, рейтинги по темам
+/// и очередь повторений. Разделение простое: контент неизменяем и одинаков у
+/// всех, состояние уникально и должно пережить обновление приложения.
+
+/// Выбранная специализация с уровнями.
+///
+/// Строк несколько: прогресс хранится по каждой специализации отдельно, а
+/// основная ровно одна (CLAUDE.md §3.1).
+class Profiles extends Table {
   TextColumn get specializationId => text()();
-  TextColumn get type => text()();
-  TextColumn get title => text()();
-  TextColumn get topicCode => text()();
-  TextColumn get topicTitle => text()();
-  TextColumn get subtopicCode => text().nullable()();
-  TextColumn get subtopicTitle => text().nullable()();
-  IntColumn get minGrade => integer()();
-  IntColumn get peakGrade => integer()();
-  IntColumn get maxGrade => integer()();
-  IntColumn get frequency => integer()();
 
-  /// Варианты вместе с признаком правильности: без него офлайн не проверить ответ.
-  TextColumn get optionsJson => text()();
-  BoolColumn get isVerified => boolean()();
+  /// Где человек сейчас — стартовая точка для оценки.
+  IntColumn get selfAssessedGrade => integer()();
 
-  TextColumn get answerShort => text()();
-  TextColumn get answerDetailed => text()();
-  TextColumn get commonMistakesJson => text()();
-  TextColumn get followUpsJson => text()();
+  /// К какому уровню готовится — именно он определяет выдачу.
+  IntColumn get targetGrade => integer()();
+
+  BoolColumn get isPrimary => boolean().withDefault(const Constant(false))();
+  IntColumn get answersCount => integer().withDefault(const Constant(0))();
   DateTimeColumn get updatedAt => dateTime()();
-
-  @override
-  Set<Column<Object>> get primaryKey => <Column<Object>>{id, specializationId};
-}
-
-/// Ответы, данные на устройстве.
-///
-/// Одна таблица работает и очередью на отправку, и памятью о пройденном:
-/// `syncedAt IS NULL` — ещё не улетело, иначе уже на сервере. Строки не удаляем
-/// после отправки, иначе офлайн начнёт заново выдавать отвеченные вопросы.
-class LocalAnswers extends Table {
-  /// Ключ идемпотентности, сгенерированный на устройстве. Он же защищает от
-  /// дублей на сервере при повторной отправке пачки.
-  TextColumn get submissionId => text()();
-  TextColumn get questionId => text()();
-  TextColumn get specializationId => text()();
-  TextColumn get selectedOptionsJson => text().withDefault(const Constant('[]'))();
-  TextColumn get freeText => text().nullable()();
-  IntColumn get selfAssessment => integer().nullable()();
-
-  /// Результат, посчитанный на устройстве по тем же правилам, что и на сервере.
-  RealColumn get score => real()();
-  IntColumn get quality => integer()();
-
-  DateTimeColumn get answeredAt => dateTime()();
-  DateTimeColumn get syncedAt => dateTime().nullable()();
-  IntColumn get attempts => integer().withDefault(const Constant(0))();
-  TextColumn get lastError => text().nullable()();
-
-  @override
-  Set<Column<Object>> get primaryKey => <Column<Object>>{submissionId};
-}
-
-/// Отметка последней успешной синхронизации по каждой специализации.
-class SyncMetadata extends Table {
-  TextColumn get specializationId => text()();
-  DateTimeColumn get lastSyncedAt => dateTime().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => <Column<Object>>{specializationId};
 }
 
-/// Последний известный профиль.
+/// Факт ответа.
 ///
-/// Без него запуск без сети некуда вести: приложение не знает ни выбранной
-/// специализации, ни грейда, а `/me` в самолёте не ответит.
-class CachedProfile extends Table {
-  /// Строка всегда одна: профиль на устройстве ровно один.
-  IntColumn get id => integer().withDefault(const Constant(1))();
-  TextColumn get payloadJson => text()();
-  DateTimeColumn get savedAt => dateTime()();
+/// Хранятся все попытки, а не последняя: список вопросов показывает, чем
+/// закончилась именно последняя, но история нужна для счётчиков и для того,
+/// чтобы отвеченный вопрос не выдавался как новый.
+class Answers extends Table {
+  /// Идентификатор попытки. Защищает от двойной записи при повторном нажатии.
+  TextColumn get submissionId => text()();
+  TextColumn get questionId => text()();
+  TextColumn get specializationId => text()();
+
+  /// Раздел дублируется сюда, чтобы статистика не искала вопрос в банке.
+  TextColumn get topicCode => text()();
+
+  TextColumn get selectedOptionsJson => text().withDefault(const Constant('[]'))();
+  TextColumn get freeText => text().nullable()();
+  IntColumn get selfAssessment => integer().nullable()();
+
+  RealColumn get score => real()();
+  IntColumn get quality => integer()();
+
+  DateTimeColumn get answeredAt => dateTime()();
 
   @override
-  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+  Set<Column<Object>> get primaryKey => <Column<Object>>{submissionId};
 }
 
-@DriftDatabase(tables: <Type>[CachedQuestions, LocalAnswers, SyncMetadata, CachedProfile])
+/// Elo-рейтинг по паре (специализация, раздел).
+class TopicRatings extends Table {
+  TextColumn get specializationId => text()();
+  TextColumn get topicCode => text()();
+  RealColumn get rating => real()();
+  IntColumn get answersCount => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{specializationId, topicCode};
+}
+
+/// Состояние интервального повторения по вопросу.
+///
+/// Ключ без специализации: вопрос может относиться к нескольким стекам, но
+/// помнит его человек один раз.
+class ReviewStates extends Table {
+  TextColumn get questionId => text()();
+  RealColumn get easinessFactor => real()();
+  IntColumn get repetitions => integer()();
+  IntColumn get intervalDays => integer()();
+  DateTimeColumn get dueAt => dateTime()();
+  DateTimeColumn get lastReviewedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{questionId};
+}
+
+@DriftDatabase(tables: <Type>[Profiles, Answers, TopicRatings, ReviewStates])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'interview_trainer'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
-  // --- банк вопросов ----------------------------------------------------------
-
-  Future<void> upsertQuestions(List<CachedQuestionsCompanion> questions) async {
-    if (questions.isEmpty) {
-      return;
-    }
-    await batch((Batch batch) {
-      batch.insertAllOnConflictUpdate(cachedQuestions, questions);
-    });
-  }
-
-  Future<int> countQuestions(String specializationId) async {
-    final Expression<int> total = cachedQuestions.id.count();
-    final JoinedSelectStatement<HasResultSet, Object> query = selectOnly(cachedQuestions)
-      ..addColumns(<Expression<Object>>[total])
-      ..where(cachedQuestions.specializationId.equals(specializationId));
-    return await query.map((TypedResult row) => row.read(total) ?? 0).getSingle();
-  }
-
-  /// Вопросы, подходящие грейду и ещё не отвеченные на этом устройстве.
-  Future<List<CachedQuestion>> unansweredQuestions({
-    required String specializationId,
-    required int grade,
-  }) async {
-    final Set<String> answered = await answeredQuestionIds(specializationId);
-
-    final List<CachedQuestion> rows = await (select(cachedQuestions)
-          ..where(
-            (CachedQuestions table) =>
-                table.specializationId.equals(specializationId) &
-                table.minGrade.isSmallerOrEqualValue(grade) &
-                table.maxGrade.isBiggerOrEqualValue(grade),
-          ))
-        .get();
-
-    return rows
-        .where((CachedQuestion question) => !answered.contains(question.id))
-        .toList(growable: false);
-  }
-
-  Future<CachedQuestion?> questionById(String questionId, String specializationId) =>
-      (select(cachedQuestions)
-            ..where(
-              (CachedQuestions table) =>
-                  table.id.equals(questionId) &
-                  table.specializationId.equals(specializationId),
-            ))
-          .getSingleOrNull();
-
-  // --- ответы -----------------------------------------------------------------
-
-  Future<void> saveAnswer(LocalAnswersCompanion answer) =>
-      into(localAnswers).insertOnConflictUpdate(answer);
-
-  Future<Set<String>> answeredQuestionIds(String specializationId) async {
-    final List<LocalAnswer> rows = await (select(localAnswers)
-          ..where((LocalAnswers table) => table.specializationId.equals(specializationId)))
-        .get();
-    return rows.map((LocalAnswer answer) => answer.questionId).toSet();
-  }
-
-  /// Очередь на отправку, по возрастанию времени ответа: сервер пересчитывает
-  /// Elo последовательно, поэтому порядок должен совпадать с реальным.
-  Future<List<LocalAnswer>> pendingAnswers({int limit = 200}) => (select(localAnswers)
-        ..where((LocalAnswers table) => table.syncedAt.isNull())
-        ..orderBy(<OrderClauseGenerator<LocalAnswers>>[
-          (LocalAnswers table) => OrderingTerm.asc(table.answeredAt),
-        ])
-        ..limit(limit))
-      .get();
-
-  Future<int> pendingCount() async {
-    final Expression<int> total = localAnswers.submissionId.count();
-    final JoinedSelectStatement<HasResultSet, Object> query = selectOnly(localAnswers)
-      ..addColumns(<Expression<Object>>[total])
-      ..where(localAnswers.syncedAt.isNull());
-    return await query.map((TypedResult row) => row.read(total) ?? 0).getSingle();
-  }
-
-  Stream<int> watchPendingCount() {
-    final Expression<int> total = localAnswers.submissionId.count();
-    final JoinedSelectStatement<HasResultSet, Object> query = selectOnly(localAnswers)
-      ..addColumns(<Expression<Object>>[total])
-      ..where(localAnswers.syncedAt.isNull());
-    return query.map((TypedResult row) => row.read(total) ?? 0).watchSingle();
-  }
-
-  Future<void> markSynced(List<String> submissionIds, DateTime syncedAt) async {
-    if (submissionIds.isEmpty) {
-      return;
-    }
-    await (update(localAnswers)
-          ..where((LocalAnswers table) => table.submissionId.isIn(submissionIds)))
-        .write(LocalAnswersCompanion(syncedAt: Value<DateTime>(syncedAt)));
-  }
-
-  /// Отклонённый сервером ответ помечаем как обработанный: повторять его
-  /// бессмысленно, но и держать очередь заблокированной нельзя.
-  Future<void> markRejected(String submissionId, String error, DateTime at) =>
-      (update(localAnswers)..where((LocalAnswers table) => table.submissionId.equals(submissionId)))
-          .write(
-        LocalAnswersCompanion(
-          syncedAt: Value<DateTime>(at),
-          lastError: Value<String>(error),
-        ),
-      );
-
-  /// Отправка не удалась целиком (сеть отвалилась). Ответы остаются в очереди,
-  /// растёт лишь счётчик попыток — он нужен, чтобы отличить временный сбой от
-  /// вечно висящей записи. Инкремент колонки Companion выразить не умеет.
-  Future<void> recordFailure(List<String> submissionIds, String error) async {
-    if (submissionIds.isEmpty) {
-      return;
-    }
-    final String placeholders = List<String>.filled(submissionIds.length, '?').join(', ');
-    await customUpdate(
-      'UPDATE local_answers SET attempts = attempts + 1, last_error = ? '
-      'WHERE submission_id IN ($placeholders)',
-      variables: <Variable<Object>>[
-        Variable<String>(error),
-        ...submissionIds.map(Variable<String>.new),
-      ],
-      updates: <TableInfo<Table, Object?>>{localAnswers},
-    );
-  }
-
-  // --- метаданные синхронизации -----------------------------------------------
-
-  Future<DateTime?> lastSyncedAt(String specializationId) async {
-    final SyncMetadataData? row = await (select(syncMetadata)
-          ..where((SyncMetadata table) => table.specializationId.equals(specializationId)))
-        .getSingleOrNull();
-    return row?.lastSyncedAt;
-  }
-
-  Future<void> setLastSyncedAt(String specializationId, DateTime value) =>
-      into(syncMetadata).insertOnConflictUpdate(
-        SyncMetadataCompanion(
-          specializationId: Value<String>(specializationId),
-          lastSyncedAt: Value<DateTime>(value),
-        ),
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+        onCreate: (Migrator m) => m.createAll(),
+        onUpgrade: (Migrator m, int from, int to) async {
+          if (from < 2) {
+            // Версия 1 обслуживала синхронизацию с сервером: кеш вопросов,
+            // очередь отправки и профиль одним JSON. Сервера у приложения
+            // больше нет, схема стала другой. Приложение не публиковалось,
+            // переносить оттуда нечего — старые таблицы просто убираем.
+            for (final String table in <String>[
+              'cached_questions',
+              'local_answers',
+              'sync_metadata',
+              'cached_profile',
+            ]) {
+              await m.database.customStatement('DROP TABLE IF EXISTS $table');
+            }
+            await m.createAll();
+          }
+        },
       );
 
   // --- профиль ----------------------------------------------------------------
 
-  Future<void> saveProfile(String payloadJson) =>
-      into(cachedProfile).insertOnConflictUpdate(
-        CachedProfileCompanion.insert(
-          payloadJson: payloadJson,
-          savedAt: DateTime.now(),
+  Future<List<Profile>> allProfiles() => select(profiles).get();
+
+  Future<Profile?> primaryProfile() => (select(profiles)
+        ..where((Profiles table) => table.isPrimary.equals(true))
+        ..limit(1))
+      .getSingleOrNull();
+
+  Future<Profile?> profileFor(String specializationId) => (select(profiles)
+        ..where((Profiles table) => table.specializationId.equals(specializationId)))
+      .getSingleOrNull();
+
+  Stream<Profile?> watchPrimaryProfile() => (select(profiles)
+        ..where((Profiles table) => table.isPrimary.equals(true))
+        ..limit(1))
+      .watchSingleOrNull();
+
+  /// Сохраняет специализацию и делает её основной.
+  ///
+  /// Основная ровно одна, поэтому с остальных отметка снимается в той же
+  /// транзакции: два «основных» профиля означали бы, что главный экран
+  /// показывает один стек, а тренировка выдаёт вопросы другого.
+  Future<void> saveProfile({
+    required String specializationId,
+    required int selfAssessedGrade,
+    required int targetGrade,
+  }) =>
+      transaction(() async {
+        await (update(profiles)..where((Profiles table) => table.isPrimary.equals(true)))
+            .write(const ProfilesCompanion(isPrimary: Value<bool>(false)));
+
+        final Profile? existing = await profileFor(specializationId);
+        await into(profiles).insertOnConflictUpdate(
+          ProfilesCompanion(
+            specializationId: Value<String>(specializationId),
+            selfAssessedGrade: Value<int>(selfAssessedGrade),
+            targetGrade: Value<int>(targetGrade),
+            isPrimary: const Value<bool>(true),
+            // Счётчик ответов принадлежит прогрессу, а не выбору уровня:
+            // смена цели не должна его обнулять.
+            answersCount: Value<int>(existing?.answersCount ?? 0),
+            updatedAt: Value<DateTime>(DateTime.now()),
+          ),
+        );
+      });
+
+  // --- ответы -----------------------------------------------------------------
+
+  Future<void> saveAnswer(AnswersCompanion answer) =>
+      into(answers).insertOnConflictUpdate(answer);
+
+  Future<List<Answer>> answersFor(String specializationId) => (select(answers)
+        ..where((Answers table) => table.specializationId.equals(specializationId))
+        ..orderBy(<OrderClauseGenerator<Answers>>[
+          (Answers table) => OrderingTerm.asc(table.answeredAt),
+        ]))
+      .get();
+
+  Future<Set<String>> answeredQuestionIds(String specializationId) async {
+    final List<Answer> rows = await answersFor(specializationId);
+    return rows.map((Answer answer) => answer.questionId).toSet();
+  }
+
+  Future<int> countAnswers(String specializationId) async {
+    final Expression<int> total = answers.submissionId.count();
+    final JoinedSelectStatement<HasResultSet, Object> query = selectOnly(answers)
+      ..addColumns(<Expression<Object>>[total])
+      ..where(answers.specializationId.equals(specializationId));
+    return await query.map((TypedResult row) => row.read(total) ?? 0).getSingle();
+  }
+
+  /// Сколько ответов дано в этот день — норма плана считается по календарю.
+  Future<int> countAnswersSince(String specializationId, DateTime since) async {
+    final Expression<int> total = answers.submissionId.count();
+    final JoinedSelectStatement<HasResultSet, Object> query = selectOnly(answers)
+      ..addColumns(<Expression<Object>>[total])
+      ..where(
+        answers.specializationId.equals(specializationId) &
+            answers.answeredAt.isBiggerOrEqualValue(since),
+      );
+    return await query.map((TypedResult row) => row.read(total) ?? 0).getSingle();
+  }
+
+  Future<void> bumpAnswersCount(String specializationId) => customUpdate(
+        'UPDATE profiles SET answers_count = answers_count + 1 WHERE specialization_id = ?',
+        variables: <Variable<Object>>[Variable<String>(specializationId)],
+        updates: <TableInfo<Table, Object?>>{profiles},
+      );
+
+  // --- рейтинги ---------------------------------------------------------------
+
+  Future<Map<String, TopicRating>> ratingsFor(String specializationId) async {
+    final List<TopicRating> rows = await (select(topicRatings)
+          ..where((TopicRatings table) => table.specializationId.equals(specializationId)))
+        .get();
+    return <String, TopicRating>{
+      for (final TopicRating row in rows) row.topicCode: row,
+    };
+  }
+
+  Future<void> saveTopicRating({
+    required String specializationId,
+    required String topicCode,
+    required double rating,
+    required int answersCount,
+  }) =>
+      into(topicRatings).insertOnConflictUpdate(
+        TopicRatingsCompanion(
+          specializationId: Value<String>(specializationId),
+          topicCode: Value<String>(topicCode),
+          rating: Value<double>(rating),
+          answersCount: Value<int>(answersCount),
         ),
       );
 
-  Future<String?> loadProfile() async {
-    final CachedProfileData? row = await select(cachedProfile).getSingleOrNull();
-    return row?.payloadJson;
+  // --- повторения -------------------------------------------------------------
+
+  Future<ReviewState?> reviewStateFor(String questionId) => (select(reviewStates)
+        ..where((ReviewStates table) => table.questionId.equals(questionId)))
+      .getSingleOrNull();
+
+  Future<Map<String, ReviewState>> allReviewStates() async {
+    final List<ReviewState> rows = await select(reviewStates).get();
+    return <String, ReviewState>{
+      for (final ReviewState row in rows) row.questionId: row,
+    };
   }
 
-  /// Полная очистка — используется при выходе из аккаунта: чужие ответы и
-  /// прогресс не должны достаться следующему пользователю устройства.
-  Future<void> wipe() async {
-    await batch((Batch batch) {
-      batch.deleteAll(localAnswers);
-      batch.deleteAll(cachedQuestions);
-      batch.deleteAll(syncMetadata);
-      batch.deleteAll(cachedProfile);
-    });
-  }
+  /// Просроченные повторения, самые давние первыми.
+  Future<List<ReviewState>> dueReviews(DateTime now) => (select(reviewStates)
+        ..where((ReviewStates table) => table.dueAt.isSmallerOrEqualValue(now))
+        ..orderBy(<OrderClauseGenerator<ReviewStates>>[
+          (ReviewStates table) => OrderingTerm.asc(table.dueAt),
+        ]))
+      .get();
+
+  Future<void> saveReviewState(ReviewStatesCompanion state) =>
+      into(reviewStates).insertOnConflictUpdate(state);
+
+  // --- очистка ----------------------------------------------------------------
+
+  /// Полная очистка прогресса. Банк вопросов не трогает — он в ресурсах.
+  Future<void> wipe() => transaction(() async {
+        await delete(answers).go();
+        await delete(topicRatings).go();
+        await delete(reviewStates).go();
+        await delete(profiles).go();
+      });
 }

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response, status
 
 from app.core.deps import CurrentUser, SessionDep
 from app.core.grades import code_from_grade
@@ -36,6 +36,22 @@ async def update_me(
     specializations = await service.list_specializations(user)
     await session.commit()
     return _to_response(user, specializations)
+
+
+@router.delete(
+    "",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Удалить аккаунт со всеми данными",
+    description=(
+        "Необратимо. Удаляются профиль, ответы, рейтинги, очередь повторений, "
+        "планы подготовки и присланные вопросы. Восстановить нельзя — "
+        "регистрация с той же почтой создаст пустой аккаунт."
+    ),
+)
+async def delete_me(user: CurrentUser, session: SessionDep) -> Response:
+    await UserService(session).delete_account(user)
+    await session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 def _to_response(user: User, specializations: list[UserSpecialization]) -> UserResponse:

@@ -1,0 +1,20 @@
+# Образец файла с настройками подписи. Настоящий key.properties лежит рядом,
+# в git не попадает и создаётся на машине, где собирают релиз.
+#
+# Как создать ключ (один раз на всю жизнь приложения):
+#
+#   keytool -genkey -v -keystore upload-keystore.jks -storetype JKS \
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+# Файл .jks и пароли храните вне репозитория и в резервной копии. Потеря ключа
+# означает, что обновить опубликованное приложение уже нельзя — только выпускать
+# новое с другим идентификатором и терять установки.
+#
+# В CI те же значения приходят переменными окружения:
+# ANDROID_KEYSTORE_PATH, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS,
+# ANDROID_KEY_PASSWORD.
+
+storeFile=/absolute/path/to/upload-keystore.jks
+storePassword=пароль хранилища
+keyAlias=upload
+keyPassword=пароль ключа

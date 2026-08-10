@@ -3,120 +3,47 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $CachedQuestionsTable extends CachedQuestions
-    with TableInfo<$CachedQuestionsTable, CachedQuestion> {
+class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $CachedQuestionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  $ProfilesTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _specializationIdMeta =
       const VerificationMeta('specializationId');
   @override
   late final GeneratedColumn<String> specializationId = GeneratedColumn<String>(
       'specialization_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  static const VerificationMeta _selfAssessedGradeMeta =
+      const VerificationMeta('selfAssessedGrade');
   @override
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
-  @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _topicCodeMeta =
-      const VerificationMeta('topicCode');
-  @override
-  late final GeneratedColumn<String> topicCode = GeneratedColumn<String>(
-      'topic_code', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _topicTitleMeta =
-      const VerificationMeta('topicTitle');
-  @override
-  late final GeneratedColumn<String> topicTitle = GeneratedColumn<String>(
-      'topic_title', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _subtopicCodeMeta =
-      const VerificationMeta('subtopicCode');
-  @override
-  late final GeneratedColumn<String> subtopicCode = GeneratedColumn<String>(
-      'subtopic_code', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _subtopicTitleMeta =
-      const VerificationMeta('subtopicTitle');
-  @override
-  late final GeneratedColumn<String> subtopicTitle = GeneratedColumn<String>(
-      'subtopic_title', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
-  static const VerificationMeta _minGradeMeta =
-      const VerificationMeta('minGrade');
-  @override
-  late final GeneratedColumn<int> minGrade = GeneratedColumn<int>(
-      'min_grade', aliasedName, false,
+  late final GeneratedColumn<int> selfAssessedGrade = GeneratedColumn<int>(
+      'self_assessed_grade', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _peakGradeMeta =
-      const VerificationMeta('peakGrade');
+  static const VerificationMeta _targetGradeMeta =
+      const VerificationMeta('targetGrade');
   @override
-  late final GeneratedColumn<int> peakGrade = GeneratedColumn<int>(
-      'peak_grade', aliasedName, false,
+  late final GeneratedColumn<int> targetGrade = GeneratedColumn<int>(
+      'target_grade', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _maxGradeMeta =
-      const VerificationMeta('maxGrade');
+  static const VerificationMeta _isPrimaryMeta =
+      const VerificationMeta('isPrimary');
   @override
-  late final GeneratedColumn<int> maxGrade = GeneratedColumn<int>(
-      'max_grade', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _frequencyMeta =
-      const VerificationMeta('frequency');
-  @override
-  late final GeneratedColumn<int> frequency = GeneratedColumn<int>(
-      'frequency', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _optionsJsonMeta =
-      const VerificationMeta('optionsJson');
-  @override
-  late final GeneratedColumn<String> optionsJson = GeneratedColumn<String>(
-      'options_json', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _isVerifiedMeta =
-      const VerificationMeta('isVerified');
-  @override
-  late final GeneratedColumn<bool> isVerified = GeneratedColumn<bool>(
-      'is_verified', aliasedName, false,
+  late final GeneratedColumn<bool> isPrimary = GeneratedColumn<bool>(
+      'is_primary', aliasedName, false,
       type: DriftSqlType.bool,
-      requiredDuringInsert: true,
-      defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("is_verified" IN (0, 1))'));
-  static const VerificationMeta _answerShortMeta =
-      const VerificationMeta('answerShort');
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_primary" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _answersCountMeta =
+      const VerificationMeta('answersCount');
   @override
-  late final GeneratedColumn<String> answerShort = GeneratedColumn<String>(
-      'answer_short', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _answerDetailedMeta =
-      const VerificationMeta('answerDetailed');
-  @override
-  late final GeneratedColumn<String> answerDetailed = GeneratedColumn<String>(
-      'answer_detailed', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _commonMistakesJsonMeta =
-      const VerificationMeta('commonMistakesJson');
-  @override
-  late final GeneratedColumn<String> commonMistakesJson =
-      GeneratedColumn<String>('common_mistakes_json', aliasedName, false,
-          type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _followUpsJsonMeta =
-      const VerificationMeta('followUpsJson');
-  @override
-  late final GeneratedColumn<String> followUpsJson = GeneratedColumn<String>(
-      'follow_ups_json', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> answersCount = GeneratedColumn<int>(
+      'answers_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _updatedAtMeta =
       const VerificationMeta('updatedAt');
   @override
@@ -125,41 +52,23 @@ class $CachedQuestionsTable extends CachedQuestions
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns => [
-        id,
         specializationId,
-        type,
-        title,
-        topicCode,
-        topicTitle,
-        subtopicCode,
-        subtopicTitle,
-        minGrade,
-        peakGrade,
-        maxGrade,
-        frequency,
-        optionsJson,
-        isVerified,
-        answerShort,
-        answerDetailed,
-        commonMistakesJson,
-        followUpsJson,
+        selfAssessedGrade,
+        targetGrade,
+        isPrimary,
+        answersCount,
         updatedAt
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'cached_questions';
+  static const String $name = 'profiles';
   @override
-  VerificationContext validateIntegrity(Insertable<CachedQuestion> instance,
+  VerificationContext validateIntegrity(Insertable<Profile> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
     if (data.containsKey('specialization_id')) {
       context.handle(
           _specializationIdMeta,
@@ -168,115 +77,31 @@ class $CachedQuestionsTable extends CachedQuestions
     } else if (isInserting) {
       context.missing(_specializationIdMeta);
     }
-    if (data.containsKey('type')) {
+    if (data.containsKey('self_assessed_grade')) {
       context.handle(
-          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
+          _selfAssessedGradeMeta,
+          selfAssessedGrade.isAcceptableOrUnknown(
+              data['self_assessed_grade']!, _selfAssessedGradeMeta));
     } else if (isInserting) {
-      context.missing(_typeMeta);
+      context.missing(_selfAssessedGradeMeta);
     }
-    if (data.containsKey('title')) {
+    if (data.containsKey('target_grade')) {
       context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+          _targetGradeMeta,
+          targetGrade.isAcceptableOrUnknown(
+              data['target_grade']!, _targetGradeMeta));
     } else if (isInserting) {
-      context.missing(_titleMeta);
+      context.missing(_targetGradeMeta);
     }
-    if (data.containsKey('topic_code')) {
-      context.handle(_topicCodeMeta,
-          topicCode.isAcceptableOrUnknown(data['topic_code']!, _topicCodeMeta));
-    } else if (isInserting) {
-      context.missing(_topicCodeMeta);
+    if (data.containsKey('is_primary')) {
+      context.handle(_isPrimaryMeta,
+          isPrimary.isAcceptableOrUnknown(data['is_primary']!, _isPrimaryMeta));
     }
-    if (data.containsKey('topic_title')) {
+    if (data.containsKey('answers_count')) {
       context.handle(
-          _topicTitleMeta,
-          topicTitle.isAcceptableOrUnknown(
-              data['topic_title']!, _topicTitleMeta));
-    } else if (isInserting) {
-      context.missing(_topicTitleMeta);
-    }
-    if (data.containsKey('subtopic_code')) {
-      context.handle(
-          _subtopicCodeMeta,
-          subtopicCode.isAcceptableOrUnknown(
-              data['subtopic_code']!, _subtopicCodeMeta));
-    }
-    if (data.containsKey('subtopic_title')) {
-      context.handle(
-          _subtopicTitleMeta,
-          subtopicTitle.isAcceptableOrUnknown(
-              data['subtopic_title']!, _subtopicTitleMeta));
-    }
-    if (data.containsKey('min_grade')) {
-      context.handle(_minGradeMeta,
-          minGrade.isAcceptableOrUnknown(data['min_grade']!, _minGradeMeta));
-    } else if (isInserting) {
-      context.missing(_minGradeMeta);
-    }
-    if (data.containsKey('peak_grade')) {
-      context.handle(_peakGradeMeta,
-          peakGrade.isAcceptableOrUnknown(data['peak_grade']!, _peakGradeMeta));
-    } else if (isInserting) {
-      context.missing(_peakGradeMeta);
-    }
-    if (data.containsKey('max_grade')) {
-      context.handle(_maxGradeMeta,
-          maxGrade.isAcceptableOrUnknown(data['max_grade']!, _maxGradeMeta));
-    } else if (isInserting) {
-      context.missing(_maxGradeMeta);
-    }
-    if (data.containsKey('frequency')) {
-      context.handle(_frequencyMeta,
-          frequency.isAcceptableOrUnknown(data['frequency']!, _frequencyMeta));
-    } else if (isInserting) {
-      context.missing(_frequencyMeta);
-    }
-    if (data.containsKey('options_json')) {
-      context.handle(
-          _optionsJsonMeta,
-          optionsJson.isAcceptableOrUnknown(
-              data['options_json']!, _optionsJsonMeta));
-    } else if (isInserting) {
-      context.missing(_optionsJsonMeta);
-    }
-    if (data.containsKey('is_verified')) {
-      context.handle(
-          _isVerifiedMeta,
-          isVerified.isAcceptableOrUnknown(
-              data['is_verified']!, _isVerifiedMeta));
-    } else if (isInserting) {
-      context.missing(_isVerifiedMeta);
-    }
-    if (data.containsKey('answer_short')) {
-      context.handle(
-          _answerShortMeta,
-          answerShort.isAcceptableOrUnknown(
-              data['answer_short']!, _answerShortMeta));
-    } else if (isInserting) {
-      context.missing(_answerShortMeta);
-    }
-    if (data.containsKey('answer_detailed')) {
-      context.handle(
-          _answerDetailedMeta,
-          answerDetailed.isAcceptableOrUnknown(
-              data['answer_detailed']!, _answerDetailedMeta));
-    } else if (isInserting) {
-      context.missing(_answerDetailedMeta);
-    }
-    if (data.containsKey('common_mistakes_json')) {
-      context.handle(
-          _commonMistakesJsonMeta,
-          commonMistakesJson.isAcceptableOrUnknown(
-              data['common_mistakes_json']!, _commonMistakesJsonMeta));
-    } else if (isInserting) {
-      context.missing(_commonMistakesJsonMeta);
-    }
-    if (data.containsKey('follow_ups_json')) {
-      context.handle(
-          _followUpsJsonMeta,
-          followUpsJson.isAcceptableOrUnknown(
-              data['follow_ups_json']!, _followUpsJsonMeta));
-    } else if (isInserting) {
-      context.missing(_followUpsJsonMeta);
+          _answersCountMeta,
+          answersCount.isAcceptableOrUnknown(
+              data['answers_count']!, _answersCountMeta));
     }
     if (data.containsKey('updated_at')) {
       context.handle(_updatedAtMeta,
@@ -288,180 +113,82 @@ class $CachedQuestionsTable extends CachedQuestions
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id, specializationId};
+  Set<GeneratedColumn> get $primaryKey => {specializationId};
   @override
-  CachedQuestion map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Profile map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CachedQuestion(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+    return Profile(
       specializationId: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}specialization_id'])!,
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      topicCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}topic_code'])!,
-      topicTitle: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}topic_title'])!,
-      subtopicCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}subtopic_code']),
-      subtopicTitle: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}subtopic_title']),
-      minGrade: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}min_grade'])!,
-      peakGrade: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}peak_grade'])!,
-      maxGrade: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}max_grade'])!,
-      frequency: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}frequency'])!,
-      optionsJson: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}options_json'])!,
-      isVerified: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_verified'])!,
-      answerShort: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}answer_short'])!,
-      answerDetailed: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}answer_detailed'])!,
-      commonMistakesJson: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}common_mistakes_json'])!,
-      followUpsJson: attachedDatabase.typeMapping.read(
-          DriftSqlType.string, data['${effectivePrefix}follow_ups_json'])!,
+      selfAssessedGrade: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}self_assessed_grade'])!,
+      targetGrade: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}target_grade'])!,
+      isPrimary: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_primary'])!,
+      answersCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}answers_count'])!,
       updatedAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
     );
   }
 
   @override
-  $CachedQuestionsTable createAlias(String alias) {
-    return $CachedQuestionsTable(attachedDatabase, alias);
+  $ProfilesTable createAlias(String alias) {
+    return $ProfilesTable(attachedDatabase, alias);
   }
 }
 
-class CachedQuestion extends DataClass implements Insertable<CachedQuestion> {
-  final String id;
+class Profile extends DataClass implements Insertable<Profile> {
   final String specializationId;
-  final String type;
-  final String title;
-  final String topicCode;
-  final String topicTitle;
-  final String? subtopicCode;
-  final String? subtopicTitle;
-  final int minGrade;
-  final int peakGrade;
-  final int maxGrade;
-  final int frequency;
 
-  /// Варианты вместе с признаком правильности: без него офлайн не проверить ответ.
-  final String optionsJson;
-  final bool isVerified;
-  final String answerShort;
-  final String answerDetailed;
-  final String commonMistakesJson;
-  final String followUpsJson;
+  /// Где человек сейчас — стартовая точка для оценки.
+  final int selfAssessedGrade;
+
+  /// К какому уровню готовится — именно он определяет выдачу.
+  final int targetGrade;
+  final bool isPrimary;
+  final int answersCount;
   final DateTime updatedAt;
-  const CachedQuestion(
-      {required this.id,
-      required this.specializationId,
-      required this.type,
-      required this.title,
-      required this.topicCode,
-      required this.topicTitle,
-      this.subtopicCode,
-      this.subtopicTitle,
-      required this.minGrade,
-      required this.peakGrade,
-      required this.maxGrade,
-      required this.frequency,
-      required this.optionsJson,
-      required this.isVerified,
-      required this.answerShort,
-      required this.answerDetailed,
-      required this.commonMistakesJson,
-      required this.followUpsJson,
+  const Profile(
+      {required this.specializationId,
+      required this.selfAssessedGrade,
+      required this.targetGrade,
+      required this.isPrimary,
+      required this.answersCount,
       required this.updatedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
     map['specialization_id'] = Variable<String>(specializationId);
-    map['type'] = Variable<String>(type);
-    map['title'] = Variable<String>(title);
-    map['topic_code'] = Variable<String>(topicCode);
-    map['topic_title'] = Variable<String>(topicTitle);
-    if (!nullToAbsent || subtopicCode != null) {
-      map['subtopic_code'] = Variable<String>(subtopicCode);
-    }
-    if (!nullToAbsent || subtopicTitle != null) {
-      map['subtopic_title'] = Variable<String>(subtopicTitle);
-    }
-    map['min_grade'] = Variable<int>(minGrade);
-    map['peak_grade'] = Variable<int>(peakGrade);
-    map['max_grade'] = Variable<int>(maxGrade);
-    map['frequency'] = Variable<int>(frequency);
-    map['options_json'] = Variable<String>(optionsJson);
-    map['is_verified'] = Variable<bool>(isVerified);
-    map['answer_short'] = Variable<String>(answerShort);
-    map['answer_detailed'] = Variable<String>(answerDetailed);
-    map['common_mistakes_json'] = Variable<String>(commonMistakesJson);
-    map['follow_ups_json'] = Variable<String>(followUpsJson);
+    map['self_assessed_grade'] = Variable<int>(selfAssessedGrade);
+    map['target_grade'] = Variable<int>(targetGrade);
+    map['is_primary'] = Variable<bool>(isPrimary);
+    map['answers_count'] = Variable<int>(answersCount);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
-  CachedQuestionsCompanion toCompanion(bool nullToAbsent) {
-    return CachedQuestionsCompanion(
-      id: Value(id),
+  ProfilesCompanion toCompanion(bool nullToAbsent) {
+    return ProfilesCompanion(
       specializationId: Value(specializationId),
-      type: Value(type),
-      title: Value(title),
-      topicCode: Value(topicCode),
-      topicTitle: Value(topicTitle),
-      subtopicCode: subtopicCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(subtopicCode),
-      subtopicTitle: subtopicTitle == null && nullToAbsent
-          ? const Value.absent()
-          : Value(subtopicTitle),
-      minGrade: Value(minGrade),
-      peakGrade: Value(peakGrade),
-      maxGrade: Value(maxGrade),
-      frequency: Value(frequency),
-      optionsJson: Value(optionsJson),
-      isVerified: Value(isVerified),
-      answerShort: Value(answerShort),
-      answerDetailed: Value(answerDetailed),
-      commonMistakesJson: Value(commonMistakesJson),
-      followUpsJson: Value(followUpsJson),
+      selfAssessedGrade: Value(selfAssessedGrade),
+      targetGrade: Value(targetGrade),
+      isPrimary: Value(isPrimary),
+      answersCount: Value(answersCount),
       updatedAt: Value(updatedAt),
     );
   }
 
-  factory CachedQuestion.fromJson(Map<String, dynamic> json,
+  factory Profile.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CachedQuestion(
-      id: serializer.fromJson<String>(json['id']),
+    return Profile(
       specializationId: serializer.fromJson<String>(json['specializationId']),
-      type: serializer.fromJson<String>(json['type']),
-      title: serializer.fromJson<String>(json['title']),
-      topicCode: serializer.fromJson<String>(json['topicCode']),
-      topicTitle: serializer.fromJson<String>(json['topicTitle']),
-      subtopicCode: serializer.fromJson<String?>(json['subtopicCode']),
-      subtopicTitle: serializer.fromJson<String?>(json['subtopicTitle']),
-      minGrade: serializer.fromJson<int>(json['minGrade']),
-      peakGrade: serializer.fromJson<int>(json['peakGrade']),
-      maxGrade: serializer.fromJson<int>(json['maxGrade']),
-      frequency: serializer.fromJson<int>(json['frequency']),
-      optionsJson: serializer.fromJson<String>(json['optionsJson']),
-      isVerified: serializer.fromJson<bool>(json['isVerified']),
-      answerShort: serializer.fromJson<String>(json['answerShort']),
-      answerDetailed: serializer.fromJson<String>(json['answerDetailed']),
-      commonMistakesJson:
-          serializer.fromJson<String>(json['commonMistakesJson']),
-      followUpsJson: serializer.fromJson<String>(json['followUpsJson']),
+      selfAssessedGrade: serializer.fromJson<int>(json['selfAssessedGrade']),
+      targetGrade: serializer.fromJson<int>(json['targetGrade']),
+      isPrimary: serializer.fromJson<bool>(json['isPrimary']),
+      answersCount: serializer.fromJson<int>(json['answersCount']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -469,351 +196,139 @@ class CachedQuestion extends DataClass implements Insertable<CachedQuestion> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
       'specializationId': serializer.toJson<String>(specializationId),
-      'type': serializer.toJson<String>(type),
-      'title': serializer.toJson<String>(title),
-      'topicCode': serializer.toJson<String>(topicCode),
-      'topicTitle': serializer.toJson<String>(topicTitle),
-      'subtopicCode': serializer.toJson<String?>(subtopicCode),
-      'subtopicTitle': serializer.toJson<String?>(subtopicTitle),
-      'minGrade': serializer.toJson<int>(minGrade),
-      'peakGrade': serializer.toJson<int>(peakGrade),
-      'maxGrade': serializer.toJson<int>(maxGrade),
-      'frequency': serializer.toJson<int>(frequency),
-      'optionsJson': serializer.toJson<String>(optionsJson),
-      'isVerified': serializer.toJson<bool>(isVerified),
-      'answerShort': serializer.toJson<String>(answerShort),
-      'answerDetailed': serializer.toJson<String>(answerDetailed),
-      'commonMistakesJson': serializer.toJson<String>(commonMistakesJson),
-      'followUpsJson': serializer.toJson<String>(followUpsJson),
+      'selfAssessedGrade': serializer.toJson<int>(selfAssessedGrade),
+      'targetGrade': serializer.toJson<int>(targetGrade),
+      'isPrimary': serializer.toJson<bool>(isPrimary),
+      'answersCount': serializer.toJson<int>(answersCount),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
-  CachedQuestion copyWith(
-          {String? id,
-          String? specializationId,
-          String? type,
-          String? title,
-          String? topicCode,
-          String? topicTitle,
-          Value<String?> subtopicCode = const Value.absent(),
-          Value<String?> subtopicTitle = const Value.absent(),
-          int? minGrade,
-          int? peakGrade,
-          int? maxGrade,
-          int? frequency,
-          String? optionsJson,
-          bool? isVerified,
-          String? answerShort,
-          String? answerDetailed,
-          String? commonMistakesJson,
-          String? followUpsJson,
+  Profile copyWith(
+          {String? specializationId,
+          int? selfAssessedGrade,
+          int? targetGrade,
+          bool? isPrimary,
+          int? answersCount,
           DateTime? updatedAt}) =>
-      CachedQuestion(
-        id: id ?? this.id,
+      Profile(
         specializationId: specializationId ?? this.specializationId,
-        type: type ?? this.type,
-        title: title ?? this.title,
-        topicCode: topicCode ?? this.topicCode,
-        topicTitle: topicTitle ?? this.topicTitle,
-        subtopicCode:
-            subtopicCode.present ? subtopicCode.value : this.subtopicCode,
-        subtopicTitle:
-            subtopicTitle.present ? subtopicTitle.value : this.subtopicTitle,
-        minGrade: minGrade ?? this.minGrade,
-        peakGrade: peakGrade ?? this.peakGrade,
-        maxGrade: maxGrade ?? this.maxGrade,
-        frequency: frequency ?? this.frequency,
-        optionsJson: optionsJson ?? this.optionsJson,
-        isVerified: isVerified ?? this.isVerified,
-        answerShort: answerShort ?? this.answerShort,
-        answerDetailed: answerDetailed ?? this.answerDetailed,
-        commonMistakesJson: commonMistakesJson ?? this.commonMistakesJson,
-        followUpsJson: followUpsJson ?? this.followUpsJson,
+        selfAssessedGrade: selfAssessedGrade ?? this.selfAssessedGrade,
+        targetGrade: targetGrade ?? this.targetGrade,
+        isPrimary: isPrimary ?? this.isPrimary,
+        answersCount: answersCount ?? this.answersCount,
         updatedAt: updatedAt ?? this.updatedAt,
       );
-  CachedQuestion copyWithCompanion(CachedQuestionsCompanion data) {
-    return CachedQuestion(
-      id: data.id.present ? data.id.value : this.id,
+  Profile copyWithCompanion(ProfilesCompanion data) {
+    return Profile(
       specializationId: data.specializationId.present
           ? data.specializationId.value
           : this.specializationId,
-      type: data.type.present ? data.type.value : this.type,
-      title: data.title.present ? data.title.value : this.title,
-      topicCode: data.topicCode.present ? data.topicCode.value : this.topicCode,
-      topicTitle:
-          data.topicTitle.present ? data.topicTitle.value : this.topicTitle,
-      subtopicCode: data.subtopicCode.present
-          ? data.subtopicCode.value
-          : this.subtopicCode,
-      subtopicTitle: data.subtopicTitle.present
-          ? data.subtopicTitle.value
-          : this.subtopicTitle,
-      minGrade: data.minGrade.present ? data.minGrade.value : this.minGrade,
-      peakGrade: data.peakGrade.present ? data.peakGrade.value : this.peakGrade,
-      maxGrade: data.maxGrade.present ? data.maxGrade.value : this.maxGrade,
-      frequency: data.frequency.present ? data.frequency.value : this.frequency,
-      optionsJson:
-          data.optionsJson.present ? data.optionsJson.value : this.optionsJson,
-      isVerified:
-          data.isVerified.present ? data.isVerified.value : this.isVerified,
-      answerShort:
-          data.answerShort.present ? data.answerShort.value : this.answerShort,
-      answerDetailed: data.answerDetailed.present
-          ? data.answerDetailed.value
-          : this.answerDetailed,
-      commonMistakesJson: data.commonMistakesJson.present
-          ? data.commonMistakesJson.value
-          : this.commonMistakesJson,
-      followUpsJson: data.followUpsJson.present
-          ? data.followUpsJson.value
-          : this.followUpsJson,
+      selfAssessedGrade: data.selfAssessedGrade.present
+          ? data.selfAssessedGrade.value
+          : this.selfAssessedGrade,
+      targetGrade:
+          data.targetGrade.present ? data.targetGrade.value : this.targetGrade,
+      isPrimary: data.isPrimary.present ? data.isPrimary.value : this.isPrimary,
+      answersCount: data.answersCount.present
+          ? data.answersCount.value
+          : this.answersCount,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('CachedQuestion(')
-          ..write('id: $id, ')
+    return (StringBuffer('Profile(')
           ..write('specializationId: $specializationId, ')
-          ..write('type: $type, ')
-          ..write('title: $title, ')
-          ..write('topicCode: $topicCode, ')
-          ..write('topicTitle: $topicTitle, ')
-          ..write('subtopicCode: $subtopicCode, ')
-          ..write('subtopicTitle: $subtopicTitle, ')
-          ..write('minGrade: $minGrade, ')
-          ..write('peakGrade: $peakGrade, ')
-          ..write('maxGrade: $maxGrade, ')
-          ..write('frequency: $frequency, ')
-          ..write('optionsJson: $optionsJson, ')
-          ..write('isVerified: $isVerified, ')
-          ..write('answerShort: $answerShort, ')
-          ..write('answerDetailed: $answerDetailed, ')
-          ..write('commonMistakesJson: $commonMistakesJson, ')
-          ..write('followUpsJson: $followUpsJson, ')
+          ..write('selfAssessedGrade: $selfAssessedGrade, ')
+          ..write('targetGrade: $targetGrade, ')
+          ..write('isPrimary: $isPrimary, ')
+          ..write('answersCount: $answersCount, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
-      id,
-      specializationId,
-      type,
-      title,
-      topicCode,
-      topicTitle,
-      subtopicCode,
-      subtopicTitle,
-      minGrade,
-      peakGrade,
-      maxGrade,
-      frequency,
-      optionsJson,
-      isVerified,
-      answerShort,
-      answerDetailed,
-      commonMistakesJson,
-      followUpsJson,
-      updatedAt);
+  int get hashCode => Object.hash(specializationId, selfAssessedGrade,
+      targetGrade, isPrimary, answersCount, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CachedQuestion &&
-          other.id == this.id &&
+      (other is Profile &&
           other.specializationId == this.specializationId &&
-          other.type == this.type &&
-          other.title == this.title &&
-          other.topicCode == this.topicCode &&
-          other.topicTitle == this.topicTitle &&
-          other.subtopicCode == this.subtopicCode &&
-          other.subtopicTitle == this.subtopicTitle &&
-          other.minGrade == this.minGrade &&
-          other.peakGrade == this.peakGrade &&
-          other.maxGrade == this.maxGrade &&
-          other.frequency == this.frequency &&
-          other.optionsJson == this.optionsJson &&
-          other.isVerified == this.isVerified &&
-          other.answerShort == this.answerShort &&
-          other.answerDetailed == this.answerDetailed &&
-          other.commonMistakesJson == this.commonMistakesJson &&
-          other.followUpsJson == this.followUpsJson &&
+          other.selfAssessedGrade == this.selfAssessedGrade &&
+          other.targetGrade == this.targetGrade &&
+          other.isPrimary == this.isPrimary &&
+          other.answersCount == this.answersCount &&
           other.updatedAt == this.updatedAt);
 }
 
-class CachedQuestionsCompanion extends UpdateCompanion<CachedQuestion> {
-  final Value<String> id;
+class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<String> specializationId;
-  final Value<String> type;
-  final Value<String> title;
-  final Value<String> topicCode;
-  final Value<String> topicTitle;
-  final Value<String?> subtopicCode;
-  final Value<String?> subtopicTitle;
-  final Value<int> minGrade;
-  final Value<int> peakGrade;
-  final Value<int> maxGrade;
-  final Value<int> frequency;
-  final Value<String> optionsJson;
-  final Value<bool> isVerified;
-  final Value<String> answerShort;
-  final Value<String> answerDetailed;
-  final Value<String> commonMistakesJson;
-  final Value<String> followUpsJson;
+  final Value<int> selfAssessedGrade;
+  final Value<int> targetGrade;
+  final Value<bool> isPrimary;
+  final Value<int> answersCount;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
-  const CachedQuestionsCompanion({
-    this.id = const Value.absent(),
+  const ProfilesCompanion({
     this.specializationId = const Value.absent(),
-    this.type = const Value.absent(),
-    this.title = const Value.absent(),
-    this.topicCode = const Value.absent(),
-    this.topicTitle = const Value.absent(),
-    this.subtopicCode = const Value.absent(),
-    this.subtopicTitle = const Value.absent(),
-    this.minGrade = const Value.absent(),
-    this.peakGrade = const Value.absent(),
-    this.maxGrade = const Value.absent(),
-    this.frequency = const Value.absent(),
-    this.optionsJson = const Value.absent(),
-    this.isVerified = const Value.absent(),
-    this.answerShort = const Value.absent(),
-    this.answerDetailed = const Value.absent(),
-    this.commonMistakesJson = const Value.absent(),
-    this.followUpsJson = const Value.absent(),
+    this.selfAssessedGrade = const Value.absent(),
+    this.targetGrade = const Value.absent(),
+    this.isPrimary = const Value.absent(),
+    this.answersCount = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  CachedQuestionsCompanion.insert({
-    required String id,
+  ProfilesCompanion.insert({
     required String specializationId,
-    required String type,
-    required String title,
-    required String topicCode,
-    required String topicTitle,
-    this.subtopicCode = const Value.absent(),
-    this.subtopicTitle = const Value.absent(),
-    required int minGrade,
-    required int peakGrade,
-    required int maxGrade,
-    required int frequency,
-    required String optionsJson,
-    required bool isVerified,
-    required String answerShort,
-    required String answerDetailed,
-    required String commonMistakesJson,
-    required String followUpsJson,
+    required int selfAssessedGrade,
+    required int targetGrade,
+    this.isPrimary = const Value.absent(),
+    this.answersCount = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
-  })  : id = Value(id),
-        specializationId = Value(specializationId),
-        type = Value(type),
-        title = Value(title),
-        topicCode = Value(topicCode),
-        topicTitle = Value(topicTitle),
-        minGrade = Value(minGrade),
-        peakGrade = Value(peakGrade),
-        maxGrade = Value(maxGrade),
-        frequency = Value(frequency),
-        optionsJson = Value(optionsJson),
-        isVerified = Value(isVerified),
-        answerShort = Value(answerShort),
-        answerDetailed = Value(answerDetailed),
-        commonMistakesJson = Value(commonMistakesJson),
-        followUpsJson = Value(followUpsJson),
+  })  : specializationId = Value(specializationId),
+        selfAssessedGrade = Value(selfAssessedGrade),
+        targetGrade = Value(targetGrade),
         updatedAt = Value(updatedAt);
-  static Insertable<CachedQuestion> custom({
-    Expression<String>? id,
+  static Insertable<Profile> custom({
     Expression<String>? specializationId,
-    Expression<String>? type,
-    Expression<String>? title,
-    Expression<String>? topicCode,
-    Expression<String>? topicTitle,
-    Expression<String>? subtopicCode,
-    Expression<String>? subtopicTitle,
-    Expression<int>? minGrade,
-    Expression<int>? peakGrade,
-    Expression<int>? maxGrade,
-    Expression<int>? frequency,
-    Expression<String>? optionsJson,
-    Expression<bool>? isVerified,
-    Expression<String>? answerShort,
-    Expression<String>? answerDetailed,
-    Expression<String>? commonMistakesJson,
-    Expression<String>? followUpsJson,
+    Expression<int>? selfAssessedGrade,
+    Expression<int>? targetGrade,
+    Expression<bool>? isPrimary,
+    Expression<int>? answersCount,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
       if (specializationId != null) 'specialization_id': specializationId,
-      if (type != null) 'type': type,
-      if (title != null) 'title': title,
-      if (topicCode != null) 'topic_code': topicCode,
-      if (topicTitle != null) 'topic_title': topicTitle,
-      if (subtopicCode != null) 'subtopic_code': subtopicCode,
-      if (subtopicTitle != null) 'subtopic_title': subtopicTitle,
-      if (minGrade != null) 'min_grade': minGrade,
-      if (peakGrade != null) 'peak_grade': peakGrade,
-      if (maxGrade != null) 'max_grade': maxGrade,
-      if (frequency != null) 'frequency': frequency,
-      if (optionsJson != null) 'options_json': optionsJson,
-      if (isVerified != null) 'is_verified': isVerified,
-      if (answerShort != null) 'answer_short': answerShort,
-      if (answerDetailed != null) 'answer_detailed': answerDetailed,
-      if (commonMistakesJson != null)
-        'common_mistakes_json': commonMistakesJson,
-      if (followUpsJson != null) 'follow_ups_json': followUpsJson,
+      if (selfAssessedGrade != null) 'self_assessed_grade': selfAssessedGrade,
+      if (targetGrade != null) 'target_grade': targetGrade,
+      if (isPrimary != null) 'is_primary': isPrimary,
+      if (answersCount != null) 'answers_count': answersCount,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  CachedQuestionsCompanion copyWith(
-      {Value<String>? id,
-      Value<String>? specializationId,
-      Value<String>? type,
-      Value<String>? title,
-      Value<String>? topicCode,
-      Value<String>? topicTitle,
-      Value<String?>? subtopicCode,
-      Value<String?>? subtopicTitle,
-      Value<int>? minGrade,
-      Value<int>? peakGrade,
-      Value<int>? maxGrade,
-      Value<int>? frequency,
-      Value<String>? optionsJson,
-      Value<bool>? isVerified,
-      Value<String>? answerShort,
-      Value<String>? answerDetailed,
-      Value<String>? commonMistakesJson,
-      Value<String>? followUpsJson,
+  ProfilesCompanion copyWith(
+      {Value<String>? specializationId,
+      Value<int>? selfAssessedGrade,
+      Value<int>? targetGrade,
+      Value<bool>? isPrimary,
+      Value<int>? answersCount,
       Value<DateTime>? updatedAt,
       Value<int>? rowid}) {
-    return CachedQuestionsCompanion(
-      id: id ?? this.id,
+    return ProfilesCompanion(
       specializationId: specializationId ?? this.specializationId,
-      type: type ?? this.type,
-      title: title ?? this.title,
-      topicCode: topicCode ?? this.topicCode,
-      topicTitle: topicTitle ?? this.topicTitle,
-      subtopicCode: subtopicCode ?? this.subtopicCode,
-      subtopicTitle: subtopicTitle ?? this.subtopicTitle,
-      minGrade: minGrade ?? this.minGrade,
-      peakGrade: peakGrade ?? this.peakGrade,
-      maxGrade: maxGrade ?? this.maxGrade,
-      frequency: frequency ?? this.frequency,
-      optionsJson: optionsJson ?? this.optionsJson,
-      isVerified: isVerified ?? this.isVerified,
-      answerShort: answerShort ?? this.answerShort,
-      answerDetailed: answerDetailed ?? this.answerDetailed,
-      commonMistakesJson: commonMistakesJson ?? this.commonMistakesJson,
-      followUpsJson: followUpsJson ?? this.followUpsJson,
+      selfAssessedGrade: selfAssessedGrade ?? this.selfAssessedGrade,
+      targetGrade: targetGrade ?? this.targetGrade,
+      isPrimary: isPrimary ?? this.isPrimary,
+      answersCount: answersCount ?? this.answersCount,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -822,59 +337,20 @@ class CachedQuestionsCompanion extends UpdateCompanion<CachedQuestion> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
     if (specializationId.present) {
       map['specialization_id'] = Variable<String>(specializationId.value);
     }
-    if (type.present) {
-      map['type'] = Variable<String>(type.value);
+    if (selfAssessedGrade.present) {
+      map['self_assessed_grade'] = Variable<int>(selfAssessedGrade.value);
     }
-    if (title.present) {
-      map['title'] = Variable<String>(title.value);
+    if (targetGrade.present) {
+      map['target_grade'] = Variable<int>(targetGrade.value);
     }
-    if (topicCode.present) {
-      map['topic_code'] = Variable<String>(topicCode.value);
+    if (isPrimary.present) {
+      map['is_primary'] = Variable<bool>(isPrimary.value);
     }
-    if (topicTitle.present) {
-      map['topic_title'] = Variable<String>(topicTitle.value);
-    }
-    if (subtopicCode.present) {
-      map['subtopic_code'] = Variable<String>(subtopicCode.value);
-    }
-    if (subtopicTitle.present) {
-      map['subtopic_title'] = Variable<String>(subtopicTitle.value);
-    }
-    if (minGrade.present) {
-      map['min_grade'] = Variable<int>(minGrade.value);
-    }
-    if (peakGrade.present) {
-      map['peak_grade'] = Variable<int>(peakGrade.value);
-    }
-    if (maxGrade.present) {
-      map['max_grade'] = Variable<int>(maxGrade.value);
-    }
-    if (frequency.present) {
-      map['frequency'] = Variable<int>(frequency.value);
-    }
-    if (optionsJson.present) {
-      map['options_json'] = Variable<String>(optionsJson.value);
-    }
-    if (isVerified.present) {
-      map['is_verified'] = Variable<bool>(isVerified.value);
-    }
-    if (answerShort.present) {
-      map['answer_short'] = Variable<String>(answerShort.value);
-    }
-    if (answerDetailed.present) {
-      map['answer_detailed'] = Variable<String>(answerDetailed.value);
-    }
-    if (commonMistakesJson.present) {
-      map['common_mistakes_json'] = Variable<String>(commonMistakesJson.value);
-    }
-    if (followUpsJson.present) {
-      map['follow_ups_json'] = Variable<String>(followUpsJson.value);
+    if (answersCount.present) {
+      map['answers_count'] = Variable<int>(answersCount.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
@@ -887,25 +363,12 @@ class CachedQuestionsCompanion extends UpdateCompanion<CachedQuestion> {
 
   @override
   String toString() {
-    return (StringBuffer('CachedQuestionsCompanion(')
-          ..write('id: $id, ')
+    return (StringBuffer('ProfilesCompanion(')
           ..write('specializationId: $specializationId, ')
-          ..write('type: $type, ')
-          ..write('title: $title, ')
-          ..write('topicCode: $topicCode, ')
-          ..write('topicTitle: $topicTitle, ')
-          ..write('subtopicCode: $subtopicCode, ')
-          ..write('subtopicTitle: $subtopicTitle, ')
-          ..write('minGrade: $minGrade, ')
-          ..write('peakGrade: $peakGrade, ')
-          ..write('maxGrade: $maxGrade, ')
-          ..write('frequency: $frequency, ')
-          ..write('optionsJson: $optionsJson, ')
-          ..write('isVerified: $isVerified, ')
-          ..write('answerShort: $answerShort, ')
-          ..write('answerDetailed: $answerDetailed, ')
-          ..write('commonMistakesJson: $commonMistakesJson, ')
-          ..write('followUpsJson: $followUpsJson, ')
+          ..write('selfAssessedGrade: $selfAssessedGrade, ')
+          ..write('targetGrade: $targetGrade, ')
+          ..write('isPrimary: $isPrimary, ')
+          ..write('answersCount: $answersCount, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -913,12 +376,11 @@ class CachedQuestionsCompanion extends UpdateCompanion<CachedQuestion> {
   }
 }
 
-class $LocalAnswersTable extends LocalAnswers
-    with TableInfo<$LocalAnswersTable, LocalAnswer> {
+class $AnswersTable extends Answers with TableInfo<$AnswersTable, Answer> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $LocalAnswersTable(this.attachedDatabase, [this._alias]);
+  $AnswersTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _submissionIdMeta =
       const VerificationMeta('submissionId');
   @override
@@ -936,6 +398,12 @@ class $LocalAnswersTable extends LocalAnswers
   @override
   late final GeneratedColumn<String> specializationId = GeneratedColumn<String>(
       'specialization_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _topicCodeMeta =
+      const VerificationMeta('topicCode');
+  @override
+  late final GeneratedColumn<String> topicCode = GeneratedColumn<String>(
+      'topic_code', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _selectedOptionsJsonMeta =
       const VerificationMeta('selectedOptionsJson');
@@ -974,48 +442,26 @@ class $LocalAnswersTable extends LocalAnswers
   late final GeneratedColumn<DateTime> answeredAt = GeneratedColumn<DateTime>(
       'answered_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _syncedAtMeta =
-      const VerificationMeta('syncedAt');
-  @override
-  late final GeneratedColumn<DateTime> syncedAt = GeneratedColumn<DateTime>(
-      'synced_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
-  static const VerificationMeta _attemptsMeta =
-      const VerificationMeta('attempts');
-  @override
-  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
-      'attempts', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(0));
-  static const VerificationMeta _lastErrorMeta =
-      const VerificationMeta('lastError');
-  @override
-  late final GeneratedColumn<String> lastError = GeneratedColumn<String>(
-      'last_error', aliasedName, true,
-      type: DriftSqlType.string, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         submissionId,
         questionId,
         specializationId,
+        topicCode,
         selectedOptionsJson,
         freeText,
         selfAssessment,
         score,
         quality,
-        answeredAt,
-        syncedAt,
-        attempts,
-        lastError
+        answeredAt
       ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'local_answers';
+  static const String $name = 'answers';
   @override
-  VerificationContext validateIntegrity(Insertable<LocalAnswer> instance,
+  VerificationContext validateIntegrity(Insertable<Answer> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1042,6 +488,12 @@ class $LocalAnswersTable extends LocalAnswers
               data['specialization_id']!, _specializationIdMeta));
     } else if (isInserting) {
       context.missing(_specializationIdMeta);
+    }
+    if (data.containsKey('topic_code')) {
+      context.handle(_topicCodeMeta,
+          topicCode.isAcceptableOrUnknown(data['topic_code']!, _topicCodeMeta));
+    } else if (isInserting) {
+      context.missing(_topicCodeMeta);
     }
     if (data.containsKey('selected_options_json')) {
       context.handle(
@@ -1079,33 +531,23 @@ class $LocalAnswersTable extends LocalAnswers
     } else if (isInserting) {
       context.missing(_answeredAtMeta);
     }
-    if (data.containsKey('synced_at')) {
-      context.handle(_syncedAtMeta,
-          syncedAt.isAcceptableOrUnknown(data['synced_at']!, _syncedAtMeta));
-    }
-    if (data.containsKey('attempts')) {
-      context.handle(_attemptsMeta,
-          attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta));
-    }
-    if (data.containsKey('last_error')) {
-      context.handle(_lastErrorMeta,
-          lastError.isAcceptableOrUnknown(data['last_error']!, _lastErrorMeta));
-    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {submissionId};
   @override
-  LocalAnswer map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Answer map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return LocalAnswer(
+    return Answer(
       submissionId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}submission_id'])!,
       questionId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}question_id'])!,
       specializationId: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}specialization_id'])!,
+      topicCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}topic_code'])!,
       selectedOptionsJson: attachedDatabase.typeMapping.read(
           DriftSqlType.string,
           data['${effectivePrefix}selected_options_json'])!,
@@ -1119,57 +561,47 @@ class $LocalAnswersTable extends LocalAnswers
           .read(DriftSqlType.int, data['${effectivePrefix}quality'])!,
       answeredAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}answered_at'])!,
-      syncedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}synced_at']),
-      attempts: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}attempts'])!,
-      lastError: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}last_error']),
     );
   }
 
   @override
-  $LocalAnswersTable createAlias(String alias) {
-    return $LocalAnswersTable(attachedDatabase, alias);
+  $AnswersTable createAlias(String alias) {
+    return $AnswersTable(attachedDatabase, alias);
   }
 }
 
-class LocalAnswer extends DataClass implements Insertable<LocalAnswer> {
-  /// Ключ идемпотентности, сгенерированный на устройстве. Он же защищает от
-  /// дублей на сервере при повторной отправке пачки.
+class Answer extends DataClass implements Insertable<Answer> {
+  /// Идентификатор попытки. Защищает от двойной записи при повторном нажатии.
   final String submissionId;
   final String questionId;
   final String specializationId;
+
+  /// Раздел дублируется сюда, чтобы статистика не искала вопрос в банке.
+  final String topicCode;
   final String selectedOptionsJson;
   final String? freeText;
   final int? selfAssessment;
-
-  /// Результат, посчитанный на устройстве по тем же правилам, что и на сервере.
   final double score;
   final int quality;
   final DateTime answeredAt;
-  final DateTime? syncedAt;
-  final int attempts;
-  final String? lastError;
-  const LocalAnswer(
+  const Answer(
       {required this.submissionId,
       required this.questionId,
       required this.specializationId,
+      required this.topicCode,
       required this.selectedOptionsJson,
       this.freeText,
       this.selfAssessment,
       required this.score,
       required this.quality,
-      required this.answeredAt,
-      this.syncedAt,
-      required this.attempts,
-      this.lastError});
+      required this.answeredAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['submission_id'] = Variable<String>(submissionId);
     map['question_id'] = Variable<String>(questionId);
     map['specialization_id'] = Variable<String>(specializationId);
+    map['topic_code'] = Variable<String>(topicCode);
     map['selected_options_json'] = Variable<String>(selectedOptionsJson);
     if (!nullToAbsent || freeText != null) {
       map['free_text'] = Variable<String>(freeText);
@@ -1180,21 +612,15 @@ class LocalAnswer extends DataClass implements Insertable<LocalAnswer> {
     map['score'] = Variable<double>(score);
     map['quality'] = Variable<int>(quality);
     map['answered_at'] = Variable<DateTime>(answeredAt);
-    if (!nullToAbsent || syncedAt != null) {
-      map['synced_at'] = Variable<DateTime>(syncedAt);
-    }
-    map['attempts'] = Variable<int>(attempts);
-    if (!nullToAbsent || lastError != null) {
-      map['last_error'] = Variable<String>(lastError);
-    }
     return map;
   }
 
-  LocalAnswersCompanion toCompanion(bool nullToAbsent) {
-    return LocalAnswersCompanion(
+  AnswersCompanion toCompanion(bool nullToAbsent) {
+    return AnswersCompanion(
       submissionId: Value(submissionId),
       questionId: Value(questionId),
       specializationId: Value(specializationId),
+      topicCode: Value(topicCode),
       selectedOptionsJson: Value(selectedOptionsJson),
       freeText: freeText == null && nullToAbsent
           ? const Value.absent()
@@ -1205,23 +631,17 @@ class LocalAnswer extends DataClass implements Insertable<LocalAnswer> {
       score: Value(score),
       quality: Value(quality),
       answeredAt: Value(answeredAt),
-      syncedAt: syncedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(syncedAt),
-      attempts: Value(attempts),
-      lastError: lastError == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastError),
     );
   }
 
-  factory LocalAnswer.fromJson(Map<String, dynamic> json,
+  factory Answer.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return LocalAnswer(
+    return Answer(
       submissionId: serializer.fromJson<String>(json['submissionId']),
       questionId: serializer.fromJson<String>(json['questionId']),
       specializationId: serializer.fromJson<String>(json['specializationId']),
+      topicCode: serializer.fromJson<String>(json['topicCode']),
       selectedOptionsJson:
           serializer.fromJson<String>(json['selectedOptionsJson']),
       freeText: serializer.fromJson<String?>(json['freeText']),
@@ -1229,9 +649,6 @@ class LocalAnswer extends DataClass implements Insertable<LocalAnswer> {
       score: serializer.fromJson<double>(json['score']),
       quality: serializer.fromJson<int>(json['quality']),
       answeredAt: serializer.fromJson<DateTime>(json['answeredAt']),
-      syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
-      attempts: serializer.fromJson<int>(json['attempts']),
-      lastError: serializer.fromJson<String?>(json['lastError']),
     );
   }
   @override
@@ -1241,35 +658,32 @@ class LocalAnswer extends DataClass implements Insertable<LocalAnswer> {
       'submissionId': serializer.toJson<String>(submissionId),
       'questionId': serializer.toJson<String>(questionId),
       'specializationId': serializer.toJson<String>(specializationId),
+      'topicCode': serializer.toJson<String>(topicCode),
       'selectedOptionsJson': serializer.toJson<String>(selectedOptionsJson),
       'freeText': serializer.toJson<String?>(freeText),
       'selfAssessment': serializer.toJson<int?>(selfAssessment),
       'score': serializer.toJson<double>(score),
       'quality': serializer.toJson<int>(quality),
       'answeredAt': serializer.toJson<DateTime>(answeredAt),
-      'syncedAt': serializer.toJson<DateTime?>(syncedAt),
-      'attempts': serializer.toJson<int>(attempts),
-      'lastError': serializer.toJson<String?>(lastError),
     };
   }
 
-  LocalAnswer copyWith(
+  Answer copyWith(
           {String? submissionId,
           String? questionId,
           String? specializationId,
+          String? topicCode,
           String? selectedOptionsJson,
           Value<String?> freeText = const Value.absent(),
           Value<int?> selfAssessment = const Value.absent(),
           double? score,
           int? quality,
-          DateTime? answeredAt,
-          Value<DateTime?> syncedAt = const Value.absent(),
-          int? attempts,
-          Value<String?> lastError = const Value.absent()}) =>
-      LocalAnswer(
+          DateTime? answeredAt}) =>
+      Answer(
         submissionId: submissionId ?? this.submissionId,
         questionId: questionId ?? this.questionId,
         specializationId: specializationId ?? this.specializationId,
+        topicCode: topicCode ?? this.topicCode,
         selectedOptionsJson: selectedOptionsJson ?? this.selectedOptionsJson,
         freeText: freeText.present ? freeText.value : this.freeText,
         selfAssessment:
@@ -1277,12 +691,9 @@ class LocalAnswer extends DataClass implements Insertable<LocalAnswer> {
         score: score ?? this.score,
         quality: quality ?? this.quality,
         answeredAt: answeredAt ?? this.answeredAt,
-        syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
-        attempts: attempts ?? this.attempts,
-        lastError: lastError.present ? lastError.value : this.lastError,
       );
-  LocalAnswer copyWithCompanion(LocalAnswersCompanion data) {
-    return LocalAnswer(
+  Answer copyWithCompanion(AnswersCompanion data) {
+    return Answer(
       submissionId: data.submissionId.present
           ? data.submissionId.value
           : this.submissionId,
@@ -1291,6 +702,7 @@ class LocalAnswer extends DataClass implements Insertable<LocalAnswer> {
       specializationId: data.specializationId.present
           ? data.specializationId.value
           : this.specializationId,
+      topicCode: data.topicCode.present ? data.topicCode.value : this.topicCode,
       selectedOptionsJson: data.selectedOptionsJson.present
           ? data.selectedOptionsJson.value
           : this.selectedOptionsJson,
@@ -1302,27 +714,22 @@ class LocalAnswer extends DataClass implements Insertable<LocalAnswer> {
       quality: data.quality.present ? data.quality.value : this.quality,
       answeredAt:
           data.answeredAt.present ? data.answeredAt.value : this.answeredAt,
-      syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
-      attempts: data.attempts.present ? data.attempts.value : this.attempts,
-      lastError: data.lastError.present ? data.lastError.value : this.lastError,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('LocalAnswer(')
+    return (StringBuffer('Answer(')
           ..write('submissionId: $submissionId, ')
           ..write('questionId: $questionId, ')
           ..write('specializationId: $specializationId, ')
+          ..write('topicCode: $topicCode, ')
           ..write('selectedOptionsJson: $selectedOptionsJson, ')
           ..write('freeText: $freeText, ')
           ..write('selfAssessment: $selfAssessment, ')
           ..write('score: $score, ')
           ..write('quality: $quality, ')
-          ..write('answeredAt: $answeredAt, ')
-          ..write('syncedAt: $syncedAt, ')
-          ..write('attempts: $attempts, ')
-          ..write('lastError: $lastError')
+          ..write('answeredAt: $answeredAt')
           ..write(')'))
         .toString();
   }
@@ -1332,101 +739,91 @@ class LocalAnswer extends DataClass implements Insertable<LocalAnswer> {
       submissionId,
       questionId,
       specializationId,
+      topicCode,
       selectedOptionsJson,
       freeText,
       selfAssessment,
       score,
       quality,
-      answeredAt,
-      syncedAt,
-      attempts,
-      lastError);
+      answeredAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is LocalAnswer &&
+      (other is Answer &&
           other.submissionId == this.submissionId &&
           other.questionId == this.questionId &&
           other.specializationId == this.specializationId &&
+          other.topicCode == this.topicCode &&
           other.selectedOptionsJson == this.selectedOptionsJson &&
           other.freeText == this.freeText &&
           other.selfAssessment == this.selfAssessment &&
           other.score == this.score &&
           other.quality == this.quality &&
-          other.answeredAt == this.answeredAt &&
-          other.syncedAt == this.syncedAt &&
-          other.attempts == this.attempts &&
-          other.lastError == this.lastError);
+          other.answeredAt == this.answeredAt);
 }
 
-class LocalAnswersCompanion extends UpdateCompanion<LocalAnswer> {
+class AnswersCompanion extends UpdateCompanion<Answer> {
   final Value<String> submissionId;
   final Value<String> questionId;
   final Value<String> specializationId;
+  final Value<String> topicCode;
   final Value<String> selectedOptionsJson;
   final Value<String?> freeText;
   final Value<int?> selfAssessment;
   final Value<double> score;
   final Value<int> quality;
   final Value<DateTime> answeredAt;
-  final Value<DateTime?> syncedAt;
-  final Value<int> attempts;
-  final Value<String?> lastError;
   final Value<int> rowid;
-  const LocalAnswersCompanion({
+  const AnswersCompanion({
     this.submissionId = const Value.absent(),
     this.questionId = const Value.absent(),
     this.specializationId = const Value.absent(),
+    this.topicCode = const Value.absent(),
     this.selectedOptionsJson = const Value.absent(),
     this.freeText = const Value.absent(),
     this.selfAssessment = const Value.absent(),
     this.score = const Value.absent(),
     this.quality = const Value.absent(),
     this.answeredAt = const Value.absent(),
-    this.syncedAt = const Value.absent(),
-    this.attempts = const Value.absent(),
-    this.lastError = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  LocalAnswersCompanion.insert({
+  AnswersCompanion.insert({
     required String submissionId,
     required String questionId,
     required String specializationId,
+    required String topicCode,
     this.selectedOptionsJson = const Value.absent(),
     this.freeText = const Value.absent(),
     this.selfAssessment = const Value.absent(),
     required double score,
     required int quality,
     required DateTime answeredAt,
-    this.syncedAt = const Value.absent(),
-    this.attempts = const Value.absent(),
-    this.lastError = const Value.absent(),
     this.rowid = const Value.absent(),
   })  : submissionId = Value(submissionId),
         questionId = Value(questionId),
         specializationId = Value(specializationId),
+        topicCode = Value(topicCode),
         score = Value(score),
         quality = Value(quality),
         answeredAt = Value(answeredAt);
-  static Insertable<LocalAnswer> custom({
+  static Insertable<Answer> custom({
     Expression<String>? submissionId,
     Expression<String>? questionId,
     Expression<String>? specializationId,
+    Expression<String>? topicCode,
     Expression<String>? selectedOptionsJson,
     Expression<String>? freeText,
     Expression<int>? selfAssessment,
     Expression<double>? score,
     Expression<int>? quality,
     Expression<DateTime>? answeredAt,
-    Expression<DateTime>? syncedAt,
-    Expression<int>? attempts,
-    Expression<String>? lastError,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (submissionId != null) 'submission_id': submissionId,
       if (questionId != null) 'question_id': questionId,
       if (specializationId != null) 'specialization_id': specializationId,
+      if (topicCode != null) 'topic_code': topicCode,
       if (selectedOptionsJson != null)
         'selected_options_json': selectedOptionsJson,
       if (freeText != null) 'free_text': freeText,
@@ -1434,40 +831,33 @@ class LocalAnswersCompanion extends UpdateCompanion<LocalAnswer> {
       if (score != null) 'score': score,
       if (quality != null) 'quality': quality,
       if (answeredAt != null) 'answered_at': answeredAt,
-      if (syncedAt != null) 'synced_at': syncedAt,
-      if (attempts != null) 'attempts': attempts,
-      if (lastError != null) 'last_error': lastError,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  LocalAnswersCompanion copyWith(
+  AnswersCompanion copyWith(
       {Value<String>? submissionId,
       Value<String>? questionId,
       Value<String>? specializationId,
+      Value<String>? topicCode,
       Value<String>? selectedOptionsJson,
       Value<String?>? freeText,
       Value<int?>? selfAssessment,
       Value<double>? score,
       Value<int>? quality,
       Value<DateTime>? answeredAt,
-      Value<DateTime?>? syncedAt,
-      Value<int>? attempts,
-      Value<String?>? lastError,
       Value<int>? rowid}) {
-    return LocalAnswersCompanion(
+    return AnswersCompanion(
       submissionId: submissionId ?? this.submissionId,
       questionId: questionId ?? this.questionId,
       specializationId: specializationId ?? this.specializationId,
+      topicCode: topicCode ?? this.topicCode,
       selectedOptionsJson: selectedOptionsJson ?? this.selectedOptionsJson,
       freeText: freeText ?? this.freeText,
       selfAssessment: selfAssessment ?? this.selfAssessment,
       score: score ?? this.score,
       quality: quality ?? this.quality,
       answeredAt: answeredAt ?? this.answeredAt,
-      syncedAt: syncedAt ?? this.syncedAt,
-      attempts: attempts ?? this.attempts,
-      lastError: lastError ?? this.lastError,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1483,6 +873,9 @@ class LocalAnswersCompanion extends UpdateCompanion<LocalAnswer> {
     }
     if (specializationId.present) {
       map['specialization_id'] = Variable<String>(specializationId.value);
+    }
+    if (topicCode.present) {
+      map['topic_code'] = Variable<String>(topicCode.value);
     }
     if (selectedOptionsJson.present) {
       map['selected_options_json'] =
@@ -1503,15 +896,6 @@ class LocalAnswersCompanion extends UpdateCompanion<LocalAnswer> {
     if (answeredAt.present) {
       map['answered_at'] = Variable<DateTime>(answeredAt.value);
     }
-    if (syncedAt.present) {
-      map['synced_at'] = Variable<DateTime>(syncedAt.value);
-    }
-    if (attempts.present) {
-      map['attempts'] = Variable<int>(attempts.value);
-    }
-    if (lastError.present) {
-      map['last_error'] = Variable<String>(lastError.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1520,52 +904,64 @@ class LocalAnswersCompanion extends UpdateCompanion<LocalAnswer> {
 
   @override
   String toString() {
-    return (StringBuffer('LocalAnswersCompanion(')
+    return (StringBuffer('AnswersCompanion(')
           ..write('submissionId: $submissionId, ')
           ..write('questionId: $questionId, ')
           ..write('specializationId: $specializationId, ')
+          ..write('topicCode: $topicCode, ')
           ..write('selectedOptionsJson: $selectedOptionsJson, ')
           ..write('freeText: $freeText, ')
           ..write('selfAssessment: $selfAssessment, ')
           ..write('score: $score, ')
           ..write('quality: $quality, ')
           ..write('answeredAt: $answeredAt, ')
-          ..write('syncedAt: $syncedAt, ')
-          ..write('attempts: $attempts, ')
-          ..write('lastError: $lastError, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class $SyncMetadataTable extends SyncMetadata
-    with TableInfo<$SyncMetadataTable, SyncMetadataData> {
+class $TopicRatingsTable extends TopicRatings
+    with TableInfo<$TopicRatingsTable, TopicRating> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $SyncMetadataTable(this.attachedDatabase, [this._alias]);
+  $TopicRatingsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _specializationIdMeta =
       const VerificationMeta('specializationId');
   @override
   late final GeneratedColumn<String> specializationId = GeneratedColumn<String>(
       'specialization_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _lastSyncedAtMeta =
-      const VerificationMeta('lastSyncedAt');
+  static const VerificationMeta _topicCodeMeta =
+      const VerificationMeta('topicCode');
   @override
-  late final GeneratedColumn<DateTime> lastSyncedAt = GeneratedColumn<DateTime>(
-      'last_synced_at', aliasedName, true,
-      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  late final GeneratedColumn<String> topicCode = GeneratedColumn<String>(
+      'topic_code', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _ratingMeta = const VerificationMeta('rating');
   @override
-  List<GeneratedColumn> get $columns => [specializationId, lastSyncedAt];
+  late final GeneratedColumn<double> rating = GeneratedColumn<double>(
+      'rating', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _answersCountMeta =
+      const VerificationMeta('answersCount');
+  @override
+  late final GeneratedColumn<int> answersCount = GeneratedColumn<int>(
+      'answers_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [specializationId, topicCode, rating, answersCount];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'sync_metadata';
+  static const String $name = 'topic_ratings';
   @override
-  VerificationContext validateIntegrity(Insertable<SyncMetadataData> instance,
+  VerificationContext validateIntegrity(Insertable<TopicRating> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -1577,64 +973,87 @@ class $SyncMetadataTable extends SyncMetadata
     } else if (isInserting) {
       context.missing(_specializationIdMeta);
     }
-    if (data.containsKey('last_synced_at')) {
+    if (data.containsKey('topic_code')) {
+      context.handle(_topicCodeMeta,
+          topicCode.isAcceptableOrUnknown(data['topic_code']!, _topicCodeMeta));
+    } else if (isInserting) {
+      context.missing(_topicCodeMeta);
+    }
+    if (data.containsKey('rating')) {
+      context.handle(_ratingMeta,
+          rating.isAcceptableOrUnknown(data['rating']!, _ratingMeta));
+    } else if (isInserting) {
+      context.missing(_ratingMeta);
+    }
+    if (data.containsKey('answers_count')) {
       context.handle(
-          _lastSyncedAtMeta,
-          lastSyncedAt.isAcceptableOrUnknown(
-              data['last_synced_at']!, _lastSyncedAtMeta));
+          _answersCountMeta,
+          answersCount.isAcceptableOrUnknown(
+              data['answers_count']!, _answersCountMeta));
     }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {specializationId};
+  Set<GeneratedColumn> get $primaryKey => {specializationId, topicCode};
   @override
-  SyncMetadataData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  TopicRating map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return SyncMetadataData(
+    return TopicRating(
       specializationId: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}specialization_id'])!,
-      lastSyncedAt: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}last_synced_at']),
+      topicCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}topic_code'])!,
+      rating: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}rating'])!,
+      answersCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}answers_count'])!,
     );
   }
 
   @override
-  $SyncMetadataTable createAlias(String alias) {
-    return $SyncMetadataTable(attachedDatabase, alias);
+  $TopicRatingsTable createAlias(String alias) {
+    return $TopicRatingsTable(attachedDatabase, alias);
   }
 }
 
-class SyncMetadataData extends DataClass
-    implements Insertable<SyncMetadataData> {
+class TopicRating extends DataClass implements Insertable<TopicRating> {
   final String specializationId;
-  final DateTime? lastSyncedAt;
-  const SyncMetadataData({required this.specializationId, this.lastSyncedAt});
+  final String topicCode;
+  final double rating;
+  final int answersCount;
+  const TopicRating(
+      {required this.specializationId,
+      required this.topicCode,
+      required this.rating,
+      required this.answersCount});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['specialization_id'] = Variable<String>(specializationId);
-    if (!nullToAbsent || lastSyncedAt != null) {
-      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt);
-    }
+    map['topic_code'] = Variable<String>(topicCode);
+    map['rating'] = Variable<double>(rating);
+    map['answers_count'] = Variable<int>(answersCount);
     return map;
   }
 
-  SyncMetadataCompanion toCompanion(bool nullToAbsent) {
-    return SyncMetadataCompanion(
+  TopicRatingsCompanion toCompanion(bool nullToAbsent) {
+    return TopicRatingsCompanion(
       specializationId: Value(specializationId),
-      lastSyncedAt: lastSyncedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastSyncedAt),
+      topicCode: Value(topicCode),
+      rating: Value(rating),
+      answersCount: Value(answersCount),
     );
   }
 
-  factory SyncMetadataData.fromJson(Map<String, dynamic> json,
+  factory TopicRating.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SyncMetadataData(
+    return TopicRating(
       specializationId: serializer.fromJson<String>(json['specializationId']),
-      lastSyncedAt: serializer.fromJson<DateTime?>(json['lastSyncedAt']),
+      topicCode: serializer.fromJson<String>(json['topicCode']),
+      rating: serializer.fromJson<double>(json['rating']),
+      answersCount: serializer.fromJson<int>(json['answersCount']),
     );
   }
   @override
@@ -1642,81 +1061,109 @@ class SyncMetadataData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'specializationId': serializer.toJson<String>(specializationId),
-      'lastSyncedAt': serializer.toJson<DateTime?>(lastSyncedAt),
+      'topicCode': serializer.toJson<String>(topicCode),
+      'rating': serializer.toJson<double>(rating),
+      'answersCount': serializer.toJson<int>(answersCount),
     };
   }
 
-  SyncMetadataData copyWith(
+  TopicRating copyWith(
           {String? specializationId,
-          Value<DateTime?> lastSyncedAt = const Value.absent()}) =>
-      SyncMetadataData(
+          String? topicCode,
+          double? rating,
+          int? answersCount}) =>
+      TopicRating(
         specializationId: specializationId ?? this.specializationId,
-        lastSyncedAt:
-            lastSyncedAt.present ? lastSyncedAt.value : this.lastSyncedAt,
+        topicCode: topicCode ?? this.topicCode,
+        rating: rating ?? this.rating,
+        answersCount: answersCount ?? this.answersCount,
       );
-  SyncMetadataData copyWithCompanion(SyncMetadataCompanion data) {
-    return SyncMetadataData(
+  TopicRating copyWithCompanion(TopicRatingsCompanion data) {
+    return TopicRating(
       specializationId: data.specializationId.present
           ? data.specializationId.value
           : this.specializationId,
-      lastSyncedAt: data.lastSyncedAt.present
-          ? data.lastSyncedAt.value
-          : this.lastSyncedAt,
+      topicCode: data.topicCode.present ? data.topicCode.value : this.topicCode,
+      rating: data.rating.present ? data.rating.value : this.rating,
+      answersCount: data.answersCount.present
+          ? data.answersCount.value
+          : this.answersCount,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('SyncMetadataData(')
+    return (StringBuffer('TopicRating(')
           ..write('specializationId: $specializationId, ')
-          ..write('lastSyncedAt: $lastSyncedAt')
+          ..write('topicCode: $topicCode, ')
+          ..write('rating: $rating, ')
+          ..write('answersCount: $answersCount')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(specializationId, lastSyncedAt);
+  int get hashCode =>
+      Object.hash(specializationId, topicCode, rating, answersCount);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is SyncMetadataData &&
+      (other is TopicRating &&
           other.specializationId == this.specializationId &&
-          other.lastSyncedAt == this.lastSyncedAt);
+          other.topicCode == this.topicCode &&
+          other.rating == this.rating &&
+          other.answersCount == this.answersCount);
 }
 
-class SyncMetadataCompanion extends UpdateCompanion<SyncMetadataData> {
+class TopicRatingsCompanion extends UpdateCompanion<TopicRating> {
   final Value<String> specializationId;
-  final Value<DateTime?> lastSyncedAt;
+  final Value<String> topicCode;
+  final Value<double> rating;
+  final Value<int> answersCount;
   final Value<int> rowid;
-  const SyncMetadataCompanion({
+  const TopicRatingsCompanion({
     this.specializationId = const Value.absent(),
-    this.lastSyncedAt = const Value.absent(),
+    this.topicCode = const Value.absent(),
+    this.rating = const Value.absent(),
+    this.answersCount = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  SyncMetadataCompanion.insert({
+  TopicRatingsCompanion.insert({
     required String specializationId,
-    this.lastSyncedAt = const Value.absent(),
+    required String topicCode,
+    required double rating,
+    this.answersCount = const Value.absent(),
     this.rowid = const Value.absent(),
-  }) : specializationId = Value(specializationId);
-  static Insertable<SyncMetadataData> custom({
+  })  : specializationId = Value(specializationId),
+        topicCode = Value(topicCode),
+        rating = Value(rating);
+  static Insertable<TopicRating> custom({
     Expression<String>? specializationId,
-    Expression<DateTime>? lastSyncedAt,
+    Expression<String>? topicCode,
+    Expression<double>? rating,
+    Expression<int>? answersCount,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (specializationId != null) 'specialization_id': specializationId,
-      if (lastSyncedAt != null) 'last_synced_at': lastSyncedAt,
+      if (topicCode != null) 'topic_code': topicCode,
+      if (rating != null) 'rating': rating,
+      if (answersCount != null) 'answers_count': answersCount,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  SyncMetadataCompanion copyWith(
+  TopicRatingsCompanion copyWith(
       {Value<String>? specializationId,
-      Value<DateTime?>? lastSyncedAt,
+      Value<String>? topicCode,
+      Value<double>? rating,
+      Value<int>? answersCount,
       Value<int>? rowid}) {
-    return SyncMetadataCompanion(
+    return TopicRatingsCompanion(
       specializationId: specializationId ?? this.specializationId,
-      lastSyncedAt: lastSyncedAt ?? this.lastSyncedAt,
+      topicCode: topicCode ?? this.topicCode,
+      rating: rating ?? this.rating,
+      answersCount: answersCount ?? this.answersCount,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1727,8 +1174,14 @@ class SyncMetadataCompanion extends UpdateCompanion<SyncMetadataData> {
     if (specializationId.present) {
       map['specialization_id'] = Variable<String>(specializationId.value);
     }
-    if (lastSyncedAt.present) {
-      map['last_synced_at'] = Variable<DateTime>(lastSyncedAt.value);
+    if (topicCode.present) {
+      map['topic_code'] = Variable<String>(topicCode.value);
+    }
+    if (rating.present) {
+      map['rating'] = Variable<double>(rating.value);
+    }
+    if (answersCount.present) {
+      map['answers_count'] = Variable<int>(answersCount.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -1738,231 +1191,384 @@ class SyncMetadataCompanion extends UpdateCompanion<SyncMetadataData> {
 
   @override
   String toString() {
-    return (StringBuffer('SyncMetadataCompanion(')
+    return (StringBuffer('TopicRatingsCompanion(')
           ..write('specializationId: $specializationId, ')
-          ..write('lastSyncedAt: $lastSyncedAt, ')
+          ..write('topicCode: $topicCode, ')
+          ..write('rating: $rating, ')
+          ..write('answersCount: $answersCount, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class $CachedProfileTable extends CachedProfile
-    with TableInfo<$CachedProfileTable, CachedProfileData> {
+class $ReviewStatesTable extends ReviewStates
+    with TableInfo<$ReviewStatesTable, ReviewState> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $CachedProfileTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  $ReviewStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _questionIdMeta =
+      const VerificationMeta('questionId');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultValue: const Constant(1));
-  static const VerificationMeta _payloadJsonMeta =
-      const VerificationMeta('payloadJson');
-  @override
-  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
-      'payload_json', aliasedName, false,
+  late final GeneratedColumn<String> questionId = GeneratedColumn<String>(
+      'question_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _savedAtMeta =
-      const VerificationMeta('savedAt');
+  static const VerificationMeta _easinessFactorMeta =
+      const VerificationMeta('easinessFactor');
   @override
-  late final GeneratedColumn<DateTime> savedAt = GeneratedColumn<DateTime>(
-      'saved_at', aliasedName, false,
+  late final GeneratedColumn<double> easinessFactor = GeneratedColumn<double>(
+      'easiness_factor', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _repetitionsMeta =
+      const VerificationMeta('repetitions');
+  @override
+  late final GeneratedColumn<int> repetitions = GeneratedColumn<int>(
+      'repetitions', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _intervalDaysMeta =
+      const VerificationMeta('intervalDays');
+  @override
+  late final GeneratedColumn<int> intervalDays = GeneratedColumn<int>(
+      'interval_days', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _dueAtMeta = const VerificationMeta('dueAt');
+  @override
+  late final GeneratedColumn<DateTime> dueAt = GeneratedColumn<DateTime>(
+      'due_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _lastReviewedAtMeta =
+      const VerificationMeta('lastReviewedAt');
   @override
-  List<GeneratedColumn> get $columns => [id, payloadJson, savedAt];
+  late final GeneratedColumn<DateTime> lastReviewedAt =
+      GeneratedColumn<DateTime>('last_reviewed_at', aliasedName, false,
+          type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        questionId,
+        easinessFactor,
+        repetitions,
+        intervalDays,
+        dueAt,
+        lastReviewedAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'cached_profile';
+  static const String $name = 'review_states';
   @override
-  VerificationContext validateIntegrity(Insertable<CachedProfileData> instance,
+  VerificationContext validateIntegrity(Insertable<ReviewState> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('payload_json')) {
+    if (data.containsKey('question_id')) {
       context.handle(
-          _payloadJsonMeta,
-          payloadJson.isAcceptableOrUnknown(
-              data['payload_json']!, _payloadJsonMeta));
+          _questionIdMeta,
+          questionId.isAcceptableOrUnknown(
+              data['question_id']!, _questionIdMeta));
     } else if (isInserting) {
-      context.missing(_payloadJsonMeta);
+      context.missing(_questionIdMeta);
     }
-    if (data.containsKey('saved_at')) {
-      context.handle(_savedAtMeta,
-          savedAt.isAcceptableOrUnknown(data['saved_at']!, _savedAtMeta));
+    if (data.containsKey('easiness_factor')) {
+      context.handle(
+          _easinessFactorMeta,
+          easinessFactor.isAcceptableOrUnknown(
+              data['easiness_factor']!, _easinessFactorMeta));
     } else if (isInserting) {
-      context.missing(_savedAtMeta);
+      context.missing(_easinessFactorMeta);
+    }
+    if (data.containsKey('repetitions')) {
+      context.handle(
+          _repetitionsMeta,
+          repetitions.isAcceptableOrUnknown(
+              data['repetitions']!, _repetitionsMeta));
+    } else if (isInserting) {
+      context.missing(_repetitionsMeta);
+    }
+    if (data.containsKey('interval_days')) {
+      context.handle(
+          _intervalDaysMeta,
+          intervalDays.isAcceptableOrUnknown(
+              data['interval_days']!, _intervalDaysMeta));
+    } else if (isInserting) {
+      context.missing(_intervalDaysMeta);
+    }
+    if (data.containsKey('due_at')) {
+      context.handle(
+          _dueAtMeta, dueAt.isAcceptableOrUnknown(data['due_at']!, _dueAtMeta));
+    } else if (isInserting) {
+      context.missing(_dueAtMeta);
+    }
+    if (data.containsKey('last_reviewed_at')) {
+      context.handle(
+          _lastReviewedAtMeta,
+          lastReviewedAt.isAcceptableOrUnknown(
+              data['last_reviewed_at']!, _lastReviewedAtMeta));
+    } else if (isInserting) {
+      context.missing(_lastReviewedAtMeta);
     }
     return context;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => {questionId};
   @override
-  CachedProfileData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ReviewState map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CachedProfileData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      payloadJson: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}payload_json'])!,
-      savedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}saved_at'])!,
+    return ReviewState(
+      questionId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}question_id'])!,
+      easinessFactor: attachedDatabase.typeMapping.read(
+          DriftSqlType.double, data['${effectivePrefix}easiness_factor'])!,
+      repetitions: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}repetitions'])!,
+      intervalDays: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}interval_days'])!,
+      dueAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}due_at'])!,
+      lastReviewedAt: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}last_reviewed_at'])!,
     );
   }
 
   @override
-  $CachedProfileTable createAlias(String alias) {
-    return $CachedProfileTable(attachedDatabase, alias);
+  $ReviewStatesTable createAlias(String alias) {
+    return $ReviewStatesTable(attachedDatabase, alias);
   }
 }
 
-class CachedProfileData extends DataClass
-    implements Insertable<CachedProfileData> {
-  /// Строка всегда одна: профиль на устройстве ровно один.
-  final int id;
-  final String payloadJson;
-  final DateTime savedAt;
-  const CachedProfileData(
-      {required this.id, required this.payloadJson, required this.savedAt});
+class ReviewState extends DataClass implements Insertable<ReviewState> {
+  final String questionId;
+  final double easinessFactor;
+  final int repetitions;
+  final int intervalDays;
+  final DateTime dueAt;
+  final DateTime lastReviewedAt;
+  const ReviewState(
+      {required this.questionId,
+      required this.easinessFactor,
+      required this.repetitions,
+      required this.intervalDays,
+      required this.dueAt,
+      required this.lastReviewedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['payload_json'] = Variable<String>(payloadJson);
-    map['saved_at'] = Variable<DateTime>(savedAt);
+    map['question_id'] = Variable<String>(questionId);
+    map['easiness_factor'] = Variable<double>(easinessFactor);
+    map['repetitions'] = Variable<int>(repetitions);
+    map['interval_days'] = Variable<int>(intervalDays);
+    map['due_at'] = Variable<DateTime>(dueAt);
+    map['last_reviewed_at'] = Variable<DateTime>(lastReviewedAt);
     return map;
   }
 
-  CachedProfileCompanion toCompanion(bool nullToAbsent) {
-    return CachedProfileCompanion(
-      id: Value(id),
-      payloadJson: Value(payloadJson),
-      savedAt: Value(savedAt),
+  ReviewStatesCompanion toCompanion(bool nullToAbsent) {
+    return ReviewStatesCompanion(
+      questionId: Value(questionId),
+      easinessFactor: Value(easinessFactor),
+      repetitions: Value(repetitions),
+      intervalDays: Value(intervalDays),
+      dueAt: Value(dueAt),
+      lastReviewedAt: Value(lastReviewedAt),
     );
   }
 
-  factory CachedProfileData.fromJson(Map<String, dynamic> json,
+  factory ReviewState.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CachedProfileData(
-      id: serializer.fromJson<int>(json['id']),
-      payloadJson: serializer.fromJson<String>(json['payloadJson']),
-      savedAt: serializer.fromJson<DateTime>(json['savedAt']),
+    return ReviewState(
+      questionId: serializer.fromJson<String>(json['questionId']),
+      easinessFactor: serializer.fromJson<double>(json['easinessFactor']),
+      repetitions: serializer.fromJson<int>(json['repetitions']),
+      intervalDays: serializer.fromJson<int>(json['intervalDays']),
+      dueAt: serializer.fromJson<DateTime>(json['dueAt']),
+      lastReviewedAt: serializer.fromJson<DateTime>(json['lastReviewedAt']),
     );
   }
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'payloadJson': serializer.toJson<String>(payloadJson),
-      'savedAt': serializer.toJson<DateTime>(savedAt),
+      'questionId': serializer.toJson<String>(questionId),
+      'easinessFactor': serializer.toJson<double>(easinessFactor),
+      'repetitions': serializer.toJson<int>(repetitions),
+      'intervalDays': serializer.toJson<int>(intervalDays),
+      'dueAt': serializer.toJson<DateTime>(dueAt),
+      'lastReviewedAt': serializer.toJson<DateTime>(lastReviewedAt),
     };
   }
 
-  CachedProfileData copyWith(
-          {int? id, String? payloadJson, DateTime? savedAt}) =>
-      CachedProfileData(
-        id: id ?? this.id,
-        payloadJson: payloadJson ?? this.payloadJson,
-        savedAt: savedAt ?? this.savedAt,
+  ReviewState copyWith(
+          {String? questionId,
+          double? easinessFactor,
+          int? repetitions,
+          int? intervalDays,
+          DateTime? dueAt,
+          DateTime? lastReviewedAt}) =>
+      ReviewState(
+        questionId: questionId ?? this.questionId,
+        easinessFactor: easinessFactor ?? this.easinessFactor,
+        repetitions: repetitions ?? this.repetitions,
+        intervalDays: intervalDays ?? this.intervalDays,
+        dueAt: dueAt ?? this.dueAt,
+        lastReviewedAt: lastReviewedAt ?? this.lastReviewedAt,
       );
-  CachedProfileData copyWithCompanion(CachedProfileCompanion data) {
-    return CachedProfileData(
-      id: data.id.present ? data.id.value : this.id,
-      payloadJson:
-          data.payloadJson.present ? data.payloadJson.value : this.payloadJson,
-      savedAt: data.savedAt.present ? data.savedAt.value : this.savedAt,
+  ReviewState copyWithCompanion(ReviewStatesCompanion data) {
+    return ReviewState(
+      questionId:
+          data.questionId.present ? data.questionId.value : this.questionId,
+      easinessFactor: data.easinessFactor.present
+          ? data.easinessFactor.value
+          : this.easinessFactor,
+      repetitions:
+          data.repetitions.present ? data.repetitions.value : this.repetitions,
+      intervalDays: data.intervalDays.present
+          ? data.intervalDays.value
+          : this.intervalDays,
+      dueAt: data.dueAt.present ? data.dueAt.value : this.dueAt,
+      lastReviewedAt: data.lastReviewedAt.present
+          ? data.lastReviewedAt.value
+          : this.lastReviewedAt,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('CachedProfileData(')
-          ..write('id: $id, ')
-          ..write('payloadJson: $payloadJson, ')
-          ..write('savedAt: $savedAt')
+    return (StringBuffer('ReviewState(')
+          ..write('questionId: $questionId, ')
+          ..write('easinessFactor: $easinessFactor, ')
+          ..write('repetitions: $repetitions, ')
+          ..write('intervalDays: $intervalDays, ')
+          ..write('dueAt: $dueAt, ')
+          ..write('lastReviewedAt: $lastReviewedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, payloadJson, savedAt);
+  int get hashCode => Object.hash(questionId, easinessFactor, repetitions,
+      intervalDays, dueAt, lastReviewedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is CachedProfileData &&
-          other.id == this.id &&
-          other.payloadJson == this.payloadJson &&
-          other.savedAt == this.savedAt);
+      (other is ReviewState &&
+          other.questionId == this.questionId &&
+          other.easinessFactor == this.easinessFactor &&
+          other.repetitions == this.repetitions &&
+          other.intervalDays == this.intervalDays &&
+          other.dueAt == this.dueAt &&
+          other.lastReviewedAt == this.lastReviewedAt);
 }
 
-class CachedProfileCompanion extends UpdateCompanion<CachedProfileData> {
-  final Value<int> id;
-  final Value<String> payloadJson;
-  final Value<DateTime> savedAt;
-  const CachedProfileCompanion({
-    this.id = const Value.absent(),
-    this.payloadJson = const Value.absent(),
-    this.savedAt = const Value.absent(),
+class ReviewStatesCompanion extends UpdateCompanion<ReviewState> {
+  final Value<String> questionId;
+  final Value<double> easinessFactor;
+  final Value<int> repetitions;
+  final Value<int> intervalDays;
+  final Value<DateTime> dueAt;
+  final Value<DateTime> lastReviewedAt;
+  final Value<int> rowid;
+  const ReviewStatesCompanion({
+    this.questionId = const Value.absent(),
+    this.easinessFactor = const Value.absent(),
+    this.repetitions = const Value.absent(),
+    this.intervalDays = const Value.absent(),
+    this.dueAt = const Value.absent(),
+    this.lastReviewedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
-  CachedProfileCompanion.insert({
-    this.id = const Value.absent(),
-    required String payloadJson,
-    required DateTime savedAt,
-  })  : payloadJson = Value(payloadJson),
-        savedAt = Value(savedAt);
-  static Insertable<CachedProfileData> custom({
-    Expression<int>? id,
-    Expression<String>? payloadJson,
-    Expression<DateTime>? savedAt,
+  ReviewStatesCompanion.insert({
+    required String questionId,
+    required double easinessFactor,
+    required int repetitions,
+    required int intervalDays,
+    required DateTime dueAt,
+    required DateTime lastReviewedAt,
+    this.rowid = const Value.absent(),
+  })  : questionId = Value(questionId),
+        easinessFactor = Value(easinessFactor),
+        repetitions = Value(repetitions),
+        intervalDays = Value(intervalDays),
+        dueAt = Value(dueAt),
+        lastReviewedAt = Value(lastReviewedAt);
+  static Insertable<ReviewState> custom({
+    Expression<String>? questionId,
+    Expression<double>? easinessFactor,
+    Expression<int>? repetitions,
+    Expression<int>? intervalDays,
+    Expression<DateTime>? dueAt,
+    Expression<DateTime>? lastReviewedAt,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (payloadJson != null) 'payload_json': payloadJson,
-      if (savedAt != null) 'saved_at': savedAt,
+      if (questionId != null) 'question_id': questionId,
+      if (easinessFactor != null) 'easiness_factor': easinessFactor,
+      if (repetitions != null) 'repetitions': repetitions,
+      if (intervalDays != null) 'interval_days': intervalDays,
+      if (dueAt != null) 'due_at': dueAt,
+      if (lastReviewedAt != null) 'last_reviewed_at': lastReviewedAt,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
-  CachedProfileCompanion copyWith(
-      {Value<int>? id, Value<String>? payloadJson, Value<DateTime>? savedAt}) {
-    return CachedProfileCompanion(
-      id: id ?? this.id,
-      payloadJson: payloadJson ?? this.payloadJson,
-      savedAt: savedAt ?? this.savedAt,
+  ReviewStatesCompanion copyWith(
+      {Value<String>? questionId,
+      Value<double>? easinessFactor,
+      Value<int>? repetitions,
+      Value<int>? intervalDays,
+      Value<DateTime>? dueAt,
+      Value<DateTime>? lastReviewedAt,
+      Value<int>? rowid}) {
+    return ReviewStatesCompanion(
+      questionId: questionId ?? this.questionId,
+      easinessFactor: easinessFactor ?? this.easinessFactor,
+      repetitions: repetitions ?? this.repetitions,
+      intervalDays: intervalDays ?? this.intervalDays,
+      dueAt: dueAt ?? this.dueAt,
+      lastReviewedAt: lastReviewedAt ?? this.lastReviewedAt,
+      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
+    if (questionId.present) {
+      map['question_id'] = Variable<String>(questionId.value);
     }
-    if (payloadJson.present) {
-      map['payload_json'] = Variable<String>(payloadJson.value);
+    if (easinessFactor.present) {
+      map['easiness_factor'] = Variable<double>(easinessFactor.value);
     }
-    if (savedAt.present) {
-      map['saved_at'] = Variable<DateTime>(savedAt.value);
+    if (repetitions.present) {
+      map['repetitions'] = Variable<int>(repetitions.value);
+    }
+    if (intervalDays.present) {
+      map['interval_days'] = Variable<int>(intervalDays.value);
+    }
+    if (dueAt.present) {
+      map['due_at'] = Variable<DateTime>(dueAt.value);
+    }
+    if (lastReviewedAt.present) {
+      map['last_reviewed_at'] = Variable<DateTime>(lastReviewedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('CachedProfileCompanion(')
-          ..write('id: $id, ')
-          ..write('payloadJson: $payloadJson, ')
-          ..write('savedAt: $savedAt')
+    return (StringBuffer('ReviewStatesCompanion(')
+          ..write('questionId: $questionId, ')
+          ..write('easinessFactor: $easinessFactor, ')
+          ..write('repetitions: $repetitions, ')
+          ..write('intervalDays: $intervalDays, ')
+          ..write('dueAt: $dueAt, ')
+          ..write('lastReviewedAt: $lastReviewedAt, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -1971,387 +1577,181 @@ class CachedProfileCompanion extends UpdateCompanion<CachedProfileData> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $CachedQuestionsTable cachedQuestions =
-      $CachedQuestionsTable(this);
-  late final $LocalAnswersTable localAnswers = $LocalAnswersTable(this);
-  late final $SyncMetadataTable syncMetadata = $SyncMetadataTable(this);
-  late final $CachedProfileTable cachedProfile = $CachedProfileTable(this);
+  late final $ProfilesTable profiles = $ProfilesTable(this);
+  late final $AnswersTable answers = $AnswersTable(this);
+  late final $TopicRatingsTable topicRatings = $TopicRatingsTable(this);
+  late final $ReviewStatesTable reviewStates = $ReviewStatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [cachedQuestions, localAnswers, syncMetadata, cachedProfile];
+      [profiles, answers, topicRatings, reviewStates];
 }
 
-typedef $$CachedQuestionsTableCreateCompanionBuilder = CachedQuestionsCompanion
-    Function({
-  required String id,
+typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
   required String specializationId,
-  required String type,
-  required String title,
-  required String topicCode,
-  required String topicTitle,
-  Value<String?> subtopicCode,
-  Value<String?> subtopicTitle,
-  required int minGrade,
-  required int peakGrade,
-  required int maxGrade,
-  required int frequency,
-  required String optionsJson,
-  required bool isVerified,
-  required String answerShort,
-  required String answerDetailed,
-  required String commonMistakesJson,
-  required String followUpsJson,
+  required int selfAssessedGrade,
+  required int targetGrade,
+  Value<bool> isPrimary,
+  Value<int> answersCount,
   required DateTime updatedAt,
   Value<int> rowid,
 });
-typedef $$CachedQuestionsTableUpdateCompanionBuilder = CachedQuestionsCompanion
-    Function({
-  Value<String> id,
+typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<String> specializationId,
-  Value<String> type,
-  Value<String> title,
-  Value<String> topicCode,
-  Value<String> topicTitle,
-  Value<String?> subtopicCode,
-  Value<String?> subtopicTitle,
-  Value<int> minGrade,
-  Value<int> peakGrade,
-  Value<int> maxGrade,
-  Value<int> frequency,
-  Value<String> optionsJson,
-  Value<bool> isVerified,
-  Value<String> answerShort,
-  Value<String> answerDetailed,
-  Value<String> commonMistakesJson,
-  Value<String> followUpsJson,
+  Value<int> selfAssessedGrade,
+  Value<int> targetGrade,
+  Value<bool> isPrimary,
+  Value<int> answersCount,
   Value<DateTime> updatedAt,
   Value<int> rowid,
 });
 
-class $$CachedQuestionsTableFilterComposer
-    extends Composer<_$AppDatabase, $CachedQuestionsTable> {
-  $$CachedQuestionsTableFilterComposer({
+class $$ProfilesTableFilterComposer
+    extends Composer<_$AppDatabase, $ProfilesTable> {
+  $$ProfilesTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
   ColumnFilters<String> get specializationId => $composableBuilder(
       column: $table.specializationId,
       builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get type => $composableBuilder(
-      column: $table.type, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get topicCode => $composableBuilder(
-      column: $table.topicCode, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get topicTitle => $composableBuilder(
-      column: $table.topicTitle, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get subtopicCode => $composableBuilder(
-      column: $table.subtopicCode, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get subtopicTitle => $composableBuilder(
-      column: $table.subtopicTitle, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get minGrade => $composableBuilder(
-      column: $table.minGrade, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get peakGrade => $composableBuilder(
-      column: $table.peakGrade, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get maxGrade => $composableBuilder(
-      column: $table.maxGrade, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get frequency => $composableBuilder(
-      column: $table.frequency, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get optionsJson => $composableBuilder(
-      column: $table.optionsJson, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<bool> get isVerified => $composableBuilder(
-      column: $table.isVerified, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get answerShort => $composableBuilder(
-      column: $table.answerShort, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get answerDetailed => $composableBuilder(
-      column: $table.answerDetailed,
+  ColumnFilters<int> get selfAssessedGrade => $composableBuilder(
+      column: $table.selfAssessedGrade,
       builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get commonMistakesJson => $composableBuilder(
-      column: $table.commonMistakesJson,
-      builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get targetGrade => $composableBuilder(
+      column: $table.targetGrade, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get followUpsJson => $composableBuilder(
-      column: $table.followUpsJson, builder: (column) => ColumnFilters(column));
+  ColumnFilters<bool> get isPrimary => $composableBuilder(
+      column: $table.isPrimary, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get answersCount => $composableBuilder(
+      column: $table.answersCount, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
       column: $table.updatedAt, builder: (column) => ColumnFilters(column));
 }
 
-class $$CachedQuestionsTableOrderingComposer
-    extends Composer<_$AppDatabase, $CachedQuestionsTable> {
-  $$CachedQuestionsTableOrderingComposer({
+class $$ProfilesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ProfilesTable> {
+  $$ProfilesTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<String> get specializationId => $composableBuilder(
       column: $table.specializationId,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get type => $composableBuilder(
-      column: $table.type, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get topicCode => $composableBuilder(
-      column: $table.topicCode, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get topicTitle => $composableBuilder(
-      column: $table.topicTitle, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get subtopicCode => $composableBuilder(
-      column: $table.subtopicCode,
+  ColumnOrderings<int> get selfAssessedGrade => $composableBuilder(
+      column: $table.selfAssessedGrade,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get subtopicTitle => $composableBuilder(
-      column: $table.subtopicTitle,
-      builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get targetGrade => $composableBuilder(
+      column: $table.targetGrade, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get minGrade => $composableBuilder(
-      column: $table.minGrade, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<bool> get isPrimary => $composableBuilder(
+      column: $table.isPrimary, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get peakGrade => $composableBuilder(
-      column: $table.peakGrade, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get maxGrade => $composableBuilder(
-      column: $table.maxGrade, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get frequency => $composableBuilder(
-      column: $table.frequency, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get optionsJson => $composableBuilder(
-      column: $table.optionsJson, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<bool> get isVerified => $composableBuilder(
-      column: $table.isVerified, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get answerShort => $composableBuilder(
-      column: $table.answerShort, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get answerDetailed => $composableBuilder(
-      column: $table.answerDetailed,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get commonMistakesJson => $composableBuilder(
-      column: $table.commonMistakesJson,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get followUpsJson => $composableBuilder(
-      column: $table.followUpsJson,
+  ColumnOrderings<int> get answersCount => $composableBuilder(
+      column: $table.answersCount,
       builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
       column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$CachedQuestionsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $CachedQuestionsTable> {
-  $$CachedQuestionsTableAnnotationComposer({
+class $$ProfilesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ProfilesTable> {
+  $$ProfilesTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
   GeneratedColumn<String> get specializationId => $composableBuilder(
       column: $table.specializationId, builder: (column) => column);
 
-  GeneratedColumn<String> get type =>
-      $composableBuilder(column: $table.type, builder: (column) => column);
+  GeneratedColumn<int> get selfAssessedGrade => $composableBuilder(
+      column: $table.selfAssessedGrade, builder: (column) => column);
 
-  GeneratedColumn<String> get title =>
-      $composableBuilder(column: $table.title, builder: (column) => column);
+  GeneratedColumn<int> get targetGrade => $composableBuilder(
+      column: $table.targetGrade, builder: (column) => column);
 
-  GeneratedColumn<String> get topicCode =>
-      $composableBuilder(column: $table.topicCode, builder: (column) => column);
+  GeneratedColumn<bool> get isPrimary =>
+      $composableBuilder(column: $table.isPrimary, builder: (column) => column);
 
-  GeneratedColumn<String> get topicTitle => $composableBuilder(
-      column: $table.topicTitle, builder: (column) => column);
-
-  GeneratedColumn<String> get subtopicCode => $composableBuilder(
-      column: $table.subtopicCode, builder: (column) => column);
-
-  GeneratedColumn<String> get subtopicTitle => $composableBuilder(
-      column: $table.subtopicTitle, builder: (column) => column);
-
-  GeneratedColumn<int> get minGrade =>
-      $composableBuilder(column: $table.minGrade, builder: (column) => column);
-
-  GeneratedColumn<int> get peakGrade =>
-      $composableBuilder(column: $table.peakGrade, builder: (column) => column);
-
-  GeneratedColumn<int> get maxGrade =>
-      $composableBuilder(column: $table.maxGrade, builder: (column) => column);
-
-  GeneratedColumn<int> get frequency =>
-      $composableBuilder(column: $table.frequency, builder: (column) => column);
-
-  GeneratedColumn<String> get optionsJson => $composableBuilder(
-      column: $table.optionsJson, builder: (column) => column);
-
-  GeneratedColumn<bool> get isVerified => $composableBuilder(
-      column: $table.isVerified, builder: (column) => column);
-
-  GeneratedColumn<String> get answerShort => $composableBuilder(
-      column: $table.answerShort, builder: (column) => column);
-
-  GeneratedColumn<String> get answerDetailed => $composableBuilder(
-      column: $table.answerDetailed, builder: (column) => column);
-
-  GeneratedColumn<String> get commonMistakesJson => $composableBuilder(
-      column: $table.commonMistakesJson, builder: (column) => column);
-
-  GeneratedColumn<String> get followUpsJson => $composableBuilder(
-      column: $table.followUpsJson, builder: (column) => column);
+  GeneratedColumn<int> get answersCount => $composableBuilder(
+      column: $table.answersCount, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$CachedQuestionsTableTableManager extends RootTableManager<
+class $$ProfilesTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $CachedQuestionsTable,
-    CachedQuestion,
-    $$CachedQuestionsTableFilterComposer,
-    $$CachedQuestionsTableOrderingComposer,
-    $$CachedQuestionsTableAnnotationComposer,
-    $$CachedQuestionsTableCreateCompanionBuilder,
-    $$CachedQuestionsTableUpdateCompanionBuilder,
-    (
-      CachedQuestion,
-      BaseReferences<_$AppDatabase, $CachedQuestionsTable, CachedQuestion>
-    ),
-    CachedQuestion,
+    $ProfilesTable,
+    Profile,
+    $$ProfilesTableFilterComposer,
+    $$ProfilesTableOrderingComposer,
+    $$ProfilesTableAnnotationComposer,
+    $$ProfilesTableCreateCompanionBuilder,
+    $$ProfilesTableUpdateCompanionBuilder,
+    (Profile, BaseReferences<_$AppDatabase, $ProfilesTable, Profile>),
+    Profile,
     PrefetchHooks Function()> {
-  $$CachedQuestionsTableTableManager(
-      _$AppDatabase db, $CachedQuestionsTable table)
+  $$ProfilesTableTableManager(_$AppDatabase db, $ProfilesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$CachedQuestionsTableFilterComposer($db: db, $table: table),
+              $$ProfilesTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$CachedQuestionsTableOrderingComposer($db: db, $table: table),
+              $$ProfilesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$CachedQuestionsTableAnnotationComposer($db: db, $table: table),
+              $$ProfilesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
-            Value<String> id = const Value.absent(),
             Value<String> specializationId = const Value.absent(),
-            Value<String> type = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> topicCode = const Value.absent(),
-            Value<String> topicTitle = const Value.absent(),
-            Value<String?> subtopicCode = const Value.absent(),
-            Value<String?> subtopicTitle = const Value.absent(),
-            Value<int> minGrade = const Value.absent(),
-            Value<int> peakGrade = const Value.absent(),
-            Value<int> maxGrade = const Value.absent(),
-            Value<int> frequency = const Value.absent(),
-            Value<String> optionsJson = const Value.absent(),
-            Value<bool> isVerified = const Value.absent(),
-            Value<String> answerShort = const Value.absent(),
-            Value<String> answerDetailed = const Value.absent(),
-            Value<String> commonMistakesJson = const Value.absent(),
-            Value<String> followUpsJson = const Value.absent(),
+            Value<int> selfAssessedGrade = const Value.absent(),
+            Value<int> targetGrade = const Value.absent(),
+            Value<bool> isPrimary = const Value.absent(),
+            Value<int> answersCount = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              CachedQuestionsCompanion(
-            id: id,
+              ProfilesCompanion(
             specializationId: specializationId,
-            type: type,
-            title: title,
-            topicCode: topicCode,
-            topicTitle: topicTitle,
-            subtopicCode: subtopicCode,
-            subtopicTitle: subtopicTitle,
-            minGrade: minGrade,
-            peakGrade: peakGrade,
-            maxGrade: maxGrade,
-            frequency: frequency,
-            optionsJson: optionsJson,
-            isVerified: isVerified,
-            answerShort: answerShort,
-            answerDetailed: answerDetailed,
-            commonMistakesJson: commonMistakesJson,
-            followUpsJson: followUpsJson,
+            selfAssessedGrade: selfAssessedGrade,
+            targetGrade: targetGrade,
+            isPrimary: isPrimary,
+            answersCount: answersCount,
             updatedAt: updatedAt,
             rowid: rowid,
           ),
           createCompanionCallback: ({
-            required String id,
             required String specializationId,
-            required String type,
-            required String title,
-            required String topicCode,
-            required String topicTitle,
-            Value<String?> subtopicCode = const Value.absent(),
-            Value<String?> subtopicTitle = const Value.absent(),
-            required int minGrade,
-            required int peakGrade,
-            required int maxGrade,
-            required int frequency,
-            required String optionsJson,
-            required bool isVerified,
-            required String answerShort,
-            required String answerDetailed,
-            required String commonMistakesJson,
-            required String followUpsJson,
+            required int selfAssessedGrade,
+            required int targetGrade,
+            Value<bool> isPrimary = const Value.absent(),
+            Value<int> answersCount = const Value.absent(),
             required DateTime updatedAt,
             Value<int> rowid = const Value.absent(),
           }) =>
-              CachedQuestionsCompanion.insert(
-            id: id,
+              ProfilesCompanion.insert(
             specializationId: specializationId,
-            type: type,
-            title: title,
-            topicCode: topicCode,
-            topicTitle: topicTitle,
-            subtopicCode: subtopicCode,
-            subtopicTitle: subtopicTitle,
-            minGrade: minGrade,
-            peakGrade: peakGrade,
-            maxGrade: maxGrade,
-            frequency: frequency,
-            optionsJson: optionsJson,
-            isVerified: isVerified,
-            answerShort: answerShort,
-            answerDetailed: answerDetailed,
-            commonMistakesJson: commonMistakesJson,
-            followUpsJson: followUpsJson,
+            selfAssessedGrade: selfAssessedGrade,
+            targetGrade: targetGrade,
+            isPrimary: isPrimary,
+            answersCount: answersCount,
             updatedAt: updatedAt,
             rowid: rowid,
           ),
@@ -2362,57 +1762,48 @@ class $$CachedQuestionsTableTableManager extends RootTableManager<
         ));
 }
 
-typedef $$CachedQuestionsTableProcessedTableManager = ProcessedTableManager<
+typedef $$ProfilesTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
-    $CachedQuestionsTable,
-    CachedQuestion,
-    $$CachedQuestionsTableFilterComposer,
-    $$CachedQuestionsTableOrderingComposer,
-    $$CachedQuestionsTableAnnotationComposer,
-    $$CachedQuestionsTableCreateCompanionBuilder,
-    $$CachedQuestionsTableUpdateCompanionBuilder,
-    (
-      CachedQuestion,
-      BaseReferences<_$AppDatabase, $CachedQuestionsTable, CachedQuestion>
-    ),
-    CachedQuestion,
+    $ProfilesTable,
+    Profile,
+    $$ProfilesTableFilterComposer,
+    $$ProfilesTableOrderingComposer,
+    $$ProfilesTableAnnotationComposer,
+    $$ProfilesTableCreateCompanionBuilder,
+    $$ProfilesTableUpdateCompanionBuilder,
+    (Profile, BaseReferences<_$AppDatabase, $ProfilesTable, Profile>),
+    Profile,
     PrefetchHooks Function()>;
-typedef $$LocalAnswersTableCreateCompanionBuilder = LocalAnswersCompanion
-    Function({
+typedef $$AnswersTableCreateCompanionBuilder = AnswersCompanion Function({
   required String submissionId,
   required String questionId,
   required String specializationId,
+  required String topicCode,
   Value<String> selectedOptionsJson,
   Value<String?> freeText,
   Value<int?> selfAssessment,
   required double score,
   required int quality,
   required DateTime answeredAt,
-  Value<DateTime?> syncedAt,
-  Value<int> attempts,
-  Value<String?> lastError,
   Value<int> rowid,
 });
-typedef $$LocalAnswersTableUpdateCompanionBuilder = LocalAnswersCompanion
-    Function({
+typedef $$AnswersTableUpdateCompanionBuilder = AnswersCompanion Function({
   Value<String> submissionId,
   Value<String> questionId,
   Value<String> specializationId,
+  Value<String> topicCode,
   Value<String> selectedOptionsJson,
   Value<String?> freeText,
   Value<int?> selfAssessment,
   Value<double> score,
   Value<int> quality,
   Value<DateTime> answeredAt,
-  Value<DateTime?> syncedAt,
-  Value<int> attempts,
-  Value<String?> lastError,
   Value<int> rowid,
 });
 
-class $$LocalAnswersTableFilterComposer
-    extends Composer<_$AppDatabase, $LocalAnswersTable> {
-  $$LocalAnswersTableFilterComposer({
+class $$AnswersTableFilterComposer
+    extends Composer<_$AppDatabase, $AnswersTable> {
+  $$AnswersTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2428,6 +1819,9 @@ class $$LocalAnswersTableFilterComposer
   ColumnFilters<String> get specializationId => $composableBuilder(
       column: $table.specializationId,
       builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get topicCode => $composableBuilder(
+      column: $table.topicCode, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get selectedOptionsJson => $composableBuilder(
       column: $table.selectedOptionsJson,
@@ -2448,20 +1842,11 @@ class $$LocalAnswersTableFilterComposer
 
   ColumnFilters<DateTime> get answeredAt => $composableBuilder(
       column: $table.answeredAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get syncedAt => $composableBuilder(
-      column: $table.syncedAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get attempts => $composableBuilder(
-      column: $table.attempts, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get lastError => $composableBuilder(
-      column: $table.lastError, builder: (column) => ColumnFilters(column));
 }
 
-class $$LocalAnswersTableOrderingComposer
-    extends Composer<_$AppDatabase, $LocalAnswersTable> {
-  $$LocalAnswersTableOrderingComposer({
+class $$AnswersTableOrderingComposer
+    extends Composer<_$AppDatabase, $AnswersTable> {
+  $$AnswersTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2478,6 +1863,9 @@ class $$LocalAnswersTableOrderingComposer
   ColumnOrderings<String> get specializationId => $composableBuilder(
       column: $table.specializationId,
       builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get topicCode => $composableBuilder(
+      column: $table.topicCode, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get selectedOptionsJson => $composableBuilder(
       column: $table.selectedOptionsJson,
@@ -2498,20 +1886,11 @@ class $$LocalAnswersTableOrderingComposer
 
   ColumnOrderings<DateTime> get answeredAt => $composableBuilder(
       column: $table.answeredAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get syncedAt => $composableBuilder(
-      column: $table.syncedAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get attempts => $composableBuilder(
-      column: $table.attempts, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get lastError => $composableBuilder(
-      column: $table.lastError, builder: (column) => ColumnOrderings(column));
 }
 
-class $$LocalAnswersTableAnnotationComposer
-    extends Composer<_$AppDatabase, $LocalAnswersTable> {
-  $$LocalAnswersTableAnnotationComposer({
+class $$AnswersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AnswersTable> {
+  $$AnswersTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2526,6 +1905,9 @@ class $$LocalAnswersTableAnnotationComposer
 
   GeneratedColumn<String> get specializationId => $composableBuilder(
       column: $table.specializationId, builder: (column) => column);
+
+  GeneratedColumn<String> get topicCode =>
+      $composableBuilder(column: $table.topicCode, builder: (column) => column);
 
   GeneratedColumn<String> get selectedOptionsJson => $composableBuilder(
       column: $table.selectedOptionsJson, builder: (column) => column);
@@ -2544,100 +1926,80 @@ class $$LocalAnswersTableAnnotationComposer
 
   GeneratedColumn<DateTime> get answeredAt => $composableBuilder(
       column: $table.answeredAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get syncedAt =>
-      $composableBuilder(column: $table.syncedAt, builder: (column) => column);
-
-  GeneratedColumn<int> get attempts =>
-      $composableBuilder(column: $table.attempts, builder: (column) => column);
-
-  GeneratedColumn<String> get lastError =>
-      $composableBuilder(column: $table.lastError, builder: (column) => column);
 }
 
-class $$LocalAnswersTableTableManager extends RootTableManager<
+class $$AnswersTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $LocalAnswersTable,
-    LocalAnswer,
-    $$LocalAnswersTableFilterComposer,
-    $$LocalAnswersTableOrderingComposer,
-    $$LocalAnswersTableAnnotationComposer,
-    $$LocalAnswersTableCreateCompanionBuilder,
-    $$LocalAnswersTableUpdateCompanionBuilder,
-    (
-      LocalAnswer,
-      BaseReferences<_$AppDatabase, $LocalAnswersTable, LocalAnswer>
-    ),
-    LocalAnswer,
+    $AnswersTable,
+    Answer,
+    $$AnswersTableFilterComposer,
+    $$AnswersTableOrderingComposer,
+    $$AnswersTableAnnotationComposer,
+    $$AnswersTableCreateCompanionBuilder,
+    $$AnswersTableUpdateCompanionBuilder,
+    (Answer, BaseReferences<_$AppDatabase, $AnswersTable, Answer>),
+    Answer,
     PrefetchHooks Function()> {
-  $$LocalAnswersTableTableManager(_$AppDatabase db, $LocalAnswersTable table)
+  $$AnswersTableTableManager(_$AppDatabase db, $AnswersTable table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$LocalAnswersTableFilterComposer($db: db, $table: table),
+              $$AnswersTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$LocalAnswersTableOrderingComposer($db: db, $table: table),
+              $$AnswersTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$LocalAnswersTableAnnotationComposer($db: db, $table: table),
+              $$AnswersTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> submissionId = const Value.absent(),
             Value<String> questionId = const Value.absent(),
             Value<String> specializationId = const Value.absent(),
+            Value<String> topicCode = const Value.absent(),
             Value<String> selectedOptionsJson = const Value.absent(),
             Value<String?> freeText = const Value.absent(),
             Value<int?> selfAssessment = const Value.absent(),
             Value<double> score = const Value.absent(),
             Value<int> quality = const Value.absent(),
             Value<DateTime> answeredAt = const Value.absent(),
-            Value<DateTime?> syncedAt = const Value.absent(),
-            Value<int> attempts = const Value.absent(),
-            Value<String?> lastError = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              LocalAnswersCompanion(
+              AnswersCompanion(
             submissionId: submissionId,
             questionId: questionId,
             specializationId: specializationId,
+            topicCode: topicCode,
             selectedOptionsJson: selectedOptionsJson,
             freeText: freeText,
             selfAssessment: selfAssessment,
             score: score,
             quality: quality,
             answeredAt: answeredAt,
-            syncedAt: syncedAt,
-            attempts: attempts,
-            lastError: lastError,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String submissionId,
             required String questionId,
             required String specializationId,
+            required String topicCode,
             Value<String> selectedOptionsJson = const Value.absent(),
             Value<String?> freeText = const Value.absent(),
             Value<int?> selfAssessment = const Value.absent(),
             required double score,
             required int quality,
             required DateTime answeredAt,
-            Value<DateTime?> syncedAt = const Value.absent(),
-            Value<int> attempts = const Value.absent(),
-            Value<String?> lastError = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              LocalAnswersCompanion.insert(
+              AnswersCompanion.insert(
             submissionId: submissionId,
             questionId: questionId,
             specializationId: specializationId,
+            topicCode: topicCode,
             selectedOptionsJson: selectedOptionsJson,
             freeText: freeText,
             selfAssessment: selfAssessment,
             score: score,
             quality: quality,
             answeredAt: answeredAt,
-            syncedAt: syncedAt,
-            attempts: attempts,
-            lastError: lastError,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -2647,37 +2009,38 @@ class $$LocalAnswersTableTableManager extends RootTableManager<
         ));
 }
 
-typedef $$LocalAnswersTableProcessedTableManager = ProcessedTableManager<
+typedef $$AnswersTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
-    $LocalAnswersTable,
-    LocalAnswer,
-    $$LocalAnswersTableFilterComposer,
-    $$LocalAnswersTableOrderingComposer,
-    $$LocalAnswersTableAnnotationComposer,
-    $$LocalAnswersTableCreateCompanionBuilder,
-    $$LocalAnswersTableUpdateCompanionBuilder,
-    (
-      LocalAnswer,
-      BaseReferences<_$AppDatabase, $LocalAnswersTable, LocalAnswer>
-    ),
-    LocalAnswer,
+    $AnswersTable,
+    Answer,
+    $$AnswersTableFilterComposer,
+    $$AnswersTableOrderingComposer,
+    $$AnswersTableAnnotationComposer,
+    $$AnswersTableCreateCompanionBuilder,
+    $$AnswersTableUpdateCompanionBuilder,
+    (Answer, BaseReferences<_$AppDatabase, $AnswersTable, Answer>),
+    Answer,
     PrefetchHooks Function()>;
-typedef $$SyncMetadataTableCreateCompanionBuilder = SyncMetadataCompanion
+typedef $$TopicRatingsTableCreateCompanionBuilder = TopicRatingsCompanion
     Function({
   required String specializationId,
-  Value<DateTime?> lastSyncedAt,
+  required String topicCode,
+  required double rating,
+  Value<int> answersCount,
   Value<int> rowid,
 });
-typedef $$SyncMetadataTableUpdateCompanionBuilder = SyncMetadataCompanion
+typedef $$TopicRatingsTableUpdateCompanionBuilder = TopicRatingsCompanion
     Function({
   Value<String> specializationId,
-  Value<DateTime?> lastSyncedAt,
+  Value<String> topicCode,
+  Value<double> rating,
+  Value<int> answersCount,
   Value<int> rowid,
 });
 
-class $$SyncMetadataTableFilterComposer
-    extends Composer<_$AppDatabase, $SyncMetadataTable> {
-  $$SyncMetadataTableFilterComposer({
+class $$TopicRatingsTableFilterComposer
+    extends Composer<_$AppDatabase, $TopicRatingsTable> {
+  $$TopicRatingsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2688,13 +2051,19 @@ class $$SyncMetadataTableFilterComposer
       column: $table.specializationId,
       builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get lastSyncedAt => $composableBuilder(
-      column: $table.lastSyncedAt, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get topicCode => $composableBuilder(
+      column: $table.topicCode, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get rating => $composableBuilder(
+      column: $table.rating, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get answersCount => $composableBuilder(
+      column: $table.answersCount, builder: (column) => ColumnFilters(column));
 }
 
-class $$SyncMetadataTableOrderingComposer
-    extends Composer<_$AppDatabase, $SyncMetadataTable> {
-  $$SyncMetadataTableOrderingComposer({
+class $$TopicRatingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $TopicRatingsTable> {
+  $$TopicRatingsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2705,14 +2074,20 @@ class $$SyncMetadataTableOrderingComposer
       column: $table.specializationId,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get lastSyncedAt => $composableBuilder(
-      column: $table.lastSyncedAt,
+  ColumnOrderings<String> get topicCode => $composableBuilder(
+      column: $table.topicCode, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get rating => $composableBuilder(
+      column: $table.rating, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get answersCount => $composableBuilder(
+      column: $table.answersCount,
       builder: (column) => ColumnOrderings(column));
 }
 
-class $$SyncMetadataTableAnnotationComposer
-    extends Composer<_$AppDatabase, $SyncMetadataTable> {
-  $$SyncMetadataTableAnnotationComposer({
+class $$TopicRatingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TopicRatingsTable> {
+  $$TopicRatingsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -2722,53 +2097,67 @@ class $$SyncMetadataTableAnnotationComposer
   GeneratedColumn<String> get specializationId => $composableBuilder(
       column: $table.specializationId, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get lastSyncedAt => $composableBuilder(
-      column: $table.lastSyncedAt, builder: (column) => column);
+  GeneratedColumn<String> get topicCode =>
+      $composableBuilder(column: $table.topicCode, builder: (column) => column);
+
+  GeneratedColumn<double> get rating =>
+      $composableBuilder(column: $table.rating, builder: (column) => column);
+
+  GeneratedColumn<int> get answersCount => $composableBuilder(
+      column: $table.answersCount, builder: (column) => column);
 }
 
-class $$SyncMetadataTableTableManager extends RootTableManager<
+class $$TopicRatingsTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $SyncMetadataTable,
-    SyncMetadataData,
-    $$SyncMetadataTableFilterComposer,
-    $$SyncMetadataTableOrderingComposer,
-    $$SyncMetadataTableAnnotationComposer,
-    $$SyncMetadataTableCreateCompanionBuilder,
-    $$SyncMetadataTableUpdateCompanionBuilder,
+    $TopicRatingsTable,
+    TopicRating,
+    $$TopicRatingsTableFilterComposer,
+    $$TopicRatingsTableOrderingComposer,
+    $$TopicRatingsTableAnnotationComposer,
+    $$TopicRatingsTableCreateCompanionBuilder,
+    $$TopicRatingsTableUpdateCompanionBuilder,
     (
-      SyncMetadataData,
-      BaseReferences<_$AppDatabase, $SyncMetadataTable, SyncMetadataData>
+      TopicRating,
+      BaseReferences<_$AppDatabase, $TopicRatingsTable, TopicRating>
     ),
-    SyncMetadataData,
+    TopicRating,
     PrefetchHooks Function()> {
-  $$SyncMetadataTableTableManager(_$AppDatabase db, $SyncMetadataTable table)
+  $$TopicRatingsTableTableManager(_$AppDatabase db, $TopicRatingsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$SyncMetadataTableFilterComposer($db: db, $table: table),
+              $$TopicRatingsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$SyncMetadataTableOrderingComposer($db: db, $table: table),
+              $$TopicRatingsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$SyncMetadataTableAnnotationComposer($db: db, $table: table),
+              $$TopicRatingsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> specializationId = const Value.absent(),
-            Value<DateTime?> lastSyncedAt = const Value.absent(),
+            Value<String> topicCode = const Value.absent(),
+            Value<double> rating = const Value.absent(),
+            Value<int> answersCount = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              SyncMetadataCompanion(
+              TopicRatingsCompanion(
             specializationId: specializationId,
-            lastSyncedAt: lastSyncedAt,
+            topicCode: topicCode,
+            rating: rating,
+            answersCount: answersCount,
             rowid: rowid,
           ),
           createCompanionCallback: ({
             required String specializationId,
-            Value<DateTime?> lastSyncedAt = const Value.absent(),
+            required String topicCode,
+            required double rating,
+            Value<int> answersCount = const Value.absent(),
             Value<int> rowid = const Value.absent(),
           }) =>
-              SyncMetadataCompanion.insert(
+              TopicRatingsCompanion.insert(
             specializationId: specializationId,
-            lastSyncedAt: lastSyncedAt,
+            topicCode: topicCode,
+            rating: rating,
+            answersCount: answersCount,
             rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
@@ -2778,135 +2167,191 @@ class $$SyncMetadataTableTableManager extends RootTableManager<
         ));
 }
 
-typedef $$SyncMetadataTableProcessedTableManager = ProcessedTableManager<
+typedef $$TopicRatingsTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
-    $SyncMetadataTable,
-    SyncMetadataData,
-    $$SyncMetadataTableFilterComposer,
-    $$SyncMetadataTableOrderingComposer,
-    $$SyncMetadataTableAnnotationComposer,
-    $$SyncMetadataTableCreateCompanionBuilder,
-    $$SyncMetadataTableUpdateCompanionBuilder,
+    $TopicRatingsTable,
+    TopicRating,
+    $$TopicRatingsTableFilterComposer,
+    $$TopicRatingsTableOrderingComposer,
+    $$TopicRatingsTableAnnotationComposer,
+    $$TopicRatingsTableCreateCompanionBuilder,
+    $$TopicRatingsTableUpdateCompanionBuilder,
     (
-      SyncMetadataData,
-      BaseReferences<_$AppDatabase, $SyncMetadataTable, SyncMetadataData>
+      TopicRating,
+      BaseReferences<_$AppDatabase, $TopicRatingsTable, TopicRating>
     ),
-    SyncMetadataData,
+    TopicRating,
     PrefetchHooks Function()>;
-typedef $$CachedProfileTableCreateCompanionBuilder = CachedProfileCompanion
+typedef $$ReviewStatesTableCreateCompanionBuilder = ReviewStatesCompanion
     Function({
-  Value<int> id,
-  required String payloadJson,
-  required DateTime savedAt,
+  required String questionId,
+  required double easinessFactor,
+  required int repetitions,
+  required int intervalDays,
+  required DateTime dueAt,
+  required DateTime lastReviewedAt,
+  Value<int> rowid,
 });
-typedef $$CachedProfileTableUpdateCompanionBuilder = CachedProfileCompanion
+typedef $$ReviewStatesTableUpdateCompanionBuilder = ReviewStatesCompanion
     Function({
-  Value<int> id,
-  Value<String> payloadJson,
-  Value<DateTime> savedAt,
+  Value<String> questionId,
+  Value<double> easinessFactor,
+  Value<int> repetitions,
+  Value<int> intervalDays,
+  Value<DateTime> dueAt,
+  Value<DateTime> lastReviewedAt,
+  Value<int> rowid,
 });
 
-class $$CachedProfileTableFilterComposer
-    extends Composer<_$AppDatabase, $CachedProfileTable> {
-  $$CachedProfileTableFilterComposer({
+class $$ReviewStatesTableFilterComposer
+    extends Composer<_$AppDatabase, $ReviewStatesTable> {
+  $$ReviewStatesTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
+  ColumnFilters<String> get questionId => $composableBuilder(
+      column: $table.questionId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get payloadJson => $composableBuilder(
-      column: $table.payloadJson, builder: (column) => ColumnFilters(column));
+  ColumnFilters<double> get easinessFactor => $composableBuilder(
+      column: $table.easinessFactor,
+      builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get savedAt => $composableBuilder(
-      column: $table.savedAt, builder: (column) => ColumnFilters(column));
+  ColumnFilters<int> get repetitions => $composableBuilder(
+      column: $table.repetitions, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get intervalDays => $composableBuilder(
+      column: $table.intervalDays, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get dueAt => $composableBuilder(
+      column: $table.dueAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get lastReviewedAt => $composableBuilder(
+      column: $table.lastReviewedAt,
+      builder: (column) => ColumnFilters(column));
 }
 
-class $$CachedProfileTableOrderingComposer
-    extends Composer<_$AppDatabase, $CachedProfileTable> {
-  $$CachedProfileTableOrderingComposer({
+class $$ReviewStatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReviewStatesTable> {
+  $$ReviewStatesTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<String> get questionId => $composableBuilder(
+      column: $table.questionId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get payloadJson => $composableBuilder(
-      column: $table.payloadJson, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<double> get easinessFactor => $composableBuilder(
+      column: $table.easinessFactor,
+      builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get savedAt => $composableBuilder(
-      column: $table.savedAt, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<int> get repetitions => $composableBuilder(
+      column: $table.repetitions, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get intervalDays => $composableBuilder(
+      column: $table.intervalDays,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get dueAt => $composableBuilder(
+      column: $table.dueAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get lastReviewedAt => $composableBuilder(
+      column: $table.lastReviewedAt,
+      builder: (column) => ColumnOrderings(column));
 }
 
-class $$CachedProfileTableAnnotationComposer
-    extends Composer<_$AppDatabase, $CachedProfileTable> {
-  $$CachedProfileTableAnnotationComposer({
+class $$ReviewStatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReviewStatesTable> {
+  $$ReviewStatesTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
+  GeneratedColumn<String> get questionId => $composableBuilder(
+      column: $table.questionId, builder: (column) => column);
 
-  GeneratedColumn<String> get payloadJson => $composableBuilder(
-      column: $table.payloadJson, builder: (column) => column);
+  GeneratedColumn<double> get easinessFactor => $composableBuilder(
+      column: $table.easinessFactor, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get savedAt =>
-      $composableBuilder(column: $table.savedAt, builder: (column) => column);
+  GeneratedColumn<int> get repetitions => $composableBuilder(
+      column: $table.repetitions, builder: (column) => column);
+
+  GeneratedColumn<int> get intervalDays => $composableBuilder(
+      column: $table.intervalDays, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get dueAt =>
+      $composableBuilder(column: $table.dueAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastReviewedAt => $composableBuilder(
+      column: $table.lastReviewedAt, builder: (column) => column);
 }
 
-class $$CachedProfileTableTableManager extends RootTableManager<
+class $$ReviewStatesTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $CachedProfileTable,
-    CachedProfileData,
-    $$CachedProfileTableFilterComposer,
-    $$CachedProfileTableOrderingComposer,
-    $$CachedProfileTableAnnotationComposer,
-    $$CachedProfileTableCreateCompanionBuilder,
-    $$CachedProfileTableUpdateCompanionBuilder,
+    $ReviewStatesTable,
+    ReviewState,
+    $$ReviewStatesTableFilterComposer,
+    $$ReviewStatesTableOrderingComposer,
+    $$ReviewStatesTableAnnotationComposer,
+    $$ReviewStatesTableCreateCompanionBuilder,
+    $$ReviewStatesTableUpdateCompanionBuilder,
     (
-      CachedProfileData,
-      BaseReferences<_$AppDatabase, $CachedProfileTable, CachedProfileData>
+      ReviewState,
+      BaseReferences<_$AppDatabase, $ReviewStatesTable, ReviewState>
     ),
-    CachedProfileData,
+    ReviewState,
     PrefetchHooks Function()> {
-  $$CachedProfileTableTableManager(_$AppDatabase db, $CachedProfileTable table)
+  $$ReviewStatesTableTableManager(_$AppDatabase db, $ReviewStatesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$CachedProfileTableFilterComposer($db: db, $table: table),
+              $$ReviewStatesTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$CachedProfileTableOrderingComposer($db: db, $table: table),
+              $$ReviewStatesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$CachedProfileTableAnnotationComposer($db: db, $table: table),
+              $$ReviewStatesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> payloadJson = const Value.absent(),
-            Value<DateTime> savedAt = const Value.absent(),
+            Value<String> questionId = const Value.absent(),
+            Value<double> easinessFactor = const Value.absent(),
+            Value<int> repetitions = const Value.absent(),
+            Value<int> intervalDays = const Value.absent(),
+            Value<DateTime> dueAt = const Value.absent(),
+            Value<DateTime> lastReviewedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
           }) =>
-              CachedProfileCompanion(
-            id: id,
-            payloadJson: payloadJson,
-            savedAt: savedAt,
+              ReviewStatesCompanion(
+            questionId: questionId,
+            easinessFactor: easinessFactor,
+            repetitions: repetitions,
+            intervalDays: intervalDays,
+            dueAt: dueAt,
+            lastReviewedAt: lastReviewedAt,
+            rowid: rowid,
           ),
           createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String payloadJson,
-            required DateTime savedAt,
+            required String questionId,
+            required double easinessFactor,
+            required int repetitions,
+            required int intervalDays,
+            required DateTime dueAt,
+            required DateTime lastReviewedAt,
+            Value<int> rowid = const Value.absent(),
           }) =>
-              CachedProfileCompanion.insert(
-            id: id,
-            payloadJson: payloadJson,
-            savedAt: savedAt,
+              ReviewStatesCompanion.insert(
+            questionId: questionId,
+            easinessFactor: easinessFactor,
+            repetitions: repetitions,
+            intervalDays: intervalDays,
+            dueAt: dueAt,
+            lastReviewedAt: lastReviewedAt,
+            rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -2915,31 +2360,31 @@ class $$CachedProfileTableTableManager extends RootTableManager<
         ));
 }
 
-typedef $$CachedProfileTableProcessedTableManager = ProcessedTableManager<
+typedef $$ReviewStatesTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
-    $CachedProfileTable,
-    CachedProfileData,
-    $$CachedProfileTableFilterComposer,
-    $$CachedProfileTableOrderingComposer,
-    $$CachedProfileTableAnnotationComposer,
-    $$CachedProfileTableCreateCompanionBuilder,
-    $$CachedProfileTableUpdateCompanionBuilder,
+    $ReviewStatesTable,
+    ReviewState,
+    $$ReviewStatesTableFilterComposer,
+    $$ReviewStatesTableOrderingComposer,
+    $$ReviewStatesTableAnnotationComposer,
+    $$ReviewStatesTableCreateCompanionBuilder,
+    $$ReviewStatesTableUpdateCompanionBuilder,
     (
-      CachedProfileData,
-      BaseReferences<_$AppDatabase, $CachedProfileTable, CachedProfileData>
+      ReviewState,
+      BaseReferences<_$AppDatabase, $ReviewStatesTable, ReviewState>
     ),
-    CachedProfileData,
+    ReviewState,
     PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$CachedQuestionsTableTableManager get cachedQuestions =>
-      $$CachedQuestionsTableTableManager(_db, _db.cachedQuestions);
-  $$LocalAnswersTableTableManager get localAnswers =>
-      $$LocalAnswersTableTableManager(_db, _db.localAnswers);
-  $$SyncMetadataTableTableManager get syncMetadata =>
-      $$SyncMetadataTableTableManager(_db, _db.syncMetadata);
-  $$CachedProfileTableTableManager get cachedProfile =>
-      $$CachedProfileTableTableManager(_db, _db.cachedProfile);
+  $$ProfilesTableTableManager get profiles =>
+      $$ProfilesTableTableManager(_db, _db.profiles);
+  $$AnswersTableTableManager get answers =>
+      $$AnswersTableTableManager(_db, _db.answers);
+  $$TopicRatingsTableTableManager get topicRatings =>
+      $$TopicRatingsTableTableManager(_db, _db.topicRatings);
+  $$ReviewStatesTableTableManager get reviewStates =>
+      $$ReviewStatesTableTableManager(_db, _db.reviewStates);
 }

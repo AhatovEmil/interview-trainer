@@ -81,11 +81,25 @@ class Specialization {
 }
 
 class Topic {
-  const Topic({required this.code, required this.title, required this.subtopics});
+  const Topic({
+    required this.code,
+    required this.title,
+    required this.subtopics,
+    this.weights = const <int, double>{},
+  });
 
   final String code;
   final String title;
   final List<Subtopic> subtopics;
+
+  /// Вес раздела для каждого грейда: насколько тема важна на собеседовании
+  /// именно этого уровня. По весам считается общая оценка и приоритет тем в
+  /// плане подготовки (CLAUDE.md §3.5).
+  final Map<int, double> weights;
+
+  /// Вес для грейда. Нет значения — считаем тему неважной, а не важной:
+  /// иначе неизвестный раздел перетянул бы на себя весь план.
+  double weightFor(int grade) => weights[grade] ?? 0;
 
   factory Topic.fromJson(Map<String, dynamic> json) => Topic(
         code: json['code'] as String,
@@ -93,6 +107,11 @@ class Topic {
         subtopics: (json['subtopics'] as List<dynamic>)
             .map((dynamic item) => Subtopic.fromJson(item as Map<String, dynamic>))
             .toList(),
+        weights: <int, double>{
+          for (final MapEntry<String, dynamic> entry
+              in (json['weights'] as Map<String, dynamic>? ?? <String, dynamic>{}).entries)
+            int.parse(entry.key): (entry.value as num).toDouble(),
+        },
       );
 }
 

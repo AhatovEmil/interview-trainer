@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Trainer</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0 auto; padding: 60px 20px 80px; max-width: 36rem;
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #0c1017; background: #f6f7f9;
+  }
+  .mark {
+    width: 56px; height: 56px; border-radius: 14px; background: #0c1017;
+    display: grid; place-items: center; margin-bottom: 24px;
+  }
+  .mark svg { width: 26px; height: 26px; fill: #fff; }
+  h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 12px; }
+  p { color: #303a49; }
+  ul { padding-left: 1.2rem; color: #303a49; }
+  a { color: #2f5bea; }
+  .muted { color: #667081; font-size: 0.92rem; margin-top: 40px; }
+  @media (prefers-color-scheme: dark) {
+    body { color: #eef1f5; background: #101419; }
+    p, ul { color: #c3cad4; }
+    .mark { background: #eef1f5; }
+    .mark svg { fill: #101419; }
+    .muted { color: #8b95a3; }
+    a { color: #7ea2ff; }
+  }
+</style>
+</head>
+<body>
+<div class="mark">
+  <svg viewBox="0 0 100 100" aria-hidden="true">
+    <polygon points="58,6 25,55 45,55 40,94 75,44 55,44"/>
+  </svg>
+</div>
+
+<h1>Interview Trainer</h1>
+<p>
+  Тренажёр для подготовки к техническим собеседованиям в IT. Для тех, кто уже работает и
+  меняет место, а не изучает профессию с нуля.
+</p>
+
+<ul>
+  <li>676 вопросов по 21 специализации с разбором по уровням</li>
+  <li>оценка по каждой теме отдельно, а не общая отметка</li>
+  <li>интервальные повторения: забытое возвращается чаще</li>
+  <li>работает без интернета — данных приложение не собирает вовсе</li>
+</ul>
+
+<p class="muted">
+  <a href="privacy.html">Политика конфиденциальности</a> ·
+  <a href="https://github.com/AhatovEmil/interview-trainer">Исходный код</a>
+</p>
+</body>
+</html>

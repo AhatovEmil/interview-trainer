@@ -1,0 +1,95 @@
+# Боевое развёртывание.
+#
+# Накладывается поверх основного файла:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Отличия от локального запуска: порты базы и Redis наружу не выставлены,
+# сертификат выпускается и продлевается сам, у сервисов есть лимиты и
+# ротация логов, а состав переменных проверяется на старте — приложение не
+# поднимется с ключом по умолчанию.
+
+services:
+  postgres:
+    # Наружу база не смотрит: доступ к ней только из сети compose. Порт из
+    # основного файла перекрываем пустым списком.
+    ports: !override []
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?переменная обязательна в проде}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?переменная обязательна в проде}
+      POSTGRES_DB: ${POSTGRES_DB:?переменная обязательна в проде}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+    logging: &logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  redis:
+    ports: !override []
+    logging: *logging
+
+  api:
+    environment:
+      ENVIRONMENT: production
+      DEBUG: "false"
+      # В проде приложение не стартует с ключом по умолчанию и с коротким
+      # ключом — проверка живёт в app.core.config.
+      SECRET_KEY: "${SECRET_KEY:?сгенерируйте ключ через secrets.token_urlsafe(48)}"
+    # Порт наружу не публикуем: снаружи доступен только прокси с TLS.
+    ports: !override []
+    restart: always
+    logging: *logging
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+  # Caddy вместо nginx: он сам получает и продлевает сертификат Let's Encrypt,
+  # без отдельного certbot, cron и перезагрузки конфига. Для одного домена это
+  # разница между тремя строками и получасом настройки.
+  nginx:
+    image: caddy:2-alpine
+    container_name: interview-trainer-proxy
+    ports: !override
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      API_DOMAIN: "${API_DOMAIN:?домен обязателен — по нему выпускается сертификат}"
+      ACME_EMAIL: "${ACME_EMAIL:?почта для уведомлений об истечении сертификата}"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: always
+    logging: *logging
+
+  # Ежедневная резервная копия базы. Отдельный сервис, а не cron на хосте:
+  # копия должна ехать вместе с остальным стеком, а не жить в чужом расписании,
+  # про которое забудут при переезде.
+  backup:
+    image: postgres:16-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backups:/backups
+      - ./docker/backup.sh:/backup.sh:ro
+    environment:
+      PGHOST: postgres
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    entrypoint: ["/bin/sh", "/backup.sh"]
+    restart: always
+    logging: *logging
+
+volumes:
+  caddy_data:
+  caddy_config:

@@ -24,17 +24,7 @@ class ProfileScreen extends ConsumerWidget {
     final String? specialization = session.specializationId;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Мой уровень'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            tooltip: 'Выйти',
-            onPressed: () => ref.read(sessionProvider.notifier).logout(),
-          ),
-          const SizedBox(width: 4),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Мой уровень')),
       body: specialization == null
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
@@ -102,8 +92,148 @@ class _StatsView extends StatelessWidget {
             _EmptyTopics()
           else
             ...stats.topics.map((TopicStats topic) => _TopicRow(topic: topic)),
+          const SizedBox(height: 40),
+          const _DangerZone(),
+          const SizedBox(height: 20),
+          const _PrivacyNote(),
         ],
       );
+}
+
+/// Что приложение делает с данными.
+///
+/// Магазины требуют, чтобы политика была доступна и из приложения, а не только
+/// по ссылке в карточке. Здесь же самое важное сказано прямо, без перехода:
+/// большинство людей по ссылке не пойдёт.
+class _PrivacyNote extends StatelessWidget {
+  const _PrivacyNote();
+
+  static const String _policyUrl =
+      'https://ahatovemil.github.io/interview-trainer/privacy.html';
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final AppColors colors = context.colors;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Приложение не собирает данные и не выходит в сеть. Ответы и прогресс '
+          'остаются на этом устройстве.',
+          style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
+        ),
+        const SizedBox(height: 8),
+        SelectableText(
+          _policyUrl,
+          style: theme.textTheme.bodySmall?.copyWith(color: colors.accent),
+        ),
+      ],
+    );
+  }
+}
+
+/// Стирание прогресса.
+///
+/// Аккаунтов нет, стирать нечего кроме локальных данных — но само действие
+/// нужно: устройство может смениться владельцем, и чужие ответы ему доставаться
+/// не должны. Живёт внизу профиля, а не в списке действий: операция необратима,
+/// и попадать в неё случайно не должно быть легко.
+class _DangerZone extends ConsumerStatefulWidget {
+  const _DangerZone();
+
+  @override
+  ConsumerState<_DangerZone> createState() => _DangerZoneState();
+}
+
+class _DangerZoneState extends ConsumerState<_DangerZone> {
+  bool _isDeleting = false;
+
+  Future<void> _confirmAndDelete() async {
+    final bool confirmed = await showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: const Text('Стереть весь прогресс?'),
+            content: const Text(
+              'Пропадут все ответы, рейтинги по темам и очередь повторений. '
+              'Восстановить их будет нельзя: данные хранятся только на этом '
+              'устройстве.',
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Отмена'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(foregroundColor: context.colors.critical),
+                child: const Text('Удалить'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirmed) {
+      return;
+    }
+
+    setState(() => _isDeleting = true);
+    try {
+      await ref.read(sessionProvider.notifier).wipeProgress();
+      // Дальше роутер сам уводит на онбординг: профиля больше нет.
+    } on Object catch (error) {
+      if (mounted) {
+        setState(() => _isDeleting = false);
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(error.toString()),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final AppColors colors = context.colors;
+    final ThemeData theme = Theme.of(context);
+
+    return SurfaceCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text('Стереть прогресс', style: theme.textTheme.titleMedium),
+          const SizedBox(height: 6),
+          Text(
+            'Данные хранятся только на этом устройстве. Стереть можно всё: '
+            'ответы, рейтинги и повторения. Это необратимо.',
+            style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton(
+            onPressed: _isDeleting ? null : _confirmAndDelete,
+            style: OutlinedButton.styleFrom(
+              foregroundColor: colors.critical,
+              side: BorderSide(color: colors.critical),
+            ),
+            child: _isDeleting
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2.2),
+                  )
+                : const Text('Стереть прогресс'),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Главный блок: оценка уровня крупным планом.

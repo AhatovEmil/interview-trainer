@@ -1,0 +1,36 @@
+# Обратный прокси с TLS.
+#
+# Caddy сам запрашивает сертификат Let's Encrypt при первом запуске и продлевает
+# его дальше без участия человека. Условие одно: домен из API_DOMAIN должен
+# указывать на этот сервер, а порты 80 и 443 быть открыты — проверка владения
+# идёт через них.
+
+{
+	email {$ACME_EMAIL}
+}
+
+{$API_DOMAIN} {
+	encode gzip
+
+	# Заголовок с адресом клиента нужен ограничению частоты: без него все
+	# запросы приходят с адреса прокси, и лимит считает всех за одного.
+	reverse_proxy api:8000 {
+		header_up X-Real-IP {remote_host}
+	}
+
+	# Приложение отправляет пароли и токены, поэтому браузеру и промежуточным
+	# узлам сообщаем, что ходить сюда по http не нужно вовсе.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+
+	# Здоровье не засоряет журнал: его дёргают каждые десять секунд.
+	log {
+		output stdout
+		format console
+	}
+}
