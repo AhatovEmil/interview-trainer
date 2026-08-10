@@ -1,4 +1,4 @@
-package com.example.interview_trainer
+package io.github.ahatovemil.interviewtrainer
 
 import io.flutter.embedding.android.FlutterActivity
 
