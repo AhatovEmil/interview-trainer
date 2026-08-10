@@ -91,6 +91,22 @@ def test_open_answer_requires_three_level_blocks(tmp_path: Path) -> None:
         load_questions(write(tmp_path, body))
 
 
+def test_entry_level_question_does_not_need_level_blocks(tmp_path: Path) -> None:
+    """Вопрос, который выше junior не задают, не обязан объяснять уровни.
+
+    Блок «что ждут на senior» у такого вопроса — выдумка ради проверки. Раньше
+    его приходилось писать, и это портило разборы начального уровня.
+    """
+    body = MINIMAL.replace("peak_grade: middle", "peak_grade: junior")
+    body = body.replace("max_grade: senior", "max_grade: junior")
+    body = body.replace("      ### Middle\n      Освобождается на время I/O.\n", "")
+    body = body.replace("      ### Senior\n      Переключение по интервалу.\n", "")
+
+    payload = load_questions(write(tmp_path, body))
+
+    assert payload.questions[0].max_grade == "junior"
+
+
 def test_short_answer_does_not_need_level_blocks(tmp_path: Path) -> None:
     body = MINIMAL.replace("type: open_answer", "type: short_answer")
     body = body.replace("      ### Senior\n      Переключение по интервалу.\n", "")

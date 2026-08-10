@@ -127,9 +127,20 @@ def build(output: Path | None = None) -> Path:
             for subtopic in topic.subtopics:
                 titles["subtopics"][subtopic.code] = subtopic.title
 
+    # Вопросы скрытых специализаций в пакет не едут: выбрать их в приложении
+    # нельзя, а вес установочного файла они увеличивают.
+    active = {
+        specialization.id
+        for profession in taxonomy.professions
+        for specialization in profession.specializations
+        if specialization.is_active
+    }
+
     questions: list[dict[str, Any]] = []
     for path in sorted(settings.questions_dir.glob("*.yaml")):
         for question in load_questions(path, taxonomy).questions:
+            if not active.intersection(question.specializations):
+                continue
             questions.append(_question_payload(question, titles["topics"], titles["subtopics"]))
 
     payload = {

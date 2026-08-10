@@ -118,6 +118,13 @@ class QuestionIn(StrictModel):
         if self.type is not QuestionType.OPEN_ANSWER:
             return
 
+        # Разбор по уровням требуется только там, где вопрос действительно
+        # спрашивают на разных уровнях. У вопроса, который выше junior не
+        # задают, блок «что ждут на senior» — выдумка: заполнять его пришлось
+        # бы ради проверки, а не ради читателя.
+        if GRADE_VALUES[self.max_grade] < GRADE_VALUES["middle"]:
+            return
+
         missing = [
             level
             for level in LEVEL_HEADINGS
