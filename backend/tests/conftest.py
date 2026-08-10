@@ -33,6 +33,31 @@ async def reset_connection_pools() -> AsyncIterator[None]:
     get_redis.cache_clear()
 
 
+@pytest.fixture(autouse=True)
+async def reset_rate_limits() -> AsyncIterator[None]:
+    """Счётчики ограничения частоты живут в Redis и переживают тест.
+
+    Без сброса регистрации из одного теста съедали бы лимит следующего: в
+    тестах у всех запросов один и тот же адрес клиента, и любой файл, где
+    создаётся больше пяти пользователей, начал бы падать с 429.
+    """
+    await _flush_rate_limits()
+    yield
+
+
+async def _flush_rate_limits() -> None:
+    if os.getenv("RUN_INTEGRATION_TESTS") != "1":
+        return
+    redis = get_redis()
+    try:
+        keys = [key async for key in redis.scan_iter("ratelimit:*")]
+        if keys:
+            await redis.delete(*keys)
+    except OSError:
+        # Redis не поднят — юнит-тестам он и не нужен.
+        pass
+
+
 @pytest.fixture
 def app() -> FastAPI:
     return create_app()
