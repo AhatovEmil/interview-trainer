@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../presentation/home/home_screen.dart';
 import '../../presentation/onboarding/onboarding_screen.dart';
+import '../../presentation/plan/plan_screen.dart';
 import '../../presentation/practice/practice_screen.dart';
 import '../../presentation/profile/profile_screen.dart';
 import '../../presentation/questions/question_list_screen.dart';
@@ -21,6 +22,7 @@ class AppRoutes {
   static const String practice = '/practice';
   static const String questions = '/questions';
   static const String profile = '/profile';
+  static const String plan = '/plan';
 }
 
 final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
@@ -57,6 +59,10 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((Ref ref) {
                 PracticeScreen(questionId: state.pathParameters['id']),
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutes.plan,
+        builder: (BuildContext context, GoRouterState state) => const PlanScreen(),
       ),
       GoRoute(
         path: AppRoutes.profile,

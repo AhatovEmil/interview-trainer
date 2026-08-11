@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content/question_bank.dart';
 import '../data/local/app_database.dart';
+import '../data/local/plan_service.dart';
 import '../data/local/practice_service.dart';
 import '../domain/models/profile.dart';
 import '../domain/models/question_list.dart';
@@ -27,6 +28,13 @@ final Provider<AppDatabase> appDatabaseProvider = Provider<AppDatabase>((Ref ref
 
 final Provider<PracticeService> practiceServiceProvider = Provider<PracticeService>(
   (Ref ref) => PracticeService(
+    database: ref.watch(appDatabaseProvider),
+    bank: ref.watch(questionBankProvider),
+  ),
+);
+
+final Provider<PlanService> planServiceProvider = Provider<PlanService>(
+  (Ref ref) => PlanService(
     database: ref.watch(appDatabaseProvider),
     bank: ref.watch(questionBankProvider),
   ),
@@ -109,4 +117,10 @@ final FutureProviderFamily<QuestionListSummary, String> questionListProvider =
     FutureProvider.family<QuestionListSummary, String>(
   (Ref ref, String specialization) =>
       ref.watch(practiceServiceProvider).questionList(specialization),
+);
+
+/// Что делать сегодня по плану. `null` — активного плана нет.
+final FutureProviderFamily<TodayPlan?, String> todayPlanProvider =
+    FutureProvider.family<TodayPlan?, String>(
+  (Ref ref, String specialization) => ref.watch(planServiceProvider).today(specialization),
 );

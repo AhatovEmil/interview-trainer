@@ -86,13 +86,50 @@ class ReviewStates extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{questionId};
 }
 
-@DriftDatabase(tables: <Type>[Profiles, Answers, TopicRatings, ReviewStates])
+/// План подготовки к собеседованию (CLAUDE.md §3.7).
+///
+/// Активный план ровно один на специализацию: новый заменяет старый, а прежние
+/// остаются в базе — по ним видно, к чему человек уже готовился.
+class StudyPlans extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get specializationId => text()();
+  DateTimeColumn get interviewDate => dateTime()();
+  IntColumn get targetGrade => integer()();
+  IntColumn get dailyCapacity => integer()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+}
+
+/// День плана.
+///
+/// Дни сохраняются, а не пересчитываются на лету: приоритет тем зависит от
+/// рейтингов, и через три дня тот же расчёт дал бы другой план. Человек должен
+/// видеть тот, который ему обещали.
+class StudyPlanDays extends Table {
+  IntColumn get planId => integer()();
+  IntColumn get dayIndex => integer()();
+  DateTimeColumn get day => dateTime()();
+
+  /// Коды разделов на день, через запятую. Отдельная таблица ради трёх
+  /// значений на строку не окупается.
+  TextColumn get topicCodes => text()();
+
+  IntColumn get newQuestions => integer()();
+  BoolColumn get reviewOnly => boolean()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{planId, dayIndex};
+}
+
+@DriftDatabase(
+  tables: <Type>[Profiles, Answers, TopicRatings, ReviewStates, StudyPlans, StudyPlanDays],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'interview_trainer'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -118,6 +155,12 @@ class AppDatabase extends _$AppDatabase {
             // текущий уровень. Таблица пересоздаётся, остальные колонки
             // переносятся как есть — выбранный стек и прогресс сохраняются.
             await m.alterTable(TableMigration(profiles));
+          }
+          if (from < 4) {
+            // Появился план подготовки. Ничего переносить не нужно — таблицы
+            // новые, прежние данные они не трогают.
+            await m.createTable(studyPlans);
+            await m.createTable(studyPlanDays);
           }
         },
       );
@@ -260,6 +303,70 @@ class AppDatabase extends _$AppDatabase {
   Future<void> saveReviewState(ReviewStatesCompanion state) =>
       into(reviewStates).insertOnConflictUpdate(state);
 
+  // --- план подготовки --------------------------------------------------------
+
+  Future<StudyPlan?> activePlan(String specializationId) => (select(studyPlans)
+        ..where(
+          (StudyPlans table) =>
+              table.specializationId.equals(specializationId) & table.isActive.equals(true),
+        )
+        ..orderBy(<OrderClauseGenerator<StudyPlans>>[
+          (StudyPlans table) => OrderingTerm.desc(table.createdAt),
+        ])
+        ..limit(1))
+      .getSingleOrNull();
+
+  Future<List<StudyPlanDay>> planDaysOf(int planId) => (select(studyPlanDays)
+        ..where((StudyPlanDays table) => table.planId.equals(planId))
+        ..orderBy(<OrderClauseGenerator<StudyPlanDays>>[
+          (StudyPlanDays table) => OrderingTerm.asc(table.dayIndex),
+        ]))
+      .get();
+
+  /// Сохраняет новый план и снимает отметку активности с прежних.
+  ///
+  /// Активный план ровно один: два одновременно означали бы, что экран
+  /// «сегодня» показывает нагрузку из одного, а прогресс считается по другому.
+  Future<int> savePlan({
+    required String specializationId,
+    required DateTime interviewDate,
+    required int targetGrade,
+    required int dailyCapacity,
+    required List<StudyPlanDaysCompanion> Function(int planId) days,
+  }) =>
+      transaction(() async {
+        await (update(studyPlans)
+              ..where(
+                (StudyPlans table) =>
+                    table.specializationId.equals(specializationId) &
+                    table.isActive.equals(true),
+              ))
+            .write(const StudyPlansCompanion(isActive: Value<bool>(false)));
+
+        final int planId = await into(studyPlans).insert(
+          StudyPlansCompanion.insert(
+            specializationId: specializationId,
+            interviewDate: interviewDate,
+            targetGrade: targetGrade,
+            dailyCapacity: dailyCapacity,
+            createdAt: DateTime.now(),
+          ),
+        );
+
+        await batch(
+          (Batch batch) => batch.insertAll(studyPlanDays, days(planId)),
+        );
+        return planId;
+      });
+
+  /// Отменяет активный план, не удаляя историю.
+  Future<void> cancelPlan(String specializationId) => (update(studyPlans)
+        ..where(
+          (StudyPlans table) =>
+              table.specializationId.equals(specializationId) & table.isActive.equals(true),
+        ))
+      .write(const StudyPlansCompanion(isActive: Value<bool>(false)));
+
   // --- очистка ----------------------------------------------------------------
 
   /// Полная очистка прогресса. Банк вопросов не трогает — он в ресурсах.
@@ -267,6 +374,8 @@ class AppDatabase extends _$AppDatabase {
         await delete(answers).go();
         await delete(topicRatings).go();
         await delete(reviewStates).go();
+        await delete(studyPlanDays).go();
+        await delete(studyPlans).go();
         await delete(profiles).go();
       });
 }

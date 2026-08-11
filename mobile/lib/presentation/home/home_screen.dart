@@ -8,6 +8,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../domain/models/grade.dart';
 import '../../domain/models/profile.dart';
+import '../../data/local/plan_service.dart';
 import '../../domain/models/question_list.dart';
 import '../common/section_label.dart';
 import '../common/surface_card.dart';
@@ -47,6 +48,7 @@ class HomeScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(questionListProvider(specialization));
+          ref.invalidate(todayPlanProvider(specialization));
           await ref.read(sessionProvider.notifier).refreshProfile();
         },
         child: ListView(
@@ -80,6 +82,8 @@ class HomeScreen extends ConsumerWidget {
               primary: true,
               onTap: () => context.push(AppRoutes.practice),
             ),
+            const SizedBox(height: 10),
+            _PlanTile(specialization: specialization),
             const SizedBox(height: 10),
             _ActionTile(
               icon: Icons.checklist_rounded,
@@ -166,6 +170,43 @@ class _SpecializationCard extends ConsumerWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// Вход в план подготовки.
+///
+/// Отдельная плитка, а не пункт в профиле: план — главная ценность продукта
+/// (CLAUDE.md §1), и он должен быть виден с первого экрана. Подпись меняется в
+/// зависимости от того, есть ли активный план: без него это приглашение, с ним
+/// — сводка на сегодня.
+class _PlanTile extends ConsumerWidget {
+  const _PlanTile({required this.specialization});
+
+  final String specialization;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final TodayPlan? plan = ref.watch(todayPlanProvider(specialization)).valueOrNull;
+
+    final String subtitle;
+    if (plan == null) {
+      subtitle = 'Назовите дату собеседования — разложу по дням';
+    } else if (plan.isFinished) {
+      subtitle = 'Собеседование наступило — можно составить новый';
+    } else if (plan.isDone) {
+      subtitle = 'Норма на сегодня закрыта, до собеседования '
+          '${withPlural(plan.daysLeft, 'день', 'дня', 'дней')}';
+    } else {
+      subtitle = 'Сегодня ${plan.doneToday} из ${plan.target}, до собеседования '
+          '${withPlural(plan.daysLeft, 'день', 'дня', 'дней')}';
+    }
+
+    return _ActionTile(
+      icon: Icons.event_available_rounded,
+      title: plan == null ? 'План перед собеседованием' : 'План на сегодня',
+      subtitle: subtitle,
+      onTap: () => context.push(AppRoutes.plan),
     );
   }
 }

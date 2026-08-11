@@ -135,8 +135,9 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
         selectedOptions: selectedOptions,
         selfAssessment: selfAssessment,
       );
-      // Статистика после ответа устарела.
+      // Статистика и норма на сегодня после ответа устарели.
       ref.invalidate(statsProvider(specialization));
+      ref.invalidate(todayPlanProvider(specialization));
     } on Object catch (error) {
       if (context.mounted) {
         showError(context, error);
