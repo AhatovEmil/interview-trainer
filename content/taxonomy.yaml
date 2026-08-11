@@ -37,6 +37,7 @@ professions:
     specializations:
       - id: frontend_react
         title: React
+        is_active: true
       - id: frontend_vue
         title: Vue
       - id: frontend_angular
