@@ -45,6 +45,7 @@ COVERED = frozenset(
         "backend_java",
         "frontend_react",
         "frontend_vue",
+        "frontend_angular",
         "backend_csharp",
         "backend_php",
         "backend_node",

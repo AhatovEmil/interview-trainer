@@ -43,6 +43,7 @@ professions:
         is_active: true
       - id: frontend_angular
         title: Angular
+        is_active: true
 
   - id: mobile
     title: Мобильный разработчик
