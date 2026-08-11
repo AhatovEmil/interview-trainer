@@ -126,9 +126,7 @@ class QuestionIn(StrictModel):
         # одинаковая выдумка ради прохождения проверки.
         low, _, high = self.grades()
         expected = [
-            heading
-            for heading, code in LEVEL_HEADINGS.items()
-            if low <= GRADE_VALUES[code] <= high
+            heading for heading, code in LEVEL_HEADINGS.items() if low <= GRADE_VALUES[code] <= high
         ]
         if len(expected) < 2:
             return
