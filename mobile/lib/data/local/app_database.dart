@@ -17,10 +17,11 @@ part 'app_database.g.dart';
 class Profiles extends Table {
   TextColumn get specializationId => text()();
 
-  /// Где человек сейчас — стартовая точка для оценки.
-  IntColumn get selfAssessedGrade => integer()();
-
   /// К какому уровню готовится — именно он определяет выдачу.
+  ///
+  /// Уровень здесь один. Самооценка была вторым полем и не окупала себя: её
+  /// спрашивали на старте, а использовали только для подписи под целевым
+  /// уровнем. Сам уровень приложение всё равно измеряет по ответам.
   IntColumn get targetGrade => integer()();
 
   BoolColumn get isPrimary => boolean().withDefault(const Constant(false))();
@@ -85,13 +86,95 @@ class ReviewStates extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{questionId};
 }
 
-@DriftDatabase(tables: <Type>[Profiles, Answers, TopicRatings, ReviewStates])
+/// План подготовки к собеседованию (CLAUDE.md §3.7).
+///
+/// Активный план ровно один на специализацию: новый заменяет старый, а прежние
+/// остаются в базе — по ним видно, к чему человек уже готовился.
+class StudyPlans extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get specializationId => text()();
+  DateTimeColumn get interviewDate => dateTime()();
+  IntColumn get targetGrade => integer()();
+  IntColumn get dailyCapacity => integer()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get createdAt => dateTime()();
+}
+
+/// День плана.
+///
+/// Дни сохраняются, а не пересчитываются на лету: приоритет тем зависит от
+/// рейтингов, и через три дня тот же расчёт дал бы другой план. Человек должен
+/// видеть тот, который ему обещали.
+class StudyPlanDays extends Table {
+  IntColumn get planId => integer()();
+  IntColumn get dayIndex => integer()();
+  DateTimeColumn get day => dateTime()();
+
+  /// Коды разделов на день, через запятую. Отдельная таблица ради трёх
+  /// значений на строку не окупается.
+  TextColumn get topicCodes => text()();
+
+  IntColumn get newQuestions => integer()();
+  BoolColumn get reviewOnly => boolean()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{planId, dayIndex};
+}
+
+/// Заметка к вопросу банка.
+///
+/// То, что человек хочет запомнить именно про себя: что забыл сказать, как
+/// формулировать в следующий раз, куда посмотреть. Одна заметка на вопрос —
+/// история правок здесь никому не нужна.
+class QuestionNotes extends Table {
+  TextColumn get questionId => text()();
+  TextColumn get body => text()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{questionId};
+}
+
+/// Вопрос, который человек услышал на реальном собеседовании.
+///
+/// Записывать их нужно сразу после собеседования, пока помнишь формулировку.
+/// Хранится локально: сервера у приложения нет, и отправлять некуда.
+class OwnQuestions extends Table {
+  TextColumn get id => text()();
+  TextColumn get specializationId => text()();
+  TextColumn get title => text()();
+
+  /// Что ответил или что стоило ответить. Заполняется не всегда.
+  TextColumn get answer => text().nullable()();
+
+  /// Где спросили. Нужно, чтобы перед вторым кругом собеседований в ту же
+  /// компанию открыть именно её вопросы.
+  TextColumn get company => text().nullable()();
+
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
+@DriftDatabase(
+  tables: <Type>[
+    Profiles,
+    Answers,
+    TopicRatings,
+    ReviewStates,
+    StudyPlans,
+    StudyPlanDays,
+    QuestionNotes,
+    OwnQuestions,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'interview_trainer'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -111,6 +194,22 @@ class AppDatabase extends _$AppDatabase {
               await m.database.customStatement('DROP TABLE IF EXISTS $table');
             }
             await m.createAll();
+          }
+          if (from < 3) {
+            // Уходит колонка самооценки: приложение больше не спрашивает
+            // текущий уровень. Таблица пересоздаётся, остальные колонки
+            // переносятся как есть — выбранный стек и прогресс сохраняются.
+            await m.alterTable(TableMigration(profiles));
+          }
+          if (from < 4) {
+            // Появился план подготовки. Ничего переносить не нужно — таблицы
+            // новые, прежние данные они не трогают.
+            await m.createTable(studyPlans);
+            await m.createTable(studyPlanDays);
+          }
+          if (from < 5) {
+            await m.createTable(questionNotes);
+            await m.createTable(ownQuestions);
           }
         },
       );
@@ -140,7 +239,6 @@ class AppDatabase extends _$AppDatabase {
   /// показывает один стек, а тренировка выдаёт вопросы другого.
   Future<void> saveProfile({
     required String specializationId,
-    required int selfAssessedGrade,
     required int targetGrade,
   }) =>
       transaction(() async {
@@ -151,7 +249,6 @@ class AppDatabase extends _$AppDatabase {
         await into(profiles).insertOnConflictUpdate(
           ProfilesCompanion(
             specializationId: Value<String>(specializationId),
-            selfAssessedGrade: Value<int>(selfAssessedGrade),
             targetGrade: Value<int>(targetGrade),
             isPrimary: const Value<bool>(true),
             // Счётчик ответов принадлежит прогрессу, а не выбору уровня:
@@ -255,6 +352,115 @@ class AppDatabase extends _$AppDatabase {
   Future<void> saveReviewState(ReviewStatesCompanion state) =>
       into(reviewStates).insertOnConflictUpdate(state);
 
+  // --- план подготовки --------------------------------------------------------
+
+  Future<StudyPlan?> activePlan(String specializationId) => (select(studyPlans)
+        ..where(
+          (StudyPlans table) =>
+              table.specializationId.equals(specializationId) & table.isActive.equals(true),
+        )
+        ..orderBy(<OrderClauseGenerator<StudyPlans>>[
+          (StudyPlans table) => OrderingTerm.desc(table.createdAt),
+        ])
+        ..limit(1))
+      .getSingleOrNull();
+
+  Future<List<StudyPlanDay>> planDaysOf(int planId) => (select(studyPlanDays)
+        ..where((StudyPlanDays table) => table.planId.equals(planId))
+        ..orderBy(<OrderClauseGenerator<StudyPlanDays>>[
+          (StudyPlanDays table) => OrderingTerm.asc(table.dayIndex),
+        ]))
+      .get();
+
+  /// Сохраняет новый план и снимает отметку активности с прежних.
+  ///
+  /// Активный план ровно один: два одновременно означали бы, что экран
+  /// «сегодня» показывает нагрузку из одного, а прогресс считается по другому.
+  Future<int> savePlan({
+    required String specializationId,
+    required DateTime interviewDate,
+    required int targetGrade,
+    required int dailyCapacity,
+    required List<StudyPlanDaysCompanion> Function(int planId) days,
+  }) =>
+      transaction(() async {
+        await (update(studyPlans)
+              ..where(
+                (StudyPlans table) =>
+                    table.specializationId.equals(specializationId) &
+                    table.isActive.equals(true),
+              ))
+            .write(const StudyPlansCompanion(isActive: Value<bool>(false)));
+
+        final int planId = await into(studyPlans).insert(
+          StudyPlansCompanion.insert(
+            specializationId: specializationId,
+            interviewDate: interviewDate,
+            targetGrade: targetGrade,
+            dailyCapacity: dailyCapacity,
+            createdAt: DateTime.now(),
+          ),
+        );
+
+        await batch(
+          (Batch batch) => batch.insertAll(studyPlanDays, days(planId)),
+        );
+        return planId;
+      });
+
+  /// Отменяет активный план, не удаляя историю.
+  Future<void> cancelPlan(String specializationId) => (update(studyPlans)
+        ..where(
+          (StudyPlans table) =>
+              table.specializationId.equals(specializationId) & table.isActive.equals(true),
+        ))
+      .write(const StudyPlansCompanion(isActive: Value<bool>(false)));
+
+  // --- заметки и свои вопросы -------------------------------------------------
+
+  Future<QuestionNote?> noteFor(String questionId) => (select(questionNotes)
+        ..where((QuestionNotes table) => table.questionId.equals(questionId)))
+      .getSingleOrNull();
+
+  Future<Map<String, QuestionNote>> allNotes() async {
+    final List<QuestionNote> rows = await select(questionNotes).get();
+    return <String, QuestionNote>{
+      for (final QuestionNote row in rows) row.questionId: row,
+    };
+  }
+
+  /// Сохраняет заметку. Пустой текст удаляет её: заметка «ничего» — это её
+  /// отсутствие, а не строка из пробелов.
+  Future<void> saveNote({required String questionId, required String body}) async {
+    final String trimmed = body.trim();
+    if (trimmed.isEmpty) {
+      await (delete(questionNotes)
+            ..where((QuestionNotes table) => table.questionId.equals(questionId)))
+          .go();
+      return;
+    }
+    await into(questionNotes).insertOnConflictUpdate(
+      QuestionNotesCompanion(
+        questionId: Value<String>(questionId),
+        body: Value<String>(trimmed),
+        updatedAt: Value<DateTime>(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<List<OwnQuestion>> ownQuestionsFor(String specializationId) => (select(ownQuestions)
+        ..where((OwnQuestions table) => table.specializationId.equals(specializationId))
+        ..orderBy(<OrderClauseGenerator<OwnQuestions>>[
+          (OwnQuestions table) => OrderingTerm.desc(table.createdAt),
+        ]))
+      .get();
+
+  Future<void> saveOwnQuestion(OwnQuestionsCompanion question) =>
+      into(ownQuestions).insertOnConflictUpdate(question);
+
+  Future<void> deleteOwnQuestion(String id) =>
+      (delete(ownQuestions)..where((OwnQuestions table) => table.id.equals(id))).go();
+
   // --- очистка ----------------------------------------------------------------
 
   /// Полная очистка прогресса. Банк вопросов не трогает — он в ресурсах.
@@ -262,6 +468,10 @@ class AppDatabase extends _$AppDatabase {
         await delete(answers).go();
         await delete(topicRatings).go();
         await delete(reviewStates).go();
+        await delete(studyPlanDays).go();
+        await delete(studyPlans).go();
+        await delete(questionNotes).go();
+        await delete(ownQuestions).go();
         await delete(profiles).go();
       });
 }

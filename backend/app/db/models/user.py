@@ -56,8 +56,6 @@ class UserSpecialization(Base, TimestampMixin):
             f"AND target_grade BETWEEN {MIN_GRADE} AND {MAX_GRADE}",
             name="grade_range",
         ),
-        # Готовиться вниз бессмысленно: цель не ниже текущего уровня.
-        CheckConstraint("target_grade >= self_assessed_grade", name="target_not_below_current"),
         Index("ix_user_specializations_primary", "user_id", "is_primary"),
     )
 

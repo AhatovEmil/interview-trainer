@@ -8,6 +8,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../domain/models/grade.dart';
 import '../../domain/models/profile.dart';
+import '../../data/local/plan_service.dart';
 import '../../domain/models/question_list.dart';
 import '../common/section_label.dart';
 import '../common/surface_card.dart';
@@ -47,6 +48,7 @@ class HomeScreen extends ConsumerWidget {
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(questionListProvider(specialization));
+          ref.invalidate(todayPlanProvider(specialization));
           await ref.read(sessionProvider.notifier).refreshProfile();
         },
         child: ListView(
@@ -57,7 +59,18 @@ class HomeScreen extends ConsumerWidget {
             ref.watch(questionListProvider(specialization)).when(
                   loading: () => const _ProgressPlaceholder(),
                   error: (Object error, StackTrace _) => _OfflineNote(message: error.toString()),
-                  data: (QuestionListSummary summary) => _Progress(summary: summary),
+                  data: (QuestionListSummary summary) => Column(
+                    children: <Widget>[
+                      if (summary.dueCount > 0) ...<Widget>[
+                        _DueCard(
+                          count: summary.dueCount,
+                          onTap: () => context.push(AppRoutes.practice),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                      _Progress(summary: summary),
+                    ],
+                  ),
                 ),
             const SizedBox(height: 24),
             const SectionLabel('Куда дальше'),
@@ -70,11 +83,20 @@ class HomeScreen extends ConsumerWidget {
               onTap: () => context.push(AppRoutes.practice),
             ),
             const SizedBox(height: 10),
+            _PlanTile(specialization: specialization),
+            const SizedBox(height: 10),
             _ActionTile(
               icon: Icons.checklist_rounded,
               title: 'Все вопросы',
               subtitle: 'Список банка: что решено, что осталось',
               onTap: () => context.push(AppRoutes.questions),
+            ),
+            const SizedBox(height: 10),
+            _ActionTile(
+              icon: Icons.edit_note_rounded,
+              title: 'Вопросы с собеседований',
+              subtitle: 'Записать то, что спросили на реальном собесе',
+              onTap: () => context.push(AppRoutes.ownQuestions),
             ),
             const SizedBox(height: 10),
             _ActionTile(
@@ -140,10 +162,7 @@ class _SpecializationCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        profile.isReaching
-                            ? 'Сейчас ${Grade.title(profile.selfAssessedGrade)} — '
-                                'вопросы идут на уровень выше'
-                            : 'Освежаю то, что уже умею',
+                        _targetHint(profile, ref.watch(statsProvider(specializationId)).valueOrNull),
                         style: theme.textTheme.bodySmall?.copyWith(color: colors.inkMuted),
                       ),
                     ],
@@ -157,6 +176,101 @@ class _SpecializationCard extends ConsumerWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// Вход в план подготовки.
+///
+/// Отдельная плитка, а не пункт в профиле: план — главная ценность продукта
+/// (CLAUDE.md §1), и он должен быть виден с первого экрана. Подпись меняется в
+/// зависимости от того, есть ли активный план: без него это приглашение, с ним
+/// — сводка на сегодня.
+class _PlanTile extends ConsumerWidget {
+  const _PlanTile({required this.specialization});
+
+  final String specialization;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final TodayPlan? plan = ref.watch(todayPlanProvider(specialization)).valueOrNull;
+
+    final String subtitle;
+    if (plan == null) {
+      subtitle = 'Назовите дату собеседования — разложу по дням';
+    } else if (plan.isFinished) {
+      subtitle = 'Собеседование наступило — можно составить новый';
+    } else if (plan.isDone) {
+      subtitle = 'Норма на сегодня закрыта, до собеседования '
+          '${withPlural(plan.daysLeft, 'день', 'дня', 'дней')}';
+    } else {
+      subtitle = 'Сегодня ${plan.doneToday} из ${plan.target}, до собеседования '
+          '${withPlural(plan.daysLeft, 'день', 'дня', 'дней')}';
+    }
+
+    return _ActionTile(
+      icon: Icons.event_available_rounded,
+      title: plan == null ? 'План перед собеседованием' : 'План на сегодня',
+      subtitle: subtitle,
+      onTap: () => context.push(AppRoutes.plan),
+    );
+  }
+}
+
+/// Напоминание о повторениях.
+///
+/// Интервальные повторения — половина ценности продукта, но раньше о них
+/// нигде не говорилось: вопрос возвращался в выдачу молча, и человек не знал,
+/// что к нему что-то накопилось. Карточка появляется, только когда есть что
+/// повторять, — постоянный ноль превратился бы в фон.
+class _DueCard extends StatelessWidget {
+  const _DueCard({required this.count, required this.onTap});
+
+  final int count;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final AppColors colors = context.colors;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppTypography.radiusLarge),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: colors.accentWash,
+            borderRadius: BorderRadius.circular(AppTypography.radiusLarge),
+            border: Border.all(color: colors.accent.withValues(alpha: 0.35)),
+          ),
+          child: Row(
+            children: <Widget>[
+              Icon(Icons.history_rounded, size: 22, color: colors.accent),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'К повторению ${questionsLabel(count)}',
+                      style: theme.textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Сроки подошли — тренировка начнёт с них',
+                      style: theme.textTheme.bodySmall?.copyWith(color: colors.inkSecondary),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right_rounded, size: 20, color: colors.accent),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -212,6 +326,26 @@ class _Progress extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Подпись под целевым уровнем.
+///
+/// Сравнивать есть с чем только тогда, когда приложение измерило уровень само.
+/// Раньше сравнение шло с самооценкой, которую спрашивали на старте, — и
+/// подпись уверенно заявляла «сейчас Middle» человеку, который просто пролистал
+/// экран. Пока измерения нет, подпись объясняет, на что влияет выбор.
+String _targetHint(UserSpecialization profile, PracticeStats? stats) {
+  final int? measured = stats?.overallGrade;
+  if (measured == null) {
+    return 'Вопросы подбираются под этот уровень';
+  }
+  if (profile.targetGrade > measured) {
+    return 'По ответам сейчас ${Grade.title(measured)} — вопросы идут выше';
+  }
+  if (profile.targetGrade < measured) {
+    return 'По ответам сейчас ${Grade.title(measured)} — повторяю основы';
+  }
+  return 'Совпадает с оценкой по вашим ответам';
 }
 
 /// Счётчик исходов. Цвет дублируется точкой и подписью, а не несёт смысл один.
@@ -350,7 +484,3 @@ class _ActionTile extends StatelessWidget {
     );
   }
 }
-
-/// Подпись под счётчиком вопросов: «12 вопросов».
-String questionsLabel(int count) =>
-    withPlural(count, 'вопрос', 'вопроса', 'вопросов');

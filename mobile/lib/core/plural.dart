@@ -23,3 +23,6 @@ String plural(int count, String one, String few, String many) {
 /// То же самое, но сразу с числом: «3 направления».
 String withPlural(int count, String one, String few, String many) =>
     '$count ${plural(count, one, few, many)}';
+
+/// Частный случай, который встречается на нескольких экранах: «12 вопросов».
+String questionsLabel(int count) => withPlural(count, 'вопрос', 'вопроса', 'вопросов');

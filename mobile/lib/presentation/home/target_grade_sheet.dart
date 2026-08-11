@@ -42,7 +42,6 @@ class _TargetGradeSheetState extends ConsumerState<_TargetGradeSheet> {
     try {
       await ref.read(sessionProvider.notifier).completeOnboarding(
             specializationId: profile.specializationId,
-            grade: profile.selfAssessedGrade,
             targetGrade: target,
           );
       // Выдача и список вопросов считаются от целевого уровня — после смены
@@ -65,8 +64,7 @@ class _TargetGradeSheetState extends ConsumerState<_TargetGradeSheet> {
     final ThemeData theme = Theme.of(context);
     final AppColors colors = context.colors;
     final UserSpecialization? profile = ref.watch(sessionProvider).profile;
-    final int current = profile?.selfAssessedGrade ?? Grade.min;
-    final int target = profile?.targetGrade ?? current;
+    final int target = profile?.targetGrade ?? Grade.middle;
 
     return SafeArea(
       child: ConstrainedBox(
@@ -91,8 +89,8 @@ class _TargetGradeSheetState extends ConsumerState<_TargetGradeSheet> {
                   Text('К какому уровню готовитесь', style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 6),
                   Text(
-                    'Вопросы подбираются под этот уровень. Ниже текущего выбрать нельзя — '
-                    'готовиться вниз незачем.',
+                    'Вопросы подбираются под этот уровень. Менять можно в любую '
+                    'сторону: освежить основы перед собеседованием — обычное дело.',
                     style: theme.textTheme.bodySmall,
                   ),
                 ],
@@ -107,11 +105,9 @@ class _TargetGradeSheetState extends ConsumerState<_TargetGradeSheet> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: ChoiceTile(
                         title: Grade.title(value),
-                        subtitle: value < current
-                            ? 'Ниже вашего текущего уровня'
-                            : (value == current ? 'Освежить то, что уже умею' : Grade.hint(value)),
+                        subtitle: Grade.hint(value),
                         selected: value == target,
-                        enabled: value >= current && _saving == null,
+                        enabled: _saving == null,
                         trailing: _saving == value
                             ? const SizedBox(
                                 width: 20,

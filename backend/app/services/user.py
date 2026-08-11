@@ -32,9 +32,11 @@ class UserService:
 
         # Цель не задана — готовимся на свой же уровень. Это честный вариант по
         # умолчанию: человек может просто освежить то, что уже умеет.
+        #
+        # Цель ниже текущего уровня раньше отклонялась как бессмысленная. Это
+        # оказалось неверно: повторить основы перед собеседованием — обычное
+        # дело, и запрет мешал вместо того, чтобы помогать.
         target = self_assessed_grade if target_grade is None else target_grade
-        if target < self_assessed_grade:
-            raise InvalidInputError("целевой грейд ниже текущего — готовиться вниз незачем")
 
         profile = await self._session.get(UserSpecialization, (user.id, specialization_id))
         if profile is None:

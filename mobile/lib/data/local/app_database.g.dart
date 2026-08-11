@@ -14,12 +14,6 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
   late final GeneratedColumn<String> specializationId = GeneratedColumn<String>(
       'specialization_id', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _selfAssessedGradeMeta =
-      const VerificationMeta('selfAssessedGrade');
-  @override
-  late final GeneratedColumn<int> selfAssessedGrade = GeneratedColumn<int>(
-      'self_assessed_grade', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _targetGradeMeta =
       const VerificationMeta('targetGrade');
   @override
@@ -51,14 +45,8 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
       'updated_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [
-        specializationId,
-        selfAssessedGrade,
-        targetGrade,
-        isPrimary,
-        answersCount,
-        updatedAt
-      ];
+  List<GeneratedColumn> get $columns =>
+      [specializationId, targetGrade, isPrimary, answersCount, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -76,14 +64,6 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
               data['specialization_id']!, _specializationIdMeta));
     } else if (isInserting) {
       context.missing(_specializationIdMeta);
-    }
-    if (data.containsKey('self_assessed_grade')) {
-      context.handle(
-          _selfAssessedGradeMeta,
-          selfAssessedGrade.isAcceptableOrUnknown(
-              data['self_assessed_grade']!, _selfAssessedGradeMeta));
-    } else if (isInserting) {
-      context.missing(_selfAssessedGradeMeta);
     }
     if (data.containsKey('target_grade')) {
       context.handle(
@@ -120,8 +100,6 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
     return Profile(
       specializationId: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}specialization_id'])!,
-      selfAssessedGrade: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}self_assessed_grade'])!,
       targetGrade: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}target_grade'])!,
       isPrimary: attachedDatabase.typeMapping
@@ -142,17 +120,17 @@ class $ProfilesTable extends Profiles with TableInfo<$ProfilesTable, Profile> {
 class Profile extends DataClass implements Insertable<Profile> {
   final String specializationId;
 
-  /// Где человек сейчас — стартовая точка для оценки.
-  final int selfAssessedGrade;
-
   /// К какому уровню готовится — именно он определяет выдачу.
+  ///
+  /// Уровень здесь один. Самооценка была вторым полем и не окупала себя: её
+  /// спрашивали на старте, а использовали только для подписи под целевым
+  /// уровнем. Сам уровень приложение всё равно измеряет по ответам.
   final int targetGrade;
   final bool isPrimary;
   final int answersCount;
   final DateTime updatedAt;
   const Profile(
       {required this.specializationId,
-      required this.selfAssessedGrade,
       required this.targetGrade,
       required this.isPrimary,
       required this.answersCount,
@@ -161,7 +139,6 @@ class Profile extends DataClass implements Insertable<Profile> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['specialization_id'] = Variable<String>(specializationId);
-    map['self_assessed_grade'] = Variable<int>(selfAssessedGrade);
     map['target_grade'] = Variable<int>(targetGrade);
     map['is_primary'] = Variable<bool>(isPrimary);
     map['answers_count'] = Variable<int>(answersCount);
@@ -172,7 +149,6 @@ class Profile extends DataClass implements Insertable<Profile> {
   ProfilesCompanion toCompanion(bool nullToAbsent) {
     return ProfilesCompanion(
       specializationId: Value(specializationId),
-      selfAssessedGrade: Value(selfAssessedGrade),
       targetGrade: Value(targetGrade),
       isPrimary: Value(isPrimary),
       answersCount: Value(answersCount),
@@ -185,7 +161,6 @@ class Profile extends DataClass implements Insertable<Profile> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Profile(
       specializationId: serializer.fromJson<String>(json['specializationId']),
-      selfAssessedGrade: serializer.fromJson<int>(json['selfAssessedGrade']),
       targetGrade: serializer.fromJson<int>(json['targetGrade']),
       isPrimary: serializer.fromJson<bool>(json['isPrimary']),
       answersCount: serializer.fromJson<int>(json['answersCount']),
@@ -197,7 +172,6 @@ class Profile extends DataClass implements Insertable<Profile> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'specializationId': serializer.toJson<String>(specializationId),
-      'selfAssessedGrade': serializer.toJson<int>(selfAssessedGrade),
       'targetGrade': serializer.toJson<int>(targetGrade),
       'isPrimary': serializer.toJson<bool>(isPrimary),
       'answersCount': serializer.toJson<int>(answersCount),
@@ -207,14 +181,12 @@ class Profile extends DataClass implements Insertable<Profile> {
 
   Profile copyWith(
           {String? specializationId,
-          int? selfAssessedGrade,
           int? targetGrade,
           bool? isPrimary,
           int? answersCount,
           DateTime? updatedAt}) =>
       Profile(
         specializationId: specializationId ?? this.specializationId,
-        selfAssessedGrade: selfAssessedGrade ?? this.selfAssessedGrade,
         targetGrade: targetGrade ?? this.targetGrade,
         isPrimary: isPrimary ?? this.isPrimary,
         answersCount: answersCount ?? this.answersCount,
@@ -225,9 +197,6 @@ class Profile extends DataClass implements Insertable<Profile> {
       specializationId: data.specializationId.present
           ? data.specializationId.value
           : this.specializationId,
-      selfAssessedGrade: data.selfAssessedGrade.present
-          ? data.selfAssessedGrade.value
-          : this.selfAssessedGrade,
       targetGrade:
           data.targetGrade.present ? data.targetGrade.value : this.targetGrade,
       isPrimary: data.isPrimary.present ? data.isPrimary.value : this.isPrimary,
@@ -242,7 +211,6 @@ class Profile extends DataClass implements Insertable<Profile> {
   String toString() {
     return (StringBuffer('Profile(')
           ..write('specializationId: $specializationId, ')
-          ..write('selfAssessedGrade: $selfAssessedGrade, ')
           ..write('targetGrade: $targetGrade, ')
           ..write('isPrimary: $isPrimary, ')
           ..write('answersCount: $answersCount, ')
@@ -252,14 +220,13 @@ class Profile extends DataClass implements Insertable<Profile> {
   }
 
   @override
-  int get hashCode => Object.hash(specializationId, selfAssessedGrade,
-      targetGrade, isPrimary, answersCount, updatedAt);
+  int get hashCode => Object.hash(
+      specializationId, targetGrade, isPrimary, answersCount, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Profile &&
           other.specializationId == this.specializationId &&
-          other.selfAssessedGrade == this.selfAssessedGrade &&
           other.targetGrade == this.targetGrade &&
           other.isPrimary == this.isPrimary &&
           other.answersCount == this.answersCount &&
@@ -268,7 +235,6 @@ class Profile extends DataClass implements Insertable<Profile> {
 
 class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<String> specializationId;
-  final Value<int> selfAssessedGrade;
   final Value<int> targetGrade;
   final Value<bool> isPrimary;
   final Value<int> answersCount;
@@ -276,7 +242,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   final Value<int> rowid;
   const ProfilesCompanion({
     this.specializationId = const Value.absent(),
-    this.selfAssessedGrade = const Value.absent(),
     this.targetGrade = const Value.absent(),
     this.isPrimary = const Value.absent(),
     this.answersCount = const Value.absent(),
@@ -285,19 +250,16 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   });
   ProfilesCompanion.insert({
     required String specializationId,
-    required int selfAssessedGrade,
     required int targetGrade,
     this.isPrimary = const Value.absent(),
     this.answersCount = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   })  : specializationId = Value(specializationId),
-        selfAssessedGrade = Value(selfAssessedGrade),
         targetGrade = Value(targetGrade),
         updatedAt = Value(updatedAt);
   static Insertable<Profile> custom({
     Expression<String>? specializationId,
-    Expression<int>? selfAssessedGrade,
     Expression<int>? targetGrade,
     Expression<bool>? isPrimary,
     Expression<int>? answersCount,
@@ -306,7 +268,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   }) {
     return RawValuesInsertable({
       if (specializationId != null) 'specialization_id': specializationId,
-      if (selfAssessedGrade != null) 'self_assessed_grade': selfAssessedGrade,
       if (targetGrade != null) 'target_grade': targetGrade,
       if (isPrimary != null) 'is_primary': isPrimary,
       if (answersCount != null) 'answers_count': answersCount,
@@ -317,7 +278,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
 
   ProfilesCompanion copyWith(
       {Value<String>? specializationId,
-      Value<int>? selfAssessedGrade,
       Value<int>? targetGrade,
       Value<bool>? isPrimary,
       Value<int>? answersCount,
@@ -325,7 +285,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
       Value<int>? rowid}) {
     return ProfilesCompanion(
       specializationId: specializationId ?? this.specializationId,
-      selfAssessedGrade: selfAssessedGrade ?? this.selfAssessedGrade,
       targetGrade: targetGrade ?? this.targetGrade,
       isPrimary: isPrimary ?? this.isPrimary,
       answersCount: answersCount ?? this.answersCount,
@@ -339,9 +298,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
     final map = <String, Expression>{};
     if (specializationId.present) {
       map['specialization_id'] = Variable<String>(specializationId.value);
-    }
-    if (selfAssessedGrade.present) {
-      map['self_assessed_grade'] = Variable<int>(selfAssessedGrade.value);
     }
     if (targetGrade.present) {
       map['target_grade'] = Variable<int>(targetGrade.value);
@@ -365,7 +321,6 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   String toString() {
     return (StringBuffer('ProfilesCompanion(')
           ..write('specializationId: $specializationId, ')
-          ..write('selfAssessedGrade: $selfAssessedGrade, ')
           ..write('targetGrade: $targetGrade, ')
           ..write('isPrimary: $isPrimary, ')
           ..write('answersCount: $answersCount, ')
@@ -1574,6 +1529,1355 @@ class ReviewStatesCompanion extends UpdateCompanion<ReviewState> {
   }
 }
 
+class $StudyPlansTable extends StudyPlans
+    with TableInfo<$StudyPlansTable, StudyPlan> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StudyPlansTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _specializationIdMeta =
+      const VerificationMeta('specializationId');
+  @override
+  late final GeneratedColumn<String> specializationId = GeneratedColumn<String>(
+      'specialization_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _interviewDateMeta =
+      const VerificationMeta('interviewDate');
+  @override
+  late final GeneratedColumn<DateTime> interviewDate =
+      GeneratedColumn<DateTime>('interview_date', aliasedName, false,
+          type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _targetGradeMeta =
+      const VerificationMeta('targetGrade');
+  @override
+  late final GeneratedColumn<int> targetGrade = GeneratedColumn<int>(
+      'target_grade', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _dailyCapacityMeta =
+      const VerificationMeta('dailyCapacity');
+  @override
+  late final GeneratedColumn<int> dailyCapacity = GeneratedColumn<int>(
+      'daily_capacity', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _isActiveMeta =
+      const VerificationMeta('isActive');
+  @override
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+      'is_active', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_active" IN (0, 1))'),
+      defaultValue: const Constant(true));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        specializationId,
+        interviewDate,
+        targetGrade,
+        dailyCapacity,
+        isActive,
+        createdAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'study_plans';
+  @override
+  VerificationContext validateIntegrity(Insertable<StudyPlan> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('specialization_id')) {
+      context.handle(
+          _specializationIdMeta,
+          specializationId.isAcceptableOrUnknown(
+              data['specialization_id']!, _specializationIdMeta));
+    } else if (isInserting) {
+      context.missing(_specializationIdMeta);
+    }
+    if (data.containsKey('interview_date')) {
+      context.handle(
+          _interviewDateMeta,
+          interviewDate.isAcceptableOrUnknown(
+              data['interview_date']!, _interviewDateMeta));
+    } else if (isInserting) {
+      context.missing(_interviewDateMeta);
+    }
+    if (data.containsKey('target_grade')) {
+      context.handle(
+          _targetGradeMeta,
+          targetGrade.isAcceptableOrUnknown(
+              data['target_grade']!, _targetGradeMeta));
+    } else if (isInserting) {
+      context.missing(_targetGradeMeta);
+    }
+    if (data.containsKey('daily_capacity')) {
+      context.handle(
+          _dailyCapacityMeta,
+          dailyCapacity.isAcceptableOrUnknown(
+              data['daily_capacity']!, _dailyCapacityMeta));
+    } else if (isInserting) {
+      context.missing(_dailyCapacityMeta);
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(_isActiveMeta,
+          isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  StudyPlan map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StudyPlan(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      specializationId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}specialization_id'])!,
+      interviewDate: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}interview_date'])!,
+      targetGrade: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}target_grade'])!,
+      dailyCapacity: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}daily_capacity'])!,
+      isActive: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_active'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $StudyPlansTable createAlias(String alias) {
+    return $StudyPlansTable(attachedDatabase, alias);
+  }
+}
+
+class StudyPlan extends DataClass implements Insertable<StudyPlan> {
+  final int id;
+  final String specializationId;
+  final DateTime interviewDate;
+  final int targetGrade;
+  final int dailyCapacity;
+  final bool isActive;
+  final DateTime createdAt;
+  const StudyPlan(
+      {required this.id,
+      required this.specializationId,
+      required this.interviewDate,
+      required this.targetGrade,
+      required this.dailyCapacity,
+      required this.isActive,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['specialization_id'] = Variable<String>(specializationId);
+    map['interview_date'] = Variable<DateTime>(interviewDate);
+    map['target_grade'] = Variable<int>(targetGrade);
+    map['daily_capacity'] = Variable<int>(dailyCapacity);
+    map['is_active'] = Variable<bool>(isActive);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  StudyPlansCompanion toCompanion(bool nullToAbsent) {
+    return StudyPlansCompanion(
+      id: Value(id),
+      specializationId: Value(specializationId),
+      interviewDate: Value(interviewDate),
+      targetGrade: Value(targetGrade),
+      dailyCapacity: Value(dailyCapacity),
+      isActive: Value(isActive),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory StudyPlan.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StudyPlan(
+      id: serializer.fromJson<int>(json['id']),
+      specializationId: serializer.fromJson<String>(json['specializationId']),
+      interviewDate: serializer.fromJson<DateTime>(json['interviewDate']),
+      targetGrade: serializer.fromJson<int>(json['targetGrade']),
+      dailyCapacity: serializer.fromJson<int>(json['dailyCapacity']),
+      isActive: serializer.fromJson<bool>(json['isActive']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'specializationId': serializer.toJson<String>(specializationId),
+      'interviewDate': serializer.toJson<DateTime>(interviewDate),
+      'targetGrade': serializer.toJson<int>(targetGrade),
+      'dailyCapacity': serializer.toJson<int>(dailyCapacity),
+      'isActive': serializer.toJson<bool>(isActive),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  StudyPlan copyWith(
+          {int? id,
+          String? specializationId,
+          DateTime? interviewDate,
+          int? targetGrade,
+          int? dailyCapacity,
+          bool? isActive,
+          DateTime? createdAt}) =>
+      StudyPlan(
+        id: id ?? this.id,
+        specializationId: specializationId ?? this.specializationId,
+        interviewDate: interviewDate ?? this.interviewDate,
+        targetGrade: targetGrade ?? this.targetGrade,
+        dailyCapacity: dailyCapacity ?? this.dailyCapacity,
+        isActive: isActive ?? this.isActive,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  StudyPlan copyWithCompanion(StudyPlansCompanion data) {
+    return StudyPlan(
+      id: data.id.present ? data.id.value : this.id,
+      specializationId: data.specializationId.present
+          ? data.specializationId.value
+          : this.specializationId,
+      interviewDate: data.interviewDate.present
+          ? data.interviewDate.value
+          : this.interviewDate,
+      targetGrade:
+          data.targetGrade.present ? data.targetGrade.value : this.targetGrade,
+      dailyCapacity: data.dailyCapacity.present
+          ? data.dailyCapacity.value
+          : this.dailyCapacity,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StudyPlan(')
+          ..write('id: $id, ')
+          ..write('specializationId: $specializationId, ')
+          ..write('interviewDate: $interviewDate, ')
+          ..write('targetGrade: $targetGrade, ')
+          ..write('dailyCapacity: $dailyCapacity, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, specializationId, interviewDate,
+      targetGrade, dailyCapacity, isActive, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StudyPlan &&
+          other.id == this.id &&
+          other.specializationId == this.specializationId &&
+          other.interviewDate == this.interviewDate &&
+          other.targetGrade == this.targetGrade &&
+          other.dailyCapacity == this.dailyCapacity &&
+          other.isActive == this.isActive &&
+          other.createdAt == this.createdAt);
+}
+
+class StudyPlansCompanion extends UpdateCompanion<StudyPlan> {
+  final Value<int> id;
+  final Value<String> specializationId;
+  final Value<DateTime> interviewDate;
+  final Value<int> targetGrade;
+  final Value<int> dailyCapacity;
+  final Value<bool> isActive;
+  final Value<DateTime> createdAt;
+  const StudyPlansCompanion({
+    this.id = const Value.absent(),
+    this.specializationId = const Value.absent(),
+    this.interviewDate = const Value.absent(),
+    this.targetGrade = const Value.absent(),
+    this.dailyCapacity = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  StudyPlansCompanion.insert({
+    this.id = const Value.absent(),
+    required String specializationId,
+    required DateTime interviewDate,
+    required int targetGrade,
+    required int dailyCapacity,
+    this.isActive = const Value.absent(),
+    required DateTime createdAt,
+  })  : specializationId = Value(specializationId),
+        interviewDate = Value(interviewDate),
+        targetGrade = Value(targetGrade),
+        dailyCapacity = Value(dailyCapacity),
+        createdAt = Value(createdAt);
+  static Insertable<StudyPlan> custom({
+    Expression<int>? id,
+    Expression<String>? specializationId,
+    Expression<DateTime>? interviewDate,
+    Expression<int>? targetGrade,
+    Expression<int>? dailyCapacity,
+    Expression<bool>? isActive,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (specializationId != null) 'specialization_id': specializationId,
+      if (interviewDate != null) 'interview_date': interviewDate,
+      if (targetGrade != null) 'target_grade': targetGrade,
+      if (dailyCapacity != null) 'daily_capacity': dailyCapacity,
+      if (isActive != null) 'is_active': isActive,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  StudyPlansCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? specializationId,
+      Value<DateTime>? interviewDate,
+      Value<int>? targetGrade,
+      Value<int>? dailyCapacity,
+      Value<bool>? isActive,
+      Value<DateTime>? createdAt}) {
+    return StudyPlansCompanion(
+      id: id ?? this.id,
+      specializationId: specializationId ?? this.specializationId,
+      interviewDate: interviewDate ?? this.interviewDate,
+      targetGrade: targetGrade ?? this.targetGrade,
+      dailyCapacity: dailyCapacity ?? this.dailyCapacity,
+      isActive: isActive ?? this.isActive,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (specializationId.present) {
+      map['specialization_id'] = Variable<String>(specializationId.value);
+    }
+    if (interviewDate.present) {
+      map['interview_date'] = Variable<DateTime>(interviewDate.value);
+    }
+    if (targetGrade.present) {
+      map['target_grade'] = Variable<int>(targetGrade.value);
+    }
+    if (dailyCapacity.present) {
+      map['daily_capacity'] = Variable<int>(dailyCapacity.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<bool>(isActive.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StudyPlansCompanion(')
+          ..write('id: $id, ')
+          ..write('specializationId: $specializationId, ')
+          ..write('interviewDate: $interviewDate, ')
+          ..write('targetGrade: $targetGrade, ')
+          ..write('dailyCapacity: $dailyCapacity, ')
+          ..write('isActive: $isActive, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $StudyPlanDaysTable extends StudyPlanDays
+    with TableInfo<$StudyPlanDaysTable, StudyPlanDay> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StudyPlanDaysTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _planIdMeta = const VerificationMeta('planId');
+  @override
+  late final GeneratedColumn<int> planId = GeneratedColumn<int>(
+      'plan_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _dayIndexMeta =
+      const VerificationMeta('dayIndex');
+  @override
+  late final GeneratedColumn<int> dayIndex = GeneratedColumn<int>(
+      'day_index', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _dayMeta = const VerificationMeta('day');
+  @override
+  late final GeneratedColumn<DateTime> day = GeneratedColumn<DateTime>(
+      'day', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _topicCodesMeta =
+      const VerificationMeta('topicCodes');
+  @override
+  late final GeneratedColumn<String> topicCodes = GeneratedColumn<String>(
+      'topic_codes', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _newQuestionsMeta =
+      const VerificationMeta('newQuestions');
+  @override
+  late final GeneratedColumn<int> newQuestions = GeneratedColumn<int>(
+      'new_questions', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _reviewOnlyMeta =
+      const VerificationMeta('reviewOnly');
+  @override
+  late final GeneratedColumn<bool> reviewOnly = GeneratedColumn<bool>(
+      'review_only', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("review_only" IN (0, 1))'));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [planId, dayIndex, day, topicCodes, newQuestions, reviewOnly];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'study_plan_days';
+  @override
+  VerificationContext validateIntegrity(Insertable<StudyPlanDay> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('plan_id')) {
+      context.handle(_planIdMeta,
+          planId.isAcceptableOrUnknown(data['plan_id']!, _planIdMeta));
+    } else if (isInserting) {
+      context.missing(_planIdMeta);
+    }
+    if (data.containsKey('day_index')) {
+      context.handle(_dayIndexMeta,
+          dayIndex.isAcceptableOrUnknown(data['day_index']!, _dayIndexMeta));
+    } else if (isInserting) {
+      context.missing(_dayIndexMeta);
+    }
+    if (data.containsKey('day')) {
+      context.handle(
+          _dayMeta, day.isAcceptableOrUnknown(data['day']!, _dayMeta));
+    } else if (isInserting) {
+      context.missing(_dayMeta);
+    }
+    if (data.containsKey('topic_codes')) {
+      context.handle(
+          _topicCodesMeta,
+          topicCodes.isAcceptableOrUnknown(
+              data['topic_codes']!, _topicCodesMeta));
+    } else if (isInserting) {
+      context.missing(_topicCodesMeta);
+    }
+    if (data.containsKey('new_questions')) {
+      context.handle(
+          _newQuestionsMeta,
+          newQuestions.isAcceptableOrUnknown(
+              data['new_questions']!, _newQuestionsMeta));
+    } else if (isInserting) {
+      context.missing(_newQuestionsMeta);
+    }
+    if (data.containsKey('review_only')) {
+      context.handle(
+          _reviewOnlyMeta,
+          reviewOnly.isAcceptableOrUnknown(
+              data['review_only']!, _reviewOnlyMeta));
+    } else if (isInserting) {
+      context.missing(_reviewOnlyMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {planId, dayIndex};
+  @override
+  StudyPlanDay map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return StudyPlanDay(
+      planId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}plan_id'])!,
+      dayIndex: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}day_index'])!,
+      day: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}day'])!,
+      topicCodes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}topic_codes'])!,
+      newQuestions: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}new_questions'])!,
+      reviewOnly: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}review_only'])!,
+    );
+  }
+
+  @override
+  $StudyPlanDaysTable createAlias(String alias) {
+    return $StudyPlanDaysTable(attachedDatabase, alias);
+  }
+}
+
+class StudyPlanDay extends DataClass implements Insertable<StudyPlanDay> {
+  final int planId;
+  final int dayIndex;
+  final DateTime day;
+
+  /// Коды разделов на день, через запятую. Отдельная таблица ради трёх
+  /// значений на строку не окупается.
+  final String topicCodes;
+  final int newQuestions;
+  final bool reviewOnly;
+  const StudyPlanDay(
+      {required this.planId,
+      required this.dayIndex,
+      required this.day,
+      required this.topicCodes,
+      required this.newQuestions,
+      required this.reviewOnly});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['plan_id'] = Variable<int>(planId);
+    map['day_index'] = Variable<int>(dayIndex);
+    map['day'] = Variable<DateTime>(day);
+    map['topic_codes'] = Variable<String>(topicCodes);
+    map['new_questions'] = Variable<int>(newQuestions);
+    map['review_only'] = Variable<bool>(reviewOnly);
+    return map;
+  }
+
+  StudyPlanDaysCompanion toCompanion(bool nullToAbsent) {
+    return StudyPlanDaysCompanion(
+      planId: Value(planId),
+      dayIndex: Value(dayIndex),
+      day: Value(day),
+      topicCodes: Value(topicCodes),
+      newQuestions: Value(newQuestions),
+      reviewOnly: Value(reviewOnly),
+    );
+  }
+
+  factory StudyPlanDay.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return StudyPlanDay(
+      planId: serializer.fromJson<int>(json['planId']),
+      dayIndex: serializer.fromJson<int>(json['dayIndex']),
+      day: serializer.fromJson<DateTime>(json['day']),
+      topicCodes: serializer.fromJson<String>(json['topicCodes']),
+      newQuestions: serializer.fromJson<int>(json['newQuestions']),
+      reviewOnly: serializer.fromJson<bool>(json['reviewOnly']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'planId': serializer.toJson<int>(planId),
+      'dayIndex': serializer.toJson<int>(dayIndex),
+      'day': serializer.toJson<DateTime>(day),
+      'topicCodes': serializer.toJson<String>(topicCodes),
+      'newQuestions': serializer.toJson<int>(newQuestions),
+      'reviewOnly': serializer.toJson<bool>(reviewOnly),
+    };
+  }
+
+  StudyPlanDay copyWith(
+          {int? planId,
+          int? dayIndex,
+          DateTime? day,
+          String? topicCodes,
+          int? newQuestions,
+          bool? reviewOnly}) =>
+      StudyPlanDay(
+        planId: planId ?? this.planId,
+        dayIndex: dayIndex ?? this.dayIndex,
+        day: day ?? this.day,
+        topicCodes: topicCodes ?? this.topicCodes,
+        newQuestions: newQuestions ?? this.newQuestions,
+        reviewOnly: reviewOnly ?? this.reviewOnly,
+      );
+  StudyPlanDay copyWithCompanion(StudyPlanDaysCompanion data) {
+    return StudyPlanDay(
+      planId: data.planId.present ? data.planId.value : this.planId,
+      dayIndex: data.dayIndex.present ? data.dayIndex.value : this.dayIndex,
+      day: data.day.present ? data.day.value : this.day,
+      topicCodes:
+          data.topicCodes.present ? data.topicCodes.value : this.topicCodes,
+      newQuestions: data.newQuestions.present
+          ? data.newQuestions.value
+          : this.newQuestions,
+      reviewOnly:
+          data.reviewOnly.present ? data.reviewOnly.value : this.reviewOnly,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StudyPlanDay(')
+          ..write('planId: $planId, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('day: $day, ')
+          ..write('topicCodes: $topicCodes, ')
+          ..write('newQuestions: $newQuestions, ')
+          ..write('reviewOnly: $reviewOnly')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(planId, dayIndex, day, topicCodes, newQuestions, reviewOnly);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is StudyPlanDay &&
+          other.planId == this.planId &&
+          other.dayIndex == this.dayIndex &&
+          other.day == this.day &&
+          other.topicCodes == this.topicCodes &&
+          other.newQuestions == this.newQuestions &&
+          other.reviewOnly == this.reviewOnly);
+}
+
+class StudyPlanDaysCompanion extends UpdateCompanion<StudyPlanDay> {
+  final Value<int> planId;
+  final Value<int> dayIndex;
+  final Value<DateTime> day;
+  final Value<String> topicCodes;
+  final Value<int> newQuestions;
+  final Value<bool> reviewOnly;
+  final Value<int> rowid;
+  const StudyPlanDaysCompanion({
+    this.planId = const Value.absent(),
+    this.dayIndex = const Value.absent(),
+    this.day = const Value.absent(),
+    this.topicCodes = const Value.absent(),
+    this.newQuestions = const Value.absent(),
+    this.reviewOnly = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  StudyPlanDaysCompanion.insert({
+    required int planId,
+    required int dayIndex,
+    required DateTime day,
+    required String topicCodes,
+    required int newQuestions,
+    required bool reviewOnly,
+    this.rowid = const Value.absent(),
+  })  : planId = Value(planId),
+        dayIndex = Value(dayIndex),
+        day = Value(day),
+        topicCodes = Value(topicCodes),
+        newQuestions = Value(newQuestions),
+        reviewOnly = Value(reviewOnly);
+  static Insertable<StudyPlanDay> custom({
+    Expression<int>? planId,
+    Expression<int>? dayIndex,
+    Expression<DateTime>? day,
+    Expression<String>? topicCodes,
+    Expression<int>? newQuestions,
+    Expression<bool>? reviewOnly,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (planId != null) 'plan_id': planId,
+      if (dayIndex != null) 'day_index': dayIndex,
+      if (day != null) 'day': day,
+      if (topicCodes != null) 'topic_codes': topicCodes,
+      if (newQuestions != null) 'new_questions': newQuestions,
+      if (reviewOnly != null) 'review_only': reviewOnly,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  StudyPlanDaysCompanion copyWith(
+      {Value<int>? planId,
+      Value<int>? dayIndex,
+      Value<DateTime>? day,
+      Value<String>? topicCodes,
+      Value<int>? newQuestions,
+      Value<bool>? reviewOnly,
+      Value<int>? rowid}) {
+    return StudyPlanDaysCompanion(
+      planId: planId ?? this.planId,
+      dayIndex: dayIndex ?? this.dayIndex,
+      day: day ?? this.day,
+      topicCodes: topicCodes ?? this.topicCodes,
+      newQuestions: newQuestions ?? this.newQuestions,
+      reviewOnly: reviewOnly ?? this.reviewOnly,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (planId.present) {
+      map['plan_id'] = Variable<int>(planId.value);
+    }
+    if (dayIndex.present) {
+      map['day_index'] = Variable<int>(dayIndex.value);
+    }
+    if (day.present) {
+      map['day'] = Variable<DateTime>(day.value);
+    }
+    if (topicCodes.present) {
+      map['topic_codes'] = Variable<String>(topicCodes.value);
+    }
+    if (newQuestions.present) {
+      map['new_questions'] = Variable<int>(newQuestions.value);
+    }
+    if (reviewOnly.present) {
+      map['review_only'] = Variable<bool>(reviewOnly.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StudyPlanDaysCompanion(')
+          ..write('planId: $planId, ')
+          ..write('dayIndex: $dayIndex, ')
+          ..write('day: $day, ')
+          ..write('topicCodes: $topicCodes, ')
+          ..write('newQuestions: $newQuestions, ')
+          ..write('reviewOnly: $reviewOnly, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $QuestionNotesTable extends QuestionNotes
+    with TableInfo<$QuestionNotesTable, QuestionNote> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $QuestionNotesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _questionIdMeta =
+      const VerificationMeta('questionId');
+  @override
+  late final GeneratedColumn<String> questionId = GeneratedColumn<String>(
+      'question_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+      'body', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [questionId, body, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'question_notes';
+  @override
+  VerificationContext validateIntegrity(Insertable<QuestionNote> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('question_id')) {
+      context.handle(
+          _questionIdMeta,
+          questionId.isAcceptableOrUnknown(
+              data['question_id']!, _questionIdMeta));
+    } else if (isInserting) {
+      context.missing(_questionIdMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+          _bodyMeta, body.isAcceptableOrUnknown(data['body']!, _bodyMeta));
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {questionId};
+  @override
+  QuestionNote map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return QuestionNote(
+      questionId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}question_id'])!,
+      body: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}body'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $QuestionNotesTable createAlias(String alias) {
+    return $QuestionNotesTable(attachedDatabase, alias);
+  }
+}
+
+class QuestionNote extends DataClass implements Insertable<QuestionNote> {
+  final String questionId;
+  final String body;
+  final DateTime updatedAt;
+  const QuestionNote(
+      {required this.questionId, required this.body, required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['question_id'] = Variable<String>(questionId);
+    map['body'] = Variable<String>(body);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  QuestionNotesCompanion toCompanion(bool nullToAbsent) {
+    return QuestionNotesCompanion(
+      questionId: Value(questionId),
+      body: Value(body),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory QuestionNote.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return QuestionNote(
+      questionId: serializer.fromJson<String>(json['questionId']),
+      body: serializer.fromJson<String>(json['body']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'questionId': serializer.toJson<String>(questionId),
+      'body': serializer.toJson<String>(body),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  QuestionNote copyWith(
+          {String? questionId, String? body, DateTime? updatedAt}) =>
+      QuestionNote(
+        questionId: questionId ?? this.questionId,
+        body: body ?? this.body,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  QuestionNote copyWithCompanion(QuestionNotesCompanion data) {
+    return QuestionNote(
+      questionId:
+          data.questionId.present ? data.questionId.value : this.questionId,
+      body: data.body.present ? data.body.value : this.body,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuestionNote(')
+          ..write('questionId: $questionId, ')
+          ..write('body: $body, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(questionId, body, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is QuestionNote &&
+          other.questionId == this.questionId &&
+          other.body == this.body &&
+          other.updatedAt == this.updatedAt);
+}
+
+class QuestionNotesCompanion extends UpdateCompanion<QuestionNote> {
+  final Value<String> questionId;
+  final Value<String> body;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const QuestionNotesCompanion({
+    this.questionId = const Value.absent(),
+    this.body = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  QuestionNotesCompanion.insert({
+    required String questionId,
+    required String body,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  })  : questionId = Value(questionId),
+        body = Value(body),
+        updatedAt = Value(updatedAt);
+  static Insertable<QuestionNote> custom({
+    Expression<String>? questionId,
+    Expression<String>? body,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (questionId != null) 'question_id': questionId,
+      if (body != null) 'body': body,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  QuestionNotesCompanion copyWith(
+      {Value<String>? questionId,
+      Value<String>? body,
+      Value<DateTime>? updatedAt,
+      Value<int>? rowid}) {
+    return QuestionNotesCompanion(
+      questionId: questionId ?? this.questionId,
+      body: body ?? this.body,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (questionId.present) {
+      map['question_id'] = Variable<String>(questionId.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuestionNotesCompanion(')
+          ..write('questionId: $questionId, ')
+          ..write('body: $body, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $OwnQuestionsTable extends OwnQuestions
+    with TableInfo<$OwnQuestionsTable, OwnQuestion> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OwnQuestionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _specializationIdMeta =
+      const VerificationMeta('specializationId');
+  @override
+  late final GeneratedColumn<String> specializationId = GeneratedColumn<String>(
+      'specialization_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _answerMeta = const VerificationMeta('answer');
+  @override
+  late final GeneratedColumn<String> answer = GeneratedColumn<String>(
+      'answer', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _companyMeta =
+      const VerificationMeta('company');
+  @override
+  late final GeneratedColumn<String> company = GeneratedColumn<String>(
+      'company', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, specializationId, title, answer, company, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'own_questions';
+  @override
+  VerificationContext validateIntegrity(Insertable<OwnQuestion> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('specialization_id')) {
+      context.handle(
+          _specializationIdMeta,
+          specializationId.isAcceptableOrUnknown(
+              data['specialization_id']!, _specializationIdMeta));
+    } else if (isInserting) {
+      context.missing(_specializationIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('answer')) {
+      context.handle(_answerMeta,
+          answer.isAcceptableOrUnknown(data['answer']!, _answerMeta));
+    }
+    if (data.containsKey('company')) {
+      context.handle(_companyMeta,
+          company.isAcceptableOrUnknown(data['company']!, _companyMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  OwnQuestion map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OwnQuestion(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      specializationId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}specialization_id'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      answer: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}answer']),
+      company: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}company']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $OwnQuestionsTable createAlias(String alias) {
+    return $OwnQuestionsTable(attachedDatabase, alias);
+  }
+}
+
+class OwnQuestion extends DataClass implements Insertable<OwnQuestion> {
+  final String id;
+  final String specializationId;
+  final String title;
+
+  /// Что ответил или что стоило ответить. Заполняется не всегда.
+  final String? answer;
+
+  /// Где спросили. Нужно, чтобы перед вторым кругом собеседований в ту же
+  /// компанию открыть именно её вопросы.
+  final String? company;
+  final DateTime createdAt;
+  const OwnQuestion(
+      {required this.id,
+      required this.specializationId,
+      required this.title,
+      this.answer,
+      this.company,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['specialization_id'] = Variable<String>(specializationId);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || answer != null) {
+      map['answer'] = Variable<String>(answer);
+    }
+    if (!nullToAbsent || company != null) {
+      map['company'] = Variable<String>(company);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  OwnQuestionsCompanion toCompanion(bool nullToAbsent) {
+    return OwnQuestionsCompanion(
+      id: Value(id),
+      specializationId: Value(specializationId),
+      title: Value(title),
+      answer:
+          answer == null && nullToAbsent ? const Value.absent() : Value(answer),
+      company: company == null && nullToAbsent
+          ? const Value.absent()
+          : Value(company),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory OwnQuestion.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OwnQuestion(
+      id: serializer.fromJson<String>(json['id']),
+      specializationId: serializer.fromJson<String>(json['specializationId']),
+      title: serializer.fromJson<String>(json['title']),
+      answer: serializer.fromJson<String?>(json['answer']),
+      company: serializer.fromJson<String?>(json['company']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'specializationId': serializer.toJson<String>(specializationId),
+      'title': serializer.toJson<String>(title),
+      'answer': serializer.toJson<String?>(answer),
+      'company': serializer.toJson<String?>(company),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  OwnQuestion copyWith(
+          {String? id,
+          String? specializationId,
+          String? title,
+          Value<String?> answer = const Value.absent(),
+          Value<String?> company = const Value.absent(),
+          DateTime? createdAt}) =>
+      OwnQuestion(
+        id: id ?? this.id,
+        specializationId: specializationId ?? this.specializationId,
+        title: title ?? this.title,
+        answer: answer.present ? answer.value : this.answer,
+        company: company.present ? company.value : this.company,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  OwnQuestion copyWithCompanion(OwnQuestionsCompanion data) {
+    return OwnQuestion(
+      id: data.id.present ? data.id.value : this.id,
+      specializationId: data.specializationId.present
+          ? data.specializationId.value
+          : this.specializationId,
+      title: data.title.present ? data.title.value : this.title,
+      answer: data.answer.present ? data.answer.value : this.answer,
+      company: data.company.present ? data.company.value : this.company,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OwnQuestion(')
+          ..write('id: $id, ')
+          ..write('specializationId: $specializationId, ')
+          ..write('title: $title, ')
+          ..write('answer: $answer, ')
+          ..write('company: $company, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, specializationId, title, answer, company, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OwnQuestion &&
+          other.id == this.id &&
+          other.specializationId == this.specializationId &&
+          other.title == this.title &&
+          other.answer == this.answer &&
+          other.company == this.company &&
+          other.createdAt == this.createdAt);
+}
+
+class OwnQuestionsCompanion extends UpdateCompanion<OwnQuestion> {
+  final Value<String> id;
+  final Value<String> specializationId;
+  final Value<String> title;
+  final Value<String?> answer;
+  final Value<String?> company;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const OwnQuestionsCompanion({
+    this.id = const Value.absent(),
+    this.specializationId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.answer = const Value.absent(),
+    this.company = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  OwnQuestionsCompanion.insert({
+    required String id,
+    required String specializationId,
+    required String title,
+    this.answer = const Value.absent(),
+    this.company = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        specializationId = Value(specializationId),
+        title = Value(title),
+        createdAt = Value(createdAt);
+  static Insertable<OwnQuestion> custom({
+    Expression<String>? id,
+    Expression<String>? specializationId,
+    Expression<String>? title,
+    Expression<String>? answer,
+    Expression<String>? company,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (specializationId != null) 'specialization_id': specializationId,
+      if (title != null) 'title': title,
+      if (answer != null) 'answer': answer,
+      if (company != null) 'company': company,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  OwnQuestionsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? specializationId,
+      Value<String>? title,
+      Value<String?>? answer,
+      Value<String?>? company,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return OwnQuestionsCompanion(
+      id: id ?? this.id,
+      specializationId: specializationId ?? this.specializationId,
+      title: title ?? this.title,
+      answer: answer ?? this.answer,
+      company: company ?? this.company,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (specializationId.present) {
+      map['specialization_id'] = Variable<String>(specializationId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (answer.present) {
+      map['answer'] = Variable<String>(answer.value);
+    }
+    if (company.present) {
+      map['company'] = Variable<String>(company.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OwnQuestionsCompanion(')
+          ..write('id: $id, ')
+          ..write('specializationId: $specializationId, ')
+          ..write('title: $title, ')
+          ..write('answer: $answer, ')
+          ..write('company: $company, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1581,17 +2885,28 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AnswersTable answers = $AnswersTable(this);
   late final $TopicRatingsTable topicRatings = $TopicRatingsTable(this);
   late final $ReviewStatesTable reviewStates = $ReviewStatesTable(this);
+  late final $StudyPlansTable studyPlans = $StudyPlansTable(this);
+  late final $StudyPlanDaysTable studyPlanDays = $StudyPlanDaysTable(this);
+  late final $QuestionNotesTable questionNotes = $QuestionNotesTable(this);
+  late final $OwnQuestionsTable ownQuestions = $OwnQuestionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [profiles, answers, topicRatings, reviewStates];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        profiles,
+        answers,
+        topicRatings,
+        reviewStates,
+        studyPlans,
+        studyPlanDays,
+        questionNotes,
+        ownQuestions
+      ];
 }
 
 typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
   required String specializationId,
-  required int selfAssessedGrade,
   required int targetGrade,
   Value<bool> isPrimary,
   Value<int> answersCount,
@@ -1600,7 +2915,6 @@ typedef $$ProfilesTableCreateCompanionBuilder = ProfilesCompanion Function({
 });
 typedef $$ProfilesTableUpdateCompanionBuilder = ProfilesCompanion Function({
   Value<String> specializationId,
-  Value<int> selfAssessedGrade,
   Value<int> targetGrade,
   Value<bool> isPrimary,
   Value<int> answersCount,
@@ -1619,10 +2933,6 @@ class $$ProfilesTableFilterComposer
   });
   ColumnFilters<String> get specializationId => $composableBuilder(
       column: $table.specializationId,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get selfAssessedGrade => $composableBuilder(
-      column: $table.selfAssessedGrade,
       builder: (column) => ColumnFilters(column));
 
   ColumnFilters<int> get targetGrade => $composableBuilder(
@@ -1651,10 +2961,6 @@ class $$ProfilesTableOrderingComposer
       column: $table.specializationId,
       builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get selfAssessedGrade => $composableBuilder(
-      column: $table.selfAssessedGrade,
-      builder: (column) => ColumnOrderings(column));
-
   ColumnOrderings<int> get targetGrade => $composableBuilder(
       column: $table.targetGrade, builder: (column) => ColumnOrderings(column));
 
@@ -1680,9 +2986,6 @@ class $$ProfilesTableAnnotationComposer
   });
   GeneratedColumn<String> get specializationId => $composableBuilder(
       column: $table.specializationId, builder: (column) => column);
-
-  GeneratedColumn<int> get selfAssessedGrade => $composableBuilder(
-      column: $table.selfAssessedGrade, builder: (column) => column);
 
   GeneratedColumn<int> get targetGrade => $composableBuilder(
       column: $table.targetGrade, builder: (column) => column);
@@ -1721,7 +3024,6 @@ class $$ProfilesTableTableManager extends RootTableManager<
               $$ProfilesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<String> specializationId = const Value.absent(),
-            Value<int> selfAssessedGrade = const Value.absent(),
             Value<int> targetGrade = const Value.absent(),
             Value<bool> isPrimary = const Value.absent(),
             Value<int> answersCount = const Value.absent(),
@@ -1730,7 +3032,6 @@ class $$ProfilesTableTableManager extends RootTableManager<
           }) =>
               ProfilesCompanion(
             specializationId: specializationId,
-            selfAssessedGrade: selfAssessedGrade,
             targetGrade: targetGrade,
             isPrimary: isPrimary,
             answersCount: answersCount,
@@ -1739,7 +3040,6 @@ class $$ProfilesTableTableManager extends RootTableManager<
           ),
           createCompanionCallback: ({
             required String specializationId,
-            required int selfAssessedGrade,
             required int targetGrade,
             Value<bool> isPrimary = const Value.absent(),
             Value<int> answersCount = const Value.absent(),
@@ -1748,7 +3048,6 @@ class $$ProfilesTableTableManager extends RootTableManager<
           }) =>
               ProfilesCompanion.insert(
             specializationId: specializationId,
-            selfAssessedGrade: selfAssessedGrade,
             targetGrade: targetGrade,
             isPrimary: isPrimary,
             answersCount: answersCount,
@@ -2375,6 +3674,721 @@ typedef $$ReviewStatesTableProcessedTableManager = ProcessedTableManager<
     ),
     ReviewState,
     PrefetchHooks Function()>;
+typedef $$StudyPlansTableCreateCompanionBuilder = StudyPlansCompanion Function({
+  Value<int> id,
+  required String specializationId,
+  required DateTime interviewDate,
+  required int targetGrade,
+  required int dailyCapacity,
+  Value<bool> isActive,
+  required DateTime createdAt,
+});
+typedef $$StudyPlansTableUpdateCompanionBuilder = StudyPlansCompanion Function({
+  Value<int> id,
+  Value<String> specializationId,
+  Value<DateTime> interviewDate,
+  Value<int> targetGrade,
+  Value<int> dailyCapacity,
+  Value<bool> isActive,
+  Value<DateTime> createdAt,
+});
+
+class $$StudyPlansTableFilterComposer
+    extends Composer<_$AppDatabase, $StudyPlansTable> {
+  $$StudyPlansTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get specializationId => $composableBuilder(
+      column: $table.specializationId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get interviewDate => $composableBuilder(
+      column: $table.interviewDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get targetGrade => $composableBuilder(
+      column: $table.targetGrade, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get dailyCapacity => $composableBuilder(
+      column: $table.dailyCapacity, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$StudyPlansTableOrderingComposer
+    extends Composer<_$AppDatabase, $StudyPlansTable> {
+  $$StudyPlansTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get specializationId => $composableBuilder(
+      column: $table.specializationId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get interviewDate => $composableBuilder(
+      column: $table.interviewDate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get targetGrade => $composableBuilder(
+      column: $table.targetGrade, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get dailyCapacity => $composableBuilder(
+      column: $table.dailyCapacity,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isActive => $composableBuilder(
+      column: $table.isActive, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$StudyPlansTableAnnotationComposer
+    extends Composer<_$AppDatabase, $StudyPlansTable> {
+  $$StudyPlansTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get specializationId => $composableBuilder(
+      column: $table.specializationId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get interviewDate => $composableBuilder(
+      column: $table.interviewDate, builder: (column) => column);
+
+  GeneratedColumn<int> get targetGrade => $composableBuilder(
+      column: $table.targetGrade, builder: (column) => column);
+
+  GeneratedColumn<int> get dailyCapacity => $composableBuilder(
+      column: $table.dailyCapacity, builder: (column) => column);
+
+  GeneratedColumn<bool> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$StudyPlansTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $StudyPlansTable,
+    StudyPlan,
+    $$StudyPlansTableFilterComposer,
+    $$StudyPlansTableOrderingComposer,
+    $$StudyPlansTableAnnotationComposer,
+    $$StudyPlansTableCreateCompanionBuilder,
+    $$StudyPlansTableUpdateCompanionBuilder,
+    (StudyPlan, BaseReferences<_$AppDatabase, $StudyPlansTable, StudyPlan>),
+    StudyPlan,
+    PrefetchHooks Function()> {
+  $$StudyPlansTableTableManager(_$AppDatabase db, $StudyPlansTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StudyPlansTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StudyPlansTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StudyPlansTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> specializationId = const Value.absent(),
+            Value<DateTime> interviewDate = const Value.absent(),
+            Value<int> targetGrade = const Value.absent(),
+            Value<int> dailyCapacity = const Value.absent(),
+            Value<bool> isActive = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+          }) =>
+              StudyPlansCompanion(
+            id: id,
+            specializationId: specializationId,
+            interviewDate: interviewDate,
+            targetGrade: targetGrade,
+            dailyCapacity: dailyCapacity,
+            isActive: isActive,
+            createdAt: createdAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String specializationId,
+            required DateTime interviewDate,
+            required int targetGrade,
+            required int dailyCapacity,
+            Value<bool> isActive = const Value.absent(),
+            required DateTime createdAt,
+          }) =>
+              StudyPlansCompanion.insert(
+            id: id,
+            specializationId: specializationId,
+            interviewDate: interviewDate,
+            targetGrade: targetGrade,
+            dailyCapacity: dailyCapacity,
+            isActive: isActive,
+            createdAt: createdAt,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$StudyPlansTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $StudyPlansTable,
+    StudyPlan,
+    $$StudyPlansTableFilterComposer,
+    $$StudyPlansTableOrderingComposer,
+    $$StudyPlansTableAnnotationComposer,
+    $$StudyPlansTableCreateCompanionBuilder,
+    $$StudyPlansTableUpdateCompanionBuilder,
+    (StudyPlan, BaseReferences<_$AppDatabase, $StudyPlansTable, StudyPlan>),
+    StudyPlan,
+    PrefetchHooks Function()>;
+typedef $$StudyPlanDaysTableCreateCompanionBuilder = StudyPlanDaysCompanion
+    Function({
+  required int planId,
+  required int dayIndex,
+  required DateTime day,
+  required String topicCodes,
+  required int newQuestions,
+  required bool reviewOnly,
+  Value<int> rowid,
+});
+typedef $$StudyPlanDaysTableUpdateCompanionBuilder = StudyPlanDaysCompanion
+    Function({
+  Value<int> planId,
+  Value<int> dayIndex,
+  Value<DateTime> day,
+  Value<String> topicCodes,
+  Value<int> newQuestions,
+  Value<bool> reviewOnly,
+  Value<int> rowid,
+});
+
+class $$StudyPlanDaysTableFilterComposer
+    extends Composer<_$AppDatabase, $StudyPlanDaysTable> {
+  $$StudyPlanDaysTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get dayIndex => $composableBuilder(
+      column: $table.dayIndex, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get day => $composableBuilder(
+      column: $table.day, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get topicCodes => $composableBuilder(
+      column: $table.topicCodes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get newQuestions => $composableBuilder(
+      column: $table.newQuestions, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get reviewOnly => $composableBuilder(
+      column: $table.reviewOnly, builder: (column) => ColumnFilters(column));
+}
+
+class $$StudyPlanDaysTableOrderingComposer
+    extends Composer<_$AppDatabase, $StudyPlanDaysTable> {
+  $$StudyPlanDaysTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get planId => $composableBuilder(
+      column: $table.planId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get dayIndex => $composableBuilder(
+      column: $table.dayIndex, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get day => $composableBuilder(
+      column: $table.day, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get topicCodes => $composableBuilder(
+      column: $table.topicCodes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get newQuestions => $composableBuilder(
+      column: $table.newQuestions,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get reviewOnly => $composableBuilder(
+      column: $table.reviewOnly, builder: (column) => ColumnOrderings(column));
+}
+
+class $$StudyPlanDaysTableAnnotationComposer
+    extends Composer<_$AppDatabase, $StudyPlanDaysTable> {
+  $$StudyPlanDaysTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get planId =>
+      $composableBuilder(column: $table.planId, builder: (column) => column);
+
+  GeneratedColumn<int> get dayIndex =>
+      $composableBuilder(column: $table.dayIndex, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => column);
+
+  GeneratedColumn<String> get topicCodes => $composableBuilder(
+      column: $table.topicCodes, builder: (column) => column);
+
+  GeneratedColumn<int> get newQuestions => $composableBuilder(
+      column: $table.newQuestions, builder: (column) => column);
+
+  GeneratedColumn<bool> get reviewOnly => $composableBuilder(
+      column: $table.reviewOnly, builder: (column) => column);
+}
+
+class $$StudyPlanDaysTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $StudyPlanDaysTable,
+    StudyPlanDay,
+    $$StudyPlanDaysTableFilterComposer,
+    $$StudyPlanDaysTableOrderingComposer,
+    $$StudyPlanDaysTableAnnotationComposer,
+    $$StudyPlanDaysTableCreateCompanionBuilder,
+    $$StudyPlanDaysTableUpdateCompanionBuilder,
+    (
+      StudyPlanDay,
+      BaseReferences<_$AppDatabase, $StudyPlanDaysTable, StudyPlanDay>
+    ),
+    StudyPlanDay,
+    PrefetchHooks Function()> {
+  $$StudyPlanDaysTableTableManager(_$AppDatabase db, $StudyPlanDaysTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StudyPlanDaysTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StudyPlanDaysTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StudyPlanDaysTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> planId = const Value.absent(),
+            Value<int> dayIndex = const Value.absent(),
+            Value<DateTime> day = const Value.absent(),
+            Value<String> topicCodes = const Value.absent(),
+            Value<int> newQuestions = const Value.absent(),
+            Value<bool> reviewOnly = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              StudyPlanDaysCompanion(
+            planId: planId,
+            dayIndex: dayIndex,
+            day: day,
+            topicCodes: topicCodes,
+            newQuestions: newQuestions,
+            reviewOnly: reviewOnly,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required int planId,
+            required int dayIndex,
+            required DateTime day,
+            required String topicCodes,
+            required int newQuestions,
+            required bool reviewOnly,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              StudyPlanDaysCompanion.insert(
+            planId: planId,
+            dayIndex: dayIndex,
+            day: day,
+            topicCodes: topicCodes,
+            newQuestions: newQuestions,
+            reviewOnly: reviewOnly,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$StudyPlanDaysTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $StudyPlanDaysTable,
+    StudyPlanDay,
+    $$StudyPlanDaysTableFilterComposer,
+    $$StudyPlanDaysTableOrderingComposer,
+    $$StudyPlanDaysTableAnnotationComposer,
+    $$StudyPlanDaysTableCreateCompanionBuilder,
+    $$StudyPlanDaysTableUpdateCompanionBuilder,
+    (
+      StudyPlanDay,
+      BaseReferences<_$AppDatabase, $StudyPlanDaysTable, StudyPlanDay>
+    ),
+    StudyPlanDay,
+    PrefetchHooks Function()>;
+typedef $$QuestionNotesTableCreateCompanionBuilder = QuestionNotesCompanion
+    Function({
+  required String questionId,
+  required String body,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$QuestionNotesTableUpdateCompanionBuilder = QuestionNotesCompanion
+    Function({
+  Value<String> questionId,
+  Value<String> body,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$QuestionNotesTableFilterComposer
+    extends Composer<_$AppDatabase, $QuestionNotesTable> {
+  $$QuestionNotesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get questionId => $composableBuilder(
+      column: $table.questionId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get body => $composableBuilder(
+      column: $table.body, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$QuestionNotesTableOrderingComposer
+    extends Composer<_$AppDatabase, $QuestionNotesTable> {
+  $$QuestionNotesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get questionId => $composableBuilder(
+      column: $table.questionId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get body => $composableBuilder(
+      column: $table.body, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$QuestionNotesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $QuestionNotesTable> {
+  $$QuestionNotesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get questionId => $composableBuilder(
+      column: $table.questionId, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$QuestionNotesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $QuestionNotesTable,
+    QuestionNote,
+    $$QuestionNotesTableFilterComposer,
+    $$QuestionNotesTableOrderingComposer,
+    $$QuestionNotesTableAnnotationComposer,
+    $$QuestionNotesTableCreateCompanionBuilder,
+    $$QuestionNotesTableUpdateCompanionBuilder,
+    (
+      QuestionNote,
+      BaseReferences<_$AppDatabase, $QuestionNotesTable, QuestionNote>
+    ),
+    QuestionNote,
+    PrefetchHooks Function()> {
+  $$QuestionNotesTableTableManager(_$AppDatabase db, $QuestionNotesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$QuestionNotesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$QuestionNotesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$QuestionNotesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> questionId = const Value.absent(),
+            Value<String> body = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              QuestionNotesCompanion(
+            questionId: questionId,
+            body: body,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String questionId,
+            required String body,
+            required DateTime updatedAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              QuestionNotesCompanion.insert(
+            questionId: questionId,
+            body: body,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$QuestionNotesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $QuestionNotesTable,
+    QuestionNote,
+    $$QuestionNotesTableFilterComposer,
+    $$QuestionNotesTableOrderingComposer,
+    $$QuestionNotesTableAnnotationComposer,
+    $$QuestionNotesTableCreateCompanionBuilder,
+    $$QuestionNotesTableUpdateCompanionBuilder,
+    (
+      QuestionNote,
+      BaseReferences<_$AppDatabase, $QuestionNotesTable, QuestionNote>
+    ),
+    QuestionNote,
+    PrefetchHooks Function()>;
+typedef $$OwnQuestionsTableCreateCompanionBuilder = OwnQuestionsCompanion
+    Function({
+  required String id,
+  required String specializationId,
+  required String title,
+  Value<String?> answer,
+  Value<String?> company,
+  required DateTime createdAt,
+  Value<int> rowid,
+});
+typedef $$OwnQuestionsTableUpdateCompanionBuilder = OwnQuestionsCompanion
+    Function({
+  Value<String> id,
+  Value<String> specializationId,
+  Value<String> title,
+  Value<String?> answer,
+  Value<String?> company,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$OwnQuestionsTableFilterComposer
+    extends Composer<_$AppDatabase, $OwnQuestionsTable> {
+  $$OwnQuestionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get specializationId => $composableBuilder(
+      column: $table.specializationId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get answer => $composableBuilder(
+      column: $table.answer, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get company => $composableBuilder(
+      column: $table.company, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$OwnQuestionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $OwnQuestionsTable> {
+  $$OwnQuestionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get specializationId => $composableBuilder(
+      column: $table.specializationId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get answer => $composableBuilder(
+      column: $table.answer, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get company => $composableBuilder(
+      column: $table.company, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$OwnQuestionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $OwnQuestionsTable> {
+  $$OwnQuestionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get specializationId => $composableBuilder(
+      column: $table.specializationId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get answer =>
+      $composableBuilder(column: $table.answer, builder: (column) => column);
+
+  GeneratedColumn<String> get company =>
+      $composableBuilder(column: $table.company, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$OwnQuestionsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $OwnQuestionsTable,
+    OwnQuestion,
+    $$OwnQuestionsTableFilterComposer,
+    $$OwnQuestionsTableOrderingComposer,
+    $$OwnQuestionsTableAnnotationComposer,
+    $$OwnQuestionsTableCreateCompanionBuilder,
+    $$OwnQuestionsTableUpdateCompanionBuilder,
+    (
+      OwnQuestion,
+      BaseReferences<_$AppDatabase, $OwnQuestionsTable, OwnQuestion>
+    ),
+    OwnQuestion,
+    PrefetchHooks Function()> {
+  $$OwnQuestionsTableTableManager(_$AppDatabase db, $OwnQuestionsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OwnQuestionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OwnQuestionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OwnQuestionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> specializationId = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String?> answer = const Value.absent(),
+            Value<String?> company = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OwnQuestionsCompanion(
+            id: id,
+            specializationId: specializationId,
+            title: title,
+            answer: answer,
+            company: company,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String specializationId,
+            required String title,
+            Value<String?> answer = const Value.absent(),
+            Value<String?> company = const Value.absent(),
+            required DateTime createdAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OwnQuestionsCompanion.insert(
+            id: id,
+            specializationId: specializationId,
+            title: title,
+            answer: answer,
+            company: company,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$OwnQuestionsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $OwnQuestionsTable,
+    OwnQuestion,
+    $$OwnQuestionsTableFilterComposer,
+    $$OwnQuestionsTableOrderingComposer,
+    $$OwnQuestionsTableAnnotationComposer,
+    $$OwnQuestionsTableCreateCompanionBuilder,
+    $$OwnQuestionsTableUpdateCompanionBuilder,
+    (
+      OwnQuestion,
+      BaseReferences<_$AppDatabase, $OwnQuestionsTable, OwnQuestion>
+    ),
+    OwnQuestion,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2387,4 +4401,12 @@ class $AppDatabaseManager {
       $$TopicRatingsTableTableManager(_db, _db.topicRatings);
   $$ReviewStatesTableTableManager get reviewStates =>
       $$ReviewStatesTableTableManager(_db, _db.reviewStates);
+  $$StudyPlansTableTableManager get studyPlans =>
+      $$StudyPlansTableTableManager(_db, _db.studyPlans);
+  $$StudyPlanDaysTableTableManager get studyPlanDays =>
+      $$StudyPlanDaysTableTableManager(_db, _db.studyPlanDays);
+  $$QuestionNotesTableTableManager get questionNotes =>
+      $$QuestionNotesTableTableManager(_db, _db.questionNotes);
+  $$OwnQuestionsTableTableManager get ownQuestions =>
+      $$OwnQuestionsTableTableManager(_db, _db.ownQuestions);
 }

@@ -24,7 +24,8 @@ router = APIRouter(tags=["taxonomy"])
 
 @router.get("/taxonomy", response_model=TaxonomyResponse, summary="Дерево профессий и тем")
 async def get_taxonomy(session: Annotated[AsyncSession, Depends(get_session)]) -> TaxonomyResponse:
-    professions = await TaxonomyService(session).get_tree()
+    service = TaxonomyService(session)
+    professions = await service.get_tree()
 
     return TaxonomyResponse(
         professions=[
@@ -45,7 +46,7 @@ async def get_taxonomy(session: Annotated[AsyncSession, Depends(get_session)]) -
                                     for subtopic in topic.subtopics
                                 ],
                             )
-                            for topic in specialization.topics
+                            for topic in service.visible_topics(specialization)
                         ],
                     )
                     for specialization in profession.specializations

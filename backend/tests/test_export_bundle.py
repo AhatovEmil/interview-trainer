@@ -91,7 +91,16 @@ def test_committed_bundle_is_up_to_date(tmp_path: Path) -> None:
 
     Иначе правка в YAML не доедет до приложения: сборка берёт коммит, а не
     исходники, и расхождение обнаружится только по жалобам пользователей.
+
+    В образе api каталога mobile нет — туда копируется только backend и
+    content. Там проверка неприменима, и падение означало бы «не с чем
+    сравнивать», а не «контент устарел». В CI и на машине разработчика
+    репозиторий полный, и проверка работает.
     """
+    mobile_root = DEFAULT_OUTPUT.parents[2]
+    if not mobile_root.is_dir():
+        pytest.skip(f"нет каталога {mobile_root}: проверка применима на полном репозитории")
+
     assert DEFAULT_OUTPUT.is_file(), (
         "нет собранного контента; выполните: python -m app.seed.export_bundle"
     )

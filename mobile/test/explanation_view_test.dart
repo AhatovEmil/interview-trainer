@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:interview_trainer/core/theme/app_theme.dart';
 import 'package:interview_trainer/domain/models/question.dart';
 import 'package:interview_trainer/presentation/practice/explanation_view.dart';
+import 'package:interview_trainer/presentation/providers.dart';
 
 AnswerResult _result(String detailed) => AnswerResult.fromJson(<String, dynamic>{
       'score': 1.0,
@@ -26,11 +28,21 @@ AnswerResult _result(String detailed) => AnswerResult.fromJson(<String, dynamic>
 
 Future<void> _pump(WidgetTester tester, String detailed) async {
   await tester.pumpWidget(
-    MaterialApp(
-      // Тема настоящая: виджеты берут из неё палитру и типографику.
-      theme: AppTheme.light(),
-      home: Scaffold(
-        body: ExplanationView(result: _result(detailed), onNext: () {}),
+    ProviderScope(
+      // Заметка приходит из базы, а этому тесту нужна только разметка разбора.
+      overrides: <Override>[
+        noteProvider('q1').overrideWith((Ref ref) async => ''),
+      ],
+      child: MaterialApp(
+        // Тема настоящая: виджеты берут из неё палитру и типографику.
+        theme: AppTheme.light(),
+        home: Scaffold(
+          body: ExplanationView(
+            result: _result(detailed),
+            questionId: 'q1',
+            onNext: () {},
+          ),
+        ),
       ),
     ),
   );

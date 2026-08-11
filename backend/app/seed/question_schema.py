@@ -22,8 +22,9 @@ NonEmpty = Annotated[str, StringConstraints(min_length=1, strip_whitespace=True)
 # Пространство имён для uuid5: slug → стабильный id, одинаковый в любой базе.
 QUESTION_NAMESPACE = uuid.UUID("6f1c9d3a-5f2e-4a63-9a2b-2f1f0d7c8e10")
 
-# Разбор open_answer обязан отвечать на вопрос «что достаточно сказать на каждом уровне».
-LEVEL_HEADINGS = ("Junior", "Middle", "Senior")
+# Разбор open_answer обязан отвечать на вопрос «что достаточно сказать на каждом
+# уровне» — но только про те уровни, на которых вопрос действительно задают.
+LEVEL_HEADINGS = {"Junior": "junior", "Middle": "middle", "Senior": "senior"}
 
 
 def question_id(slug: str) -> uuid.UUID:
@@ -118,16 +119,28 @@ class QuestionIn(StrictModel):
         if self.type is not QuestionType.OPEN_ANSWER:
             return
 
+        # Разбор по уровням нужен там, где вопрос задают на разных уровнях и
+        # разница именно в глубине ответа. Блок про уровень за пределами
+        # [min_grade, max_grade] заполнять нечем: «что ждут на senior» у
+        # вопроса для стажёра и «что достаточно на junior» у вопроса для лида —
+        # одинаковая выдумка ради прохождения проверки.
+        low, _, high = self.grades()
+        expected = [
+            heading for heading, code in LEVEL_HEADINGS.items() if low <= GRADE_VALUES[code] <= high
+        ]
+        if len(expected) < 2:
+            return
+
         missing = [
             level
-            for level in LEVEL_HEADINGS
+            for level in expected
             if not re.search(rf"^#{{2,4}}\s*{level}\b", self.answer_detailed, re.MULTILINE)
         ]
         if missing:
             raise ValueError(
                 f"вопрос {self.slug!r}: в answer_detailed нет уровневых блоков "
-                f"{', '.join(missing)} — для open_answer нужны все три "
-                f"({', '.join(LEVEL_HEADINGS)})"
+                f"{', '.join(missing)} — вопрос охватывает {', '.join(expected)}, "
+                f"и разбор должен объяснять разницу между ними"
             )
 
     def grades(self) -> tuple[int, int, int]:

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/content/question_bank.dart';
 import '../data/local/app_database.dart';
+import '../data/local/plan_service.dart';
 import '../data/local/practice_service.dart';
 import '../domain/models/profile.dart';
 import '../domain/models/question_list.dart';
@@ -27,6 +28,13 @@ final Provider<AppDatabase> appDatabaseProvider = Provider<AppDatabase>((Ref ref
 
 final Provider<PracticeService> practiceServiceProvider = Provider<PracticeService>(
   (Ref ref) => PracticeService(
+    database: ref.watch(appDatabaseProvider),
+    bank: ref.watch(questionBankProvider),
+  ),
+);
+
+final Provider<PlanService> planServiceProvider = Provider<PlanService>(
+  (Ref ref) => PlanService(
     database: ref.watch(appDatabaseProvider),
     bank: ref.watch(questionBankProvider),
   ),
@@ -68,19 +76,13 @@ class SessionNotifier extends StateNotifier<SessionState> {
 
   Future<void> refreshProfile() => restore();
 
-  /// Выбор специализации и уровней. Используется и онбордингом, и сменой стека.
+  /// Выбор специализации и уровня. Используется онбордингом, сменой стека и
+  /// сменой уровня — все три случая пишут одну и ту же строку профиля.
   Future<void> completeOnboarding({
     required String specializationId,
-    required int grade,
-    int? targetGrade,
+    required int targetGrade,
   }) async {
-    await _db.saveProfile(
-      specializationId: specializationId,
-      selfAssessedGrade: grade,
-      // Цель не задана — готовимся на свой же уровень: человек может просто
-      // освежить то, что уже умеет.
-      targetGrade: targetGrade ?? grade,
-    );
+    await _db.saveProfile(specializationId: specializationId, targetGrade: targetGrade);
     await restore();
   }
 
@@ -96,8 +98,6 @@ class SessionNotifier extends StateNotifier<SessionState> {
 
   static UserSpecialization _toModel(Profile profile) => UserSpecialization(
         specializationId: profile.specializationId,
-        selfAssessedGrade: profile.selfAssessedGrade,
-        gradeCode: '',
         targetGrade: profile.targetGrade,
         isPrimary: profile.isPrimary,
         answersCount: profile.answersCount,
@@ -117,4 +117,22 @@ final FutureProviderFamily<QuestionListSummary, String> questionListProvider =
     FutureProvider.family<QuestionListSummary, String>(
   (Ref ref, String specialization) =>
       ref.watch(practiceServiceProvider).questionList(specialization),
+);
+
+/// Что делать сегодня по плану. `null` — активного плана нет.
+final FutureProviderFamily<TodayPlan?, String> todayPlanProvider =
+    FutureProvider.family<TodayPlan?, String>(
+  (Ref ref, String specialization) => ref.watch(planServiceProvider).today(specialization),
+);
+
+/// Заметка к вопросу. Пустая строка — заметки нет.
+final FutureProviderFamily<String, String> noteProvider = FutureProvider.family<String, String>(
+  (Ref ref, String questionId) => ref.watch(practiceServiceProvider).note(questionId),
+);
+
+/// Вопросы, записанные пользователем с реальных собеседований.
+final FutureProviderFamily<List<OwnQuestion>, String> ownQuestionsProvider =
+    FutureProvider.family<List<OwnQuestion>, String>(
+  (Ref ref, String specialization) =>
+      ref.watch(practiceServiceProvider).ownQuestions(specialization),
 );

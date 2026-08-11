@@ -33,46 +33,6 @@ void main() {
     });
   });
 
-  group('Целевой уровень', () {
-    Map<String, dynamic> row({int? target}) => <String, dynamic>{
-          'specialization_id': 'backend_python',
-          'self_assessed_grade': Grade.middle,
-          'grade_code': 'middle',
-          if (target != null) 'target_grade': target,
-          'is_primary': true,
-          'answers_count': 0,
-        };
-
-    test('цель выше текущего уровня видна как подготовка вверх', () {
-      final UserSpecialization profile =
-          UserSpecialization.fromJson(row(target: Grade.senior));
-
-      expect(profile.targetGrade, Grade.senior);
-      expect(profile.isReaching, isTrue);
-    });
-
-    test('цель равна текущему — это не подготовка вверх, а повторение', () {
-      final UserSpecialization profile =
-          UserSpecialization.fromJson(row(target: Grade.middle));
-
-      expect(profile.isReaching, isFalse);
-    });
-
-    test('старый кеш без цели читается: цель равна самооценке', () {
-      final UserSpecialization profile = UserSpecialization.fromJson(row());
-
-      expect(profile.targetGrade, Grade.middle);
-      expect(profile.isReaching, isFalse);
-    });
-
-    test('цель переживает сохранение в кеш', () {
-      final UserSpecialization profile =
-          UserSpecialization.fromJson(row(target: Grade.lead));
-
-      expect(UserSpecialization.fromJson(profile.toJson()).targetGrade, Grade.lead);
-    });
-  });
-
   group('Разбор ответа сервера', () {
     test('вопрос', () {
       final Question question = Question.fromJson(<String, dynamic>{

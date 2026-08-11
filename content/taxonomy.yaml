@@ -50,46 +50,36 @@ professions:
     specializations:
       - id: mobile_android
         title: Android / Kotlin
-        is_active: true
       - id: mobile_ios
         title: iOS / Swift
-        is_active: true
       - id: mobile_flutter
         title: Flutter
-        is_active: true
 
   - id: qa
     title: QA-инженер
     specializations:
       - id: qa_manual
         title: Ручное тестирование
-        is_active: true
       - id: qa_auto
         title: Автоматизация
-        is_active: true
 
   - id: data
     title: Данные
     specializations:
       - id: data_analyst
         title: Аналитик данных
-        is_active: true
       - id: data_engineer
         title: Data Engineer
-        is_active: true
       - id: data_ml
         title: ML-инженер
-        is_active: true
 
   - id: infra
     title: Инфраструктура
     specializations:
       - id: infra_devops
         title: DevOps / SRE
-        is_active: true
       - id: infra_dba
         title: Администратор БД
-        is_active: true
 
   - id: enterprise
     title: Корпоративная разработка
@@ -102,10 +92,8 @@ professions:
     specializations:
       - id: analysis_system
         title: Системный аналитик
-        is_active: true
       - id: analysis_business
         title: Бизнес-аналитик
-        is_active: true
 
 topics:
   backend_python:

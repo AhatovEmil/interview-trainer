@@ -14,6 +14,7 @@ class QuestionCard extends StatefulWidget {
     required this.isSubmitting,
     required this.onSubmitChoice,
     required this.onSubmitSelfAssessment,
+    this.onSkip,
     super.key,
   });
 
@@ -21,6 +22,10 @@ class QuestionCard extends StatefulWidget {
   final bool isSubmitting;
   final void Function(List<String> selectedOptions) onSubmitChoice;
   final void Function(int quality) onSubmitSelfAssessment;
+
+  /// Пропустить вопрос. Пусто, когда вопрос открыт из списка: там человек
+  /// выбрал конкретную формулировку, и подсовывать другую незачем.
+  final VoidCallback? onSkip;
 
   @override
   State<QuestionCard> createState() => _QuestionCardState();
@@ -57,26 +62,104 @@ class _QuestionCardState extends State<QuestionCard> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
+    // Короткий вопрос выравнивается по центру, длинный — прокручивается.
+    // Раньше содержимое всегда прижималось к верху, и у развёрнутых вопросов
+    // под ним оставалось полэкрана пустоты.
     return Column(
       children: <Widget>[
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
-            children: <Widget>[
-              _MetaRow(next: widget.next),
-              const SizedBox(height: 18),
-              Text(
-                stripInlineMarkup(_question.title),
-                style: theme.textTheme.headlineSmall,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) => SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - 28),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Align(alignment: Alignment.centerLeft, child: _MetaRow(next: widget.next)),
+                    const SizedBox(height: 18),
+                    Text(
+                      stripInlineMarkup(_question.title),
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 24),
+                    if (_question.type.hasOptions)
+                      ..._buildOptions()
+                    else
+                      ..._buildOpenAnswer(theme),
+                  ],
+                ),
               ),
-              const SizedBox(height: 24),
-              if (_question.type.hasOptions) ..._buildOptions() else ..._buildOpenAnswer(theme),
-            ],
+            ),
           ),
         ),
-        if (_question.type.hasOptions) _submitBar(),
+        _bottomBar(),
       ],
     );
+  }
+
+  /// Нижняя панель с главным действием.
+  ///
+  /// Одна на все типы вопросов: раньше у развёрнутых кнопка стояла внутри
+  /// прокручиваемой части и висела посреди пустого экрана, а у выборочных —
+  /// внизу. Разное место для одного и того же действия заставляло искать его
+  /// заново на каждом вопросе.
+  Widget _bottomBar() {
+    // На шаге самооценки панели нет: действие — выбрать один из вариантов
+    // выше, и пустая полоса внизу только отнимала бы место.
+    if (!_question.type.hasOptions && _revealed) {
+      return const SizedBox.shrink();
+    }
+
+    final AppColors colors = context.colors;
+    final bool showSkip = widget.onSkip != null && !widget.isSubmitting;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: colors.page,
+        border: Border(top: BorderSide(color: colors.hairline)),
+      ),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          children: <Widget>[
+            if (showSkip) ...<Widget>[
+              TextButton(
+                onPressed: widget.onSkip,
+                child: const Text('Пропустить'),
+              ),
+              const SizedBox(width: 8),
+            ],
+            Expanded(child: _primaryAction()),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _primaryAction() {
+    if (_question.type.hasOptions) {
+      return FilledButton(
+        onPressed: _selected.isEmpty || widget.isSubmitting
+            ? null
+            : () => widget.onSubmitChoice(_selected.toList()),
+        child: widget.isSubmitting ? const _ButtonSpinner() : const Text('Ответить'),
+      );
+    }
+
+    // Кнопка ведёт на самооценку, а не на разбор: увидев эталон заранее,
+    // почти все ставят «знал», и планировщик повторений слепнет.
+    if (!_revealed) {
+      return FilledButton(
+        onPressed: () => setState(() => _revealed = true),
+        child: const Text('Я ответил, оценить себя'),
+      );
+    }
+
+    // Сюда попасть нельзя: на шаге самооценки панель не строится вовсе.
+    return const SizedBox.shrink();
   }
 
   List<Widget> _buildOptions() => <Widget>[
@@ -101,28 +184,6 @@ class _QuestionCardState extends State<QuestionCard> {
             ),
           ),
       ];
-
-  Widget _submitBar() {
-    final AppColors colors = context.colors;
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.page,
-        border: Border(top: BorderSide(color: colors.hairline)),
-      ),
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-      child: SafeArea(
-        top: false,
-        child: FilledButton(
-          onPressed: _selected.isEmpty || widget.isSubmitting
-              ? null
-              : () => widget.onSubmitChoice(_selected.toList()),
-          child: widget.isSubmitting
-              ? const _ButtonSpinner()
-              : const Text('Ответить'),
-        ),
-      ),
-    );
-  }
 
   List<Widget> _buildOpenAnswer(ThemeData theme) {
     final AppColors colors = context.colors;
@@ -149,13 +210,6 @@ class _QuestionCardState extends State<QuestionCard> {
               ),
             ],
           ),
-        ),
-        const SizedBox(height: 20),
-        // Кнопка ведёт на самооценку, а не на разбор: увидев эталон заранее,
-        // почти все ставят «знал», и планировщик повторений слепнет.
-        FilledButton(
-          onPressed: () => setState(() => _revealed = true),
-          child: const Text('Я ответил, оценить себя'),
         ),
       ];
     }

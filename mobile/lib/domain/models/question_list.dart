@@ -28,7 +28,9 @@ class QuestionListItem {
     required this.title,
     required this.topicCode,
     required this.topicTitle,
+    required this.minGrade,
     required this.peakGrade,
+    required this.maxGrade,
     required this.frequency,
     required this.status,
     required this.answersCount,
@@ -41,6 +43,12 @@ class QuestionListItem {
   final String title;
   final String topicCode;
   final String topicTitle;
+
+  /// Границы уровней, на которых вопрос уместен. Нужны для фильтра по грейду:
+  /// один пиковый грейд не отвечает на вопрос «спросят ли это на middle».
+  final int minGrade;
+  final int maxGrade;
+
   final int peakGrade;
   final int frequency;
   final QuestionStatus status;
@@ -55,11 +63,32 @@ class QuestionListItem {
   /// Повторение просрочено — вопрос ждёт возврата.
   bool get isDue => dueAt != null && dueAt!.isBefore(DateTime.now());
 
+  /// Спрашивают ли этот вопрос на таком уровне.
+  bool suitsGrade(int grade) => minGrade <= grade && grade <= maxGrade;
+
+  /// Совпадает ли вопрос с поисковым запросом.
+  ///
+  /// Ищем и по формулировке, и по названию раздела: человек одинаково часто
+  /// помнит либо слово из вопроса, либо тему целиком («покажи всё про
+  /// транзакции»). Запрос разбивается на слова, и все они должны найтись —
+  /// иначе «gil потоки» выдавало бы всё, где есть хоть одно из двух.
+  bool matchesQuery(String query) {
+    final String haystack = '$title $topicTitle'.toLowerCase();
+    for (final String word in query.toLowerCase().split(RegExp(r'\s+'))) {
+      if (word.isNotEmpty && !haystack.contains(word)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   factory QuestionListItem.fromJson(Map<String, dynamic> json) => QuestionListItem(
         id: json['id'] as String,
         title: json['title'] as String,
         topicCode: json['topic_code'] as String,
         topicTitle: json['topic_title'] as String,
+        minGrade: json['min_grade'] as int,
+        maxGrade: json['max_grade'] as int,
         peakGrade: json['peak_grade'] as int,
         frequency: json['frequency'] as int,
         status: QuestionStatus.fromWire(json['status'] as String),
@@ -92,6 +121,12 @@ class QuestionListSummary {
   final List<QuestionListItem> items;
 
   double get progress => total == 0 ? 0 : answered / total;
+
+  /// Сколько вопросов ждут повторения прямо сейчас.
+  ///
+  /// Планировщик работал и раньше, но нигде не был виден: человек не знал, что
+  /// к нему что-то вернулось, и повторения делались только случайно.
+  int get dueCount => items.where((QuestionListItem item) => item.isDue).length;
 
   /// Вопросы, сгруппированные по разделу, в порядке появления.
   Map<String, List<QuestionListItem>> get byTopic {
