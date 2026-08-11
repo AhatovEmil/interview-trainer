@@ -111,6 +111,7 @@ class _PracticeScreenState extends ConsumerState<PracticeScreen> {
         // а не тянем в следующий: человек выбирал конкретную формулировку.
         return ExplanationView(
           result: state.result!,
+          questionId: state.current!.question.id,
           nextLabel: controller.isSingleQuestion ? 'Вернуться к списку' : 'Следующий вопрос',
           onNext: controller.isSingleQuestion
               ? () {

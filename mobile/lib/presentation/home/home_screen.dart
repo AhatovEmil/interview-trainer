@@ -93,6 +93,13 @@ class HomeScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 10),
             _ActionTile(
+              icon: Icons.edit_note_rounded,
+              title: 'Вопросы с собеседований',
+              subtitle: 'Записать то, что спросили на реальном собесе',
+              onTap: () => context.push(AppRoutes.ownQuestions),
+            ),
+            const SizedBox(height: 10),
+            _ActionTile(
               icon: Icons.insights_outlined,
               title: 'Мой уровень',
               subtitle: 'Рейтинги по темам и оценка грейда',

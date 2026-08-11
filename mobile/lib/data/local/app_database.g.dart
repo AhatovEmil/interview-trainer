@@ -2289,6 +2289,595 @@ class StudyPlanDaysCompanion extends UpdateCompanion<StudyPlanDay> {
   }
 }
 
+class $QuestionNotesTable extends QuestionNotes
+    with TableInfo<$QuestionNotesTable, QuestionNote> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $QuestionNotesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _questionIdMeta =
+      const VerificationMeta('questionId');
+  @override
+  late final GeneratedColumn<String> questionId = GeneratedColumn<String>(
+      'question_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
+  @override
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+      'body', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [questionId, body, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'question_notes';
+  @override
+  VerificationContext validateIntegrity(Insertable<QuestionNote> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('question_id')) {
+      context.handle(
+          _questionIdMeta,
+          questionId.isAcceptableOrUnknown(
+              data['question_id']!, _questionIdMeta));
+    } else if (isInserting) {
+      context.missing(_questionIdMeta);
+    }
+    if (data.containsKey('body')) {
+      context.handle(
+          _bodyMeta, body.isAcceptableOrUnknown(data['body']!, _bodyMeta));
+    } else if (isInserting) {
+      context.missing(_bodyMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {questionId};
+  @override
+  QuestionNote map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return QuestionNote(
+      questionId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}question_id'])!,
+      body: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}body'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $QuestionNotesTable createAlias(String alias) {
+    return $QuestionNotesTable(attachedDatabase, alias);
+  }
+}
+
+class QuestionNote extends DataClass implements Insertable<QuestionNote> {
+  final String questionId;
+  final String body;
+  final DateTime updatedAt;
+  const QuestionNote(
+      {required this.questionId, required this.body, required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['question_id'] = Variable<String>(questionId);
+    map['body'] = Variable<String>(body);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  QuestionNotesCompanion toCompanion(bool nullToAbsent) {
+    return QuestionNotesCompanion(
+      questionId: Value(questionId),
+      body: Value(body),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory QuestionNote.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return QuestionNote(
+      questionId: serializer.fromJson<String>(json['questionId']),
+      body: serializer.fromJson<String>(json['body']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'questionId': serializer.toJson<String>(questionId),
+      'body': serializer.toJson<String>(body),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  QuestionNote copyWith(
+          {String? questionId, String? body, DateTime? updatedAt}) =>
+      QuestionNote(
+        questionId: questionId ?? this.questionId,
+        body: body ?? this.body,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  QuestionNote copyWithCompanion(QuestionNotesCompanion data) {
+    return QuestionNote(
+      questionId:
+          data.questionId.present ? data.questionId.value : this.questionId,
+      body: data.body.present ? data.body.value : this.body,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuestionNote(')
+          ..write('questionId: $questionId, ')
+          ..write('body: $body, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(questionId, body, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is QuestionNote &&
+          other.questionId == this.questionId &&
+          other.body == this.body &&
+          other.updatedAt == this.updatedAt);
+}
+
+class QuestionNotesCompanion extends UpdateCompanion<QuestionNote> {
+  final Value<String> questionId;
+  final Value<String> body;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const QuestionNotesCompanion({
+    this.questionId = const Value.absent(),
+    this.body = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  QuestionNotesCompanion.insert({
+    required String questionId,
+    required String body,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  })  : questionId = Value(questionId),
+        body = Value(body),
+        updatedAt = Value(updatedAt);
+  static Insertable<QuestionNote> custom({
+    Expression<String>? questionId,
+    Expression<String>? body,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (questionId != null) 'question_id': questionId,
+      if (body != null) 'body': body,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  QuestionNotesCompanion copyWith(
+      {Value<String>? questionId,
+      Value<String>? body,
+      Value<DateTime>? updatedAt,
+      Value<int>? rowid}) {
+    return QuestionNotesCompanion(
+      questionId: questionId ?? this.questionId,
+      body: body ?? this.body,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (questionId.present) {
+      map['question_id'] = Variable<String>(questionId.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('QuestionNotesCompanion(')
+          ..write('questionId: $questionId, ')
+          ..write('body: $body, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $OwnQuestionsTable extends OwnQuestions
+    with TableInfo<$OwnQuestionsTable, OwnQuestion> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $OwnQuestionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _specializationIdMeta =
+      const VerificationMeta('specializationId');
+  @override
+  late final GeneratedColumn<String> specializationId = GeneratedColumn<String>(
+      'specialization_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _answerMeta = const VerificationMeta('answer');
+  @override
+  late final GeneratedColumn<String> answer = GeneratedColumn<String>(
+      'answer', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _companyMeta =
+      const VerificationMeta('company');
+  @override
+  late final GeneratedColumn<String> company = GeneratedColumn<String>(
+      'company', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, specializationId, title, answer, company, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'own_questions';
+  @override
+  VerificationContext validateIntegrity(Insertable<OwnQuestion> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('specialization_id')) {
+      context.handle(
+          _specializationIdMeta,
+          specializationId.isAcceptableOrUnknown(
+              data['specialization_id']!, _specializationIdMeta));
+    } else if (isInserting) {
+      context.missing(_specializationIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('answer')) {
+      context.handle(_answerMeta,
+          answer.isAcceptableOrUnknown(data['answer']!, _answerMeta));
+    }
+    if (data.containsKey('company')) {
+      context.handle(_companyMeta,
+          company.isAcceptableOrUnknown(data['company']!, _companyMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  OwnQuestion map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return OwnQuestion(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      specializationId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}specialization_id'])!,
+      title: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      answer: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}answer']),
+      company: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}company']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $OwnQuestionsTable createAlias(String alias) {
+    return $OwnQuestionsTable(attachedDatabase, alias);
+  }
+}
+
+class OwnQuestion extends DataClass implements Insertable<OwnQuestion> {
+  final String id;
+  final String specializationId;
+  final String title;
+
+  /// Что ответил или что стоило ответить. Заполняется не всегда.
+  final String? answer;
+
+  /// Где спросили. Нужно, чтобы перед вторым кругом собеседований в ту же
+  /// компанию открыть именно её вопросы.
+  final String? company;
+  final DateTime createdAt;
+  const OwnQuestion(
+      {required this.id,
+      required this.specializationId,
+      required this.title,
+      this.answer,
+      this.company,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['specialization_id'] = Variable<String>(specializationId);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || answer != null) {
+      map['answer'] = Variable<String>(answer);
+    }
+    if (!nullToAbsent || company != null) {
+      map['company'] = Variable<String>(company);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  OwnQuestionsCompanion toCompanion(bool nullToAbsent) {
+    return OwnQuestionsCompanion(
+      id: Value(id),
+      specializationId: Value(specializationId),
+      title: Value(title),
+      answer:
+          answer == null && nullToAbsent ? const Value.absent() : Value(answer),
+      company: company == null && nullToAbsent
+          ? const Value.absent()
+          : Value(company),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory OwnQuestion.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return OwnQuestion(
+      id: serializer.fromJson<String>(json['id']),
+      specializationId: serializer.fromJson<String>(json['specializationId']),
+      title: serializer.fromJson<String>(json['title']),
+      answer: serializer.fromJson<String?>(json['answer']),
+      company: serializer.fromJson<String?>(json['company']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'specializationId': serializer.toJson<String>(specializationId),
+      'title': serializer.toJson<String>(title),
+      'answer': serializer.toJson<String?>(answer),
+      'company': serializer.toJson<String?>(company),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  OwnQuestion copyWith(
+          {String? id,
+          String? specializationId,
+          String? title,
+          Value<String?> answer = const Value.absent(),
+          Value<String?> company = const Value.absent(),
+          DateTime? createdAt}) =>
+      OwnQuestion(
+        id: id ?? this.id,
+        specializationId: specializationId ?? this.specializationId,
+        title: title ?? this.title,
+        answer: answer.present ? answer.value : this.answer,
+        company: company.present ? company.value : this.company,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  OwnQuestion copyWithCompanion(OwnQuestionsCompanion data) {
+    return OwnQuestion(
+      id: data.id.present ? data.id.value : this.id,
+      specializationId: data.specializationId.present
+          ? data.specializationId.value
+          : this.specializationId,
+      title: data.title.present ? data.title.value : this.title,
+      answer: data.answer.present ? data.answer.value : this.answer,
+      company: data.company.present ? data.company.value : this.company,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OwnQuestion(')
+          ..write('id: $id, ')
+          ..write('specializationId: $specializationId, ')
+          ..write('title: $title, ')
+          ..write('answer: $answer, ')
+          ..write('company: $company, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, specializationId, title, answer, company, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is OwnQuestion &&
+          other.id == this.id &&
+          other.specializationId == this.specializationId &&
+          other.title == this.title &&
+          other.answer == this.answer &&
+          other.company == this.company &&
+          other.createdAt == this.createdAt);
+}
+
+class OwnQuestionsCompanion extends UpdateCompanion<OwnQuestion> {
+  final Value<String> id;
+  final Value<String> specializationId;
+  final Value<String> title;
+  final Value<String?> answer;
+  final Value<String?> company;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const OwnQuestionsCompanion({
+    this.id = const Value.absent(),
+    this.specializationId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.answer = const Value.absent(),
+    this.company = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  OwnQuestionsCompanion.insert({
+    required String id,
+    required String specializationId,
+    required String title,
+    this.answer = const Value.absent(),
+    this.company = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        specializationId = Value(specializationId),
+        title = Value(title),
+        createdAt = Value(createdAt);
+  static Insertable<OwnQuestion> custom({
+    Expression<String>? id,
+    Expression<String>? specializationId,
+    Expression<String>? title,
+    Expression<String>? answer,
+    Expression<String>? company,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (specializationId != null) 'specialization_id': specializationId,
+      if (title != null) 'title': title,
+      if (answer != null) 'answer': answer,
+      if (company != null) 'company': company,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  OwnQuestionsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? specializationId,
+      Value<String>? title,
+      Value<String?>? answer,
+      Value<String?>? company,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return OwnQuestionsCompanion(
+      id: id ?? this.id,
+      specializationId: specializationId ?? this.specializationId,
+      title: title ?? this.title,
+      answer: answer ?? this.answer,
+      company: company ?? this.company,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (specializationId.present) {
+      map['specialization_id'] = Variable<String>(specializationId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (answer.present) {
+      map['answer'] = Variable<String>(answer.value);
+    }
+    if (company.present) {
+      map['company'] = Variable<String>(company.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('OwnQuestionsCompanion(')
+          ..write('id: $id, ')
+          ..write('specializationId: $specializationId, ')
+          ..write('title: $title, ')
+          ..write('answer: $answer, ')
+          ..write('company: $company, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2298,6 +2887,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ReviewStatesTable reviewStates = $ReviewStatesTable(this);
   late final $StudyPlansTable studyPlans = $StudyPlansTable(this);
   late final $StudyPlanDaysTable studyPlanDays = $StudyPlanDaysTable(this);
+  late final $QuestionNotesTable questionNotes = $QuestionNotesTable(this);
+  late final $OwnQuestionsTable ownQuestions = $OwnQuestionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2308,7 +2899,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         topicRatings,
         reviewStates,
         studyPlans,
-        studyPlanDays
+        studyPlanDays,
+        questionNotes,
+        ownQuestions
       ];
 }
 
@@ -3463,6 +4056,339 @@ typedef $$StudyPlanDaysTableProcessedTableManager = ProcessedTableManager<
     ),
     StudyPlanDay,
     PrefetchHooks Function()>;
+typedef $$QuestionNotesTableCreateCompanionBuilder = QuestionNotesCompanion
+    Function({
+  required String questionId,
+  required String body,
+  required DateTime updatedAt,
+  Value<int> rowid,
+});
+typedef $$QuestionNotesTableUpdateCompanionBuilder = QuestionNotesCompanion
+    Function({
+  Value<String> questionId,
+  Value<String> body,
+  Value<DateTime> updatedAt,
+  Value<int> rowid,
+});
+
+class $$QuestionNotesTableFilterComposer
+    extends Composer<_$AppDatabase, $QuestionNotesTable> {
+  $$QuestionNotesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get questionId => $composableBuilder(
+      column: $table.questionId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get body => $composableBuilder(
+      column: $table.body, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$QuestionNotesTableOrderingComposer
+    extends Composer<_$AppDatabase, $QuestionNotesTable> {
+  $$QuestionNotesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get questionId => $composableBuilder(
+      column: $table.questionId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get body => $composableBuilder(
+      column: $table.body, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$QuestionNotesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $QuestionNotesTable> {
+  $$QuestionNotesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get questionId => $composableBuilder(
+      column: $table.questionId, builder: (column) => column);
+
+  GeneratedColumn<String> get body =>
+      $composableBuilder(column: $table.body, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$QuestionNotesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $QuestionNotesTable,
+    QuestionNote,
+    $$QuestionNotesTableFilterComposer,
+    $$QuestionNotesTableOrderingComposer,
+    $$QuestionNotesTableAnnotationComposer,
+    $$QuestionNotesTableCreateCompanionBuilder,
+    $$QuestionNotesTableUpdateCompanionBuilder,
+    (
+      QuestionNote,
+      BaseReferences<_$AppDatabase, $QuestionNotesTable, QuestionNote>
+    ),
+    QuestionNote,
+    PrefetchHooks Function()> {
+  $$QuestionNotesTableTableManager(_$AppDatabase db, $QuestionNotesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$QuestionNotesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$QuestionNotesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$QuestionNotesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> questionId = const Value.absent(),
+            Value<String> body = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              QuestionNotesCompanion(
+            questionId: questionId,
+            body: body,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String questionId,
+            required String body,
+            required DateTime updatedAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              QuestionNotesCompanion.insert(
+            questionId: questionId,
+            body: body,
+            updatedAt: updatedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$QuestionNotesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $QuestionNotesTable,
+    QuestionNote,
+    $$QuestionNotesTableFilterComposer,
+    $$QuestionNotesTableOrderingComposer,
+    $$QuestionNotesTableAnnotationComposer,
+    $$QuestionNotesTableCreateCompanionBuilder,
+    $$QuestionNotesTableUpdateCompanionBuilder,
+    (
+      QuestionNote,
+      BaseReferences<_$AppDatabase, $QuestionNotesTable, QuestionNote>
+    ),
+    QuestionNote,
+    PrefetchHooks Function()>;
+typedef $$OwnQuestionsTableCreateCompanionBuilder = OwnQuestionsCompanion
+    Function({
+  required String id,
+  required String specializationId,
+  required String title,
+  Value<String?> answer,
+  Value<String?> company,
+  required DateTime createdAt,
+  Value<int> rowid,
+});
+typedef $$OwnQuestionsTableUpdateCompanionBuilder = OwnQuestionsCompanion
+    Function({
+  Value<String> id,
+  Value<String> specializationId,
+  Value<String> title,
+  Value<String?> answer,
+  Value<String?> company,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$OwnQuestionsTableFilterComposer
+    extends Composer<_$AppDatabase, $OwnQuestionsTable> {
+  $$OwnQuestionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get specializationId => $composableBuilder(
+      column: $table.specializationId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get answer => $composableBuilder(
+      column: $table.answer, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get company => $composableBuilder(
+      column: $table.company, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$OwnQuestionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $OwnQuestionsTable> {
+  $$OwnQuestionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get specializationId => $composableBuilder(
+      column: $table.specializationId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title => $composableBuilder(
+      column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get answer => $composableBuilder(
+      column: $table.answer, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get company => $composableBuilder(
+      column: $table.company, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$OwnQuestionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $OwnQuestionsTable> {
+  $$OwnQuestionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get specializationId => $composableBuilder(
+      column: $table.specializationId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get answer =>
+      $composableBuilder(column: $table.answer, builder: (column) => column);
+
+  GeneratedColumn<String> get company =>
+      $composableBuilder(column: $table.company, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$OwnQuestionsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $OwnQuestionsTable,
+    OwnQuestion,
+    $$OwnQuestionsTableFilterComposer,
+    $$OwnQuestionsTableOrderingComposer,
+    $$OwnQuestionsTableAnnotationComposer,
+    $$OwnQuestionsTableCreateCompanionBuilder,
+    $$OwnQuestionsTableUpdateCompanionBuilder,
+    (
+      OwnQuestion,
+      BaseReferences<_$AppDatabase, $OwnQuestionsTable, OwnQuestion>
+    ),
+    OwnQuestion,
+    PrefetchHooks Function()> {
+  $$OwnQuestionsTableTableManager(_$AppDatabase db, $OwnQuestionsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$OwnQuestionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$OwnQuestionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$OwnQuestionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> specializationId = const Value.absent(),
+            Value<String> title = const Value.absent(),
+            Value<String?> answer = const Value.absent(),
+            Value<String?> company = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OwnQuestionsCompanion(
+            id: id,
+            specializationId: specializationId,
+            title: title,
+            answer: answer,
+            company: company,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String specializationId,
+            required String title,
+            Value<String?> answer = const Value.absent(),
+            Value<String?> company = const Value.absent(),
+            required DateTime createdAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              OwnQuestionsCompanion.insert(
+            id: id,
+            specializationId: specializationId,
+            title: title,
+            answer: answer,
+            company: company,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$OwnQuestionsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $OwnQuestionsTable,
+    OwnQuestion,
+    $$OwnQuestionsTableFilterComposer,
+    $$OwnQuestionsTableOrderingComposer,
+    $$OwnQuestionsTableAnnotationComposer,
+    $$OwnQuestionsTableCreateCompanionBuilder,
+    $$OwnQuestionsTableUpdateCompanionBuilder,
+    (
+      OwnQuestion,
+      BaseReferences<_$AppDatabase, $OwnQuestionsTable, OwnQuestion>
+    ),
+    OwnQuestion,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3479,4 +4405,8 @@ class $AppDatabaseManager {
       $$StudyPlansTableTableManager(_db, _db.studyPlans);
   $$StudyPlanDaysTableTableManager get studyPlanDays =>
       $$StudyPlanDaysTableTableManager(_db, _db.studyPlanDays);
+  $$QuestionNotesTableTableManager get questionNotes =>
+      $$QuestionNotesTableTableManager(_db, _db.questionNotes);
+  $$OwnQuestionsTableTableManager get ownQuestions =>
+      $$OwnQuestionsTableTableManager(_db, _db.ownQuestions);
 }

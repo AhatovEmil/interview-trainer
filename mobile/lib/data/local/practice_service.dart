@@ -310,6 +310,26 @@ class PracticeService {
     );
   }
 
+  // --- заметки ----------------------------------------------------------------
+
+  Future<String> note(String questionId) async {
+    final QuestionNote? row = await _db.noteFor(questionId);
+    return row?.body ?? '';
+  }
+
+  Future<void> saveNote({required String questionId, required String body}) =>
+      _db.saveNote(questionId: questionId, body: body);
+
+  // --- свои вопросы -----------------------------------------------------------
+
+  Future<List<OwnQuestion>> ownQuestions(String specializationId) =>
+      _db.ownQuestionsFor(specializationId);
+
+  Future<void> saveOwnQuestion(OwnQuestionsCompanion question) =>
+      _db.saveOwnQuestion(question);
+
+  Future<void> deleteOwnQuestion(String id) => _db.deleteOwnQuestion(id);
+
   // --- статистика -------------------------------------------------------------
 
   Future<PracticeStats> stats(String specializationId) async {

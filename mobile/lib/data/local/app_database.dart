@@ -121,15 +121,60 @@ class StudyPlanDays extends Table {
   Set<Column<Object>> get primaryKey => <Column<Object>>{planId, dayIndex};
 }
 
+/// Заметка к вопросу банка.
+///
+/// То, что человек хочет запомнить именно про себя: что забыл сказать, как
+/// формулировать в следующий раз, куда посмотреть. Одна заметка на вопрос —
+/// история правок здесь никому не нужна.
+class QuestionNotes extends Table {
+  TextColumn get questionId => text()();
+  TextColumn get body => text()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{questionId};
+}
+
+/// Вопрос, который человек услышал на реальном собеседовании.
+///
+/// Записывать их нужно сразу после собеседования, пока помнишь формулировку.
+/// Хранится локально: сервера у приложения нет, и отправлять некуда.
+class OwnQuestions extends Table {
+  TextColumn get id => text()();
+  TextColumn get specializationId => text()();
+  TextColumn get title => text()();
+
+  /// Что ответил или что стоило ответить. Заполняется не всегда.
+  TextColumn get answer => text().nullable()();
+
+  /// Где спросили. Нужно, чтобы перед вторым кругом собеседований в ту же
+  /// компанию открыть именно её вопросы.
+  TextColumn get company => text().nullable()();
+
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => <Column<Object>>{id};
+}
+
 @DriftDatabase(
-  tables: <Type>[Profiles, Answers, TopicRatings, ReviewStates, StudyPlans, StudyPlanDays],
+  tables: <Type>[
+    Profiles,
+    Answers,
+    TopicRatings,
+    ReviewStates,
+    StudyPlans,
+    StudyPlanDays,
+    QuestionNotes,
+    OwnQuestions,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
       : super(executor ?? driftDatabase(name: 'interview_trainer'));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -161,6 +206,10 @@ class AppDatabase extends _$AppDatabase {
             // новые, прежние данные они не трогают.
             await m.createTable(studyPlans);
             await m.createTable(studyPlanDays);
+          }
+          if (from < 5) {
+            await m.createTable(questionNotes);
+            await m.createTable(ownQuestions);
           }
         },
       );
@@ -367,6 +416,51 @@ class AppDatabase extends _$AppDatabase {
         ))
       .write(const StudyPlansCompanion(isActive: Value<bool>(false)));
 
+  // --- заметки и свои вопросы -------------------------------------------------
+
+  Future<QuestionNote?> noteFor(String questionId) => (select(questionNotes)
+        ..where((QuestionNotes table) => table.questionId.equals(questionId)))
+      .getSingleOrNull();
+
+  Future<Map<String, QuestionNote>> allNotes() async {
+    final List<QuestionNote> rows = await select(questionNotes).get();
+    return <String, QuestionNote>{
+      for (final QuestionNote row in rows) row.questionId: row,
+    };
+  }
+
+  /// Сохраняет заметку. Пустой текст удаляет её: заметка «ничего» — это её
+  /// отсутствие, а не строка из пробелов.
+  Future<void> saveNote({required String questionId, required String body}) async {
+    final String trimmed = body.trim();
+    if (trimmed.isEmpty) {
+      await (delete(questionNotes)
+            ..where((QuestionNotes table) => table.questionId.equals(questionId)))
+          .go();
+      return;
+    }
+    await into(questionNotes).insertOnConflictUpdate(
+      QuestionNotesCompanion(
+        questionId: Value<String>(questionId),
+        body: Value<String>(trimmed),
+        updatedAt: Value<DateTime>(DateTime.now()),
+      ),
+    );
+  }
+
+  Future<List<OwnQuestion>> ownQuestionsFor(String specializationId) => (select(ownQuestions)
+        ..where((OwnQuestions table) => table.specializationId.equals(specializationId))
+        ..orderBy(<OrderClauseGenerator<OwnQuestions>>[
+          (OwnQuestions table) => OrderingTerm.desc(table.createdAt),
+        ]))
+      .get();
+
+  Future<void> saveOwnQuestion(OwnQuestionsCompanion question) =>
+      into(ownQuestions).insertOnConflictUpdate(question);
+
+  Future<void> deleteOwnQuestion(String id) =>
+      (delete(ownQuestions)..where((OwnQuestions table) => table.id.equals(id))).go();
+
   // --- очистка ----------------------------------------------------------------
 
   /// Полная очистка прогресса. Банк вопросов не трогает — он в ресурсах.
@@ -376,6 +470,8 @@ class AppDatabase extends _$AppDatabase {
         await delete(reviewStates).go();
         await delete(studyPlanDays).go();
         await delete(studyPlans).go();
+        await delete(questionNotes).go();
+        await delete(ownQuestions).go();
         await delete(profiles).go();
       });
 }

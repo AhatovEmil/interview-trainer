@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../domain/models/question.dart';
 import '../common/section_label.dart';
+import 'note_editor.dart';
 import '../common/surface_card.dart';
 
 /// Разбор после ответа: вердикт, эталонный ответ, разбор по уровням,
@@ -13,12 +14,17 @@ class ExplanationView extends StatelessWidget {
   const ExplanationView({
     required this.result,
     required this.onNext,
+    required this.questionId,
     this.nextLabel = 'Следующий вопрос',
     super.key,
   });
 
   final AnswerResult result;
   final VoidCallback onNext;
+
+  /// Нужен для заметки: она привязана к вопросу, а не к попытке ответа.
+  final String questionId;
+
   final String nextLabel;
 
   @override
@@ -70,6 +76,8 @@ class ExplanationView extends StatelessWidget {
                   ),
                 ),
               ],
+              const SizedBox(height: 28),
+              NoteSection(questionId: questionId),
             ],
           ),
         ),

@@ -124,3 +124,15 @@ final FutureProviderFamily<TodayPlan?, String> todayPlanProvider =
     FutureProvider.family<TodayPlan?, String>(
   (Ref ref, String specialization) => ref.watch(planServiceProvider).today(specialization),
 );
+
+/// Заметка к вопросу. Пустая строка — заметки нет.
+final FutureProviderFamily<String, String> noteProvider = FutureProvider.family<String, String>(
+  (Ref ref, String questionId) => ref.watch(practiceServiceProvider).note(questionId),
+);
+
+/// Вопросы, записанные пользователем с реальных собеседований.
+final FutureProviderFamily<List<OwnQuestion>, String> ownQuestionsProvider =
+    FutureProvider.family<List<OwnQuestion>, String>(
+  (Ref ref, String specialization) =>
+      ref.watch(practiceServiceProvider).ownQuestions(specialization),
+);
